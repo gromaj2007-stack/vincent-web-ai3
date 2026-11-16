@@ -165,7 +165,15 @@ const thoughts=[
 'Kurze Durchsage aus meinem Kopf: Du hast einen ziemlich gut gekleideten Assistenten.'
 ];
 let lastThought=-1;
-async function shareThought(){markActivity();if(settings.classList.contains('open')||speaking||speechPending||listening)return;el.classList.add('thinking');try{const reply=await askAI({message:'Äußere einen kurzen spontanen Gedanken, eine witzige Beobachtung oder eine neugierige Frage. Maximal 30 Wörter.',memories:memories().slice(-12),topics:recentTopics(),mode:'muse'},90000);el.classList.remove('thinking');say(reply);return}catch{el.classList.remove('thinking')}let n=Math.floor(Math.random()*thoughts.length);if(n===lastThought)n=(n+1)%thoughts.length;lastThought=n;say(thoughts[n])}
+function shareThought(){
+  markActivity();
+  if(settings.classList.contains('open')||speaking||speechPending||listening)return;
+  // Respond immediately; never wait up to 90 seconds for the AI to load.
+  let n=Math.floor(Math.random()*thoughts.length);
+  if(n===lastThought)n=(n+1)%thoughts.length;
+  lastThought=n;
+  say(thoughts[n]);
+}
 
 // Spontane Gedanken nur während die Website sichtbar und Vincent unbeschäftigt ist.
 // Ein aktiver Nutzer hat immer Vorrang; kein Mikrofon wird automatisch gestartet.
