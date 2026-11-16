@@ -64,16 +64,16 @@ async function ensurePiper(){
  if(piperReady)return piperModule;
  if(piperLoading)return piperLoading;
  piperLoading=(async()=>{
-  piperStatus.textContent='Lade Piper-Bibliothek und deutsches Sprachmodell. Das kann dauern …';
+  piperStatus.textContent='Lade aktualisierte Piper-Engine (ONNX 1.22) und deutsches Sprachmodell …';
   // This package synthesizes a WAV blob entirely inside the browser after downloading the model.
-  const mod=await import('https://esm.sh/@mintplex-labs/piper-tts-web?bundle');
+  const mod=await import('https://esm.sh/@realtimex/piper-tts-web@1.1.1?bundle');
   await mod.download(PIPER_VOICE,(progress)=>{
     if(progress&&Number.isFinite(progress.loaded)&&progress.total){
       piperStatus.textContent='Deutsche Stimme wird geladen: '+Math.round(progress.loaded/progress.total*100)+' %';
     }
   });
   piperModule=mod;piperReady=true;piperStatus.textContent='Lokale deutsche Stimme bereit.';return mod;
- })().catch(e=>{piperLoading=null;piperStatus.textContent='Piper konnte nicht starten: '+(e?.message||String(e));throw e});
+ })().catch(e=>{piperLoading=null;piperStatus.textContent='Piper konnte nicht starten: '+(e?.message||String(e))+' · Prüfe Internetverbindung und lade die Seite neu.';throw e});
  return piperLoading;
 }
 async function startAudioPlayback(blob,generation){
