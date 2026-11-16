@@ -61,20 +61,33 @@ const piperStatus=$('piperstatus'),piperEnabled=$('piperenabled');
 piperEnabled.checked=localStorage.getItem('vincent_piper_enabled')==='on';
 piperEnabled.onchange=()=>{localStorage.setItem('vincent_piper_enabled',piperEnabled.checked?'on':'off');piperStatus.textContent=piperEnabled.checked?'Lokale Stimme aktiviert. Beim ersten Sprechen wird das Modell geladen.':'Browser-Stimme aktiviert.'};
 async function ensurePiper(){
- if(piperReady)return piperModule;
- if(piperLoading)return piperLoading;
+ if(piperReady&&piperModule){
+  piperStatus.textContent='Deutsches Sprachmodell ist bereits geladen. Bereit zum Testen.';
+  return piperModule;
+ }
+ if(piperLoading){
+  piperStatus.textContent='Sprachmodell wird bereits geladen …';
+  return piperLoading;
+ }
  piperLoading=(async()=>{
   piperStatus.textContent='Lade Piper-Bibliothek und deutsches Sprachmodell …';
-  // This package synthesizes a WAV blob entirely inside the browser after downloading the model.
   const mod=await import('https://esm.sh/@realtimex/piper-tts-web@1.1.1?bundle');
-  await mod.download(PIPER_VOICE,(progress)=>{
-    if(progress&&Number.isFinite(progress.loaded)&&progress.total){
-      piperStatus.textContent='Deutsche Stimme wird geladen: '+Math.round(progress.loaded/progress.total*100)+' %';
-    }
+  await mod.download(PIPER_VOICE,progress=>{
+   if(progress&&Number.isFinite(progress.loaded)&&progress.total>0){
+    piperStatus.textContent='Deutsche Stimme wird geladen: '+Math.round(progress.loaded/progress.total*100)+' %';
+   }
   });
-  piperModule=mod;piperReady=true;piperStatus.textContent='Lokale deutsche Stimme bereit.';return mod;
- })().catch(e=>{piperLoading=null;piperStatus.textContent='Piper-Ladefehler: '+(e?.message||String(e))+' · Browser-Stimme bleibt als Ersatz verfügbar.';throw e});
- return piperLoading;
+  piperModule=mod;
+  piperReady=true;
+  piperStatus.textContent='Lokale deutsche Stimme bereit.';
+  return mod;
+ })();
+ try{return await piperLoading}
+ catch(e){
+  piperModule=null;piperReady=false;
+  piperStatus.textContent='Piper-Ladefehler: '+(e?.message||String(e));
+  throw e;
+ }finally{piperLoading=null}
 }
 async function startAudioPlayback(blob,generation){
  if(generation!==speechGeneration)return;
@@ -107,7 +120,7 @@ async function sayPiper(message,generation){
  }
 }
 voiceAudio.addEventListener('ended',()=>{speaking=false;piperBusy=false;speechPending=false;status.textContent='TIPPEN: GEDANKEN · DOPPELTIPPEN: SPRECHEN'});
-$('loadpiper').addEventListener('click',async()=>{try{await ensurePiper()}catch{}});
+$('loadpiper').addEventListener('click',async()=>{piperStatus.textContent='Prüfe deutsches Sprachmodell …';try{await ensurePiper()}catch(e){console.error('Vincent Piper:',e)}});
 let lastSpoken='';
 function say(message){
   stopAudio();
