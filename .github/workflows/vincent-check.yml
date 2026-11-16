@@ -1,1 +1,37 @@
 
+name: Vincent Sicherheitsprüfung
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Repository laden
+        uses: actions/checkout@v4
+
+      - name: Python prüfen
+        run: |
+          python3 -m py_compile autopilot/agent.py
+          python3 -m py_compile autopilot/check_patch.py
+
+      - name: JavaScript prüfen
+        run: |
+          node --check app.js
+          node --check brain-worker.js
+          node --check sw.js
+
+      - name: Sicherheitsprüfung abgeschlossen
+        run: echo "Vincent hat die Syntaxprüfungen bestanden."
+
+        
