@@ -1,0 +1,58 @@
+
+name: Vincent Autopilot
+
+on:
+  workflow_dispatch:
+    inputs:
+      problem:
+        description: "Was soll Vincent verbessern?"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  develop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Projekt laden
+        uses: actions/checkout@v4
+
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Zugang prüfen
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::OPENAI_API_KEY fehlt"
+            exit 1
+          fi
+
+      - name: Vincent entwickelt eine Lösung
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PROBLEM: ${{ inputs.problem }}
+        run: |
+          python autopilot/agent.py "$PROBLEM"
+
+      - name: JavaScript prüfen
+        run: |
+          node --check app.js
+          node --check brain-worker.js
+
+      - name: Änderung zur Prüfung speichern
+        uses: actions/upload-artifact@v4
+        with:
+          name: vincent-vorschlag
+          path: |
+            app.js
+            brain-worker.js
+          retention-days: 7
+          
