@@ -64,7 +64,7 @@ async function ensurePiper(){
  if(piperReady)return piperModule;
  if(piperLoading)return piperLoading;
  piperLoading=(async()=>{
-  piperStatus.textContent='Lade aktualisierte Piper-Engine (ONNX 1.22) und deutsches Sprachmodell …';
+  piperStatus.textContent='Lade Piper-Bibliothek und deutsches Sprachmodell …';
   // This package synthesizes a WAV blob entirely inside the browser after downloading the model.
   const mod=await import('https://esm.sh/@realtimex/piper-tts-web@1.1.1?bundle');
   await mod.download(PIPER_VOICE,(progress)=>{
@@ -73,7 +73,7 @@ async function ensurePiper(){
     }
   });
   piperModule=mod;piperReady=true;piperStatus.textContent='Lokale deutsche Stimme bereit.';return mod;
- })().catch(e=>{piperLoading=null;piperStatus.textContent='Piper konnte nicht starten: '+(e?.message||String(e))+' · Prüfe Internetverbindung und lade die Seite neu.';throw e});
+ })().catch(e=>{piperLoading=null;piperStatus.textContent='Piper-Ladefehler: '+(e?.message||String(e))+' · Browser-Stimme bleibt als Ersatz verfügbar.';throw e});
  return piperLoading;
 }
 async function startAudioPlayback(blob,generation){
@@ -98,8 +98,12 @@ async function sayPiper(message,generation){
  }catch(e){
   if(generation!==speechGeneration)return;
   piperStatus.textContent='Lokale Stimme fehlgeschlagen: '+(e?.message||String(e));
-  // No silent fallback: it would bring back the original lip-sync problem.
-  piperBusy=false;speechPending=false;speaking=false;el.classList.remove('thinking');status.textContent='LOKALE STIMME NICHT VERFÜGBAR';
+  // Do not leave Vincent silent if local synthesis cannot initialize.
+  piperBusy=false;speechPending=false;speaking=false;el.classList.remove('thinking');
+  piperEnabled.checked=false;
+  try{localStorage.setItem('vincent_piper_enabled','off')}catch{}
+  status.textContent='PIPER NICHT VERFÜGBAR · BROWSER-STIMME AKTIV';
+  if(generation===speechGeneration){say(message)}
  }
 }
 voiceAudio.addEventListener('ended',()=>{speaking=false;piperBusy=false;speechPending=false;status.textContent='TIPPEN: GEDANKEN · DOPPELTIPPEN: SPRECHEN'});
