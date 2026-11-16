@@ -1,4 +1,3 @@
-
 name: Vincent Autopilot
 
 on:
@@ -26,18 +25,18 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Zugang prüfen
+      - name: Groq-Zugang prüfen
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
-          if [ -z "$OPENAI_API_KEY" ]; then
-            echo "::error::OPENAI_API_KEY fehlt"
+          if [ -z "$GROQ_API_KEY" ]; then
+            echo "::error::GROQ_API_KEY fehlt. Bitte unter Settings > Secrets and variables > Actions hinterlegen."
             exit 1
           fi
 
       - name: Vincent entwickelt eine Lösung
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           PROBLEM: ${{ inputs.problem }}
         run: |
           python autopilot/agent.py "$PROBLEM"
