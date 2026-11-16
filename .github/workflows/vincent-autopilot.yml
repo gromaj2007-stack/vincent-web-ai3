@@ -37,9 +37,9 @@ jobs:
       - name: Vincent entwickelt eine Lösung
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          PROBLEM: ${{ inputs.problem }}
+          AUTOPILOT_TASK: ${{ inputs.problem }}
         run: |
-          python autopilot/agent.py "$PROBLEM"
+          python autopilot/agent.py "$AUTOPILOT_TASK"
 
       - name: JavaScript prüfen
         run: |
