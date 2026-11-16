@@ -1,0 +1,1 @@
+{"name":"Vincent Web AI","short_name":"Vincent","description":"Dein animierter KI-Begleiter","start_url":"./","scope":"./","display":"standalone","orientation":"landscape","background_color":"#06101b","theme_color":"#07131f","icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
