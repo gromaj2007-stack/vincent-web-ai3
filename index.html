@@ -1,4 +1,4 @@
-<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vivi 3.5 – Android-Standardstimme</title><style>body{margin:0;background:#130c20;color:#eee;font:16px system-ui;min-height:100dvh;display:grid;place-items:center;text-align:center}#status{padding:20px}</style></head><body><div id="status">Vivi wird geladen …</div><script>
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vivi 3.9 – Lebendige Animation</title><style>body{margin:0;background:#130c20;color:#eee;font:16px system-ui;min-height:100dvh;display:grid;place-items:center;text-align:center}#status{padding:20px}</style></head><body><div id="status">Vivi wird geladen …</div><script>
 (async()=>{try{
 const url='https://raw.githubusercontent.com/gromaj2007-stack/vincent-web-ai3/a2a53c04ec/index.html';
 const res=await fetch(url,{cache:'no-store'});if(!res.ok)throw Error('Originalversion HTTP '+res.status);
@@ -10,24 +10,22 @@ source=source.replace(/<head>/i,'<head><base href="https://gromaj2007-stack.gith
 const appResponse=await fetch('https://gromaj2007-stack.github.io/vincent-web-ai3/app.js',{cache:'no-store'});
 if(!appResponse.ok)throw Error('app.js HTTP '+appResponse.status);
 let appCode=await appResponse.text();
-const originalVoicePreference="const preferred=v.find(x=>/male|männ|mann|markus|daniel|conrad|stefan|thomas|florian|hans/i.test(x.name));select.value=preferred?.name||(v.some(x=>x.name===old)?old:v[0].name)";
-const femaleVoicePreference="const preferred=v.find(x=>/female|weiblich|vicki|anna|petra|katja|helena|marlene|lea|lena|sarah|google deutsch/i.test(x.name)&&!/male|männ|mann|hans|markus|daniel|conrad|stefan|thomas|florian/i.test(x.name));select.value=preferred?.name||(v.some(x=>x.name===old)?old:v[0].name)";
-if(!appCode.includes(originalVoicePreference))throw Error('Stimmen-Code nicht gefunden – Update abgebrochen');
-appCode=appCode.replace(originalVoicePreference,femaleVoicePreference);
+// Use only browser/Android default TTS; no voice name or paid TTS provider.
 const onlineDefault="onlineVoiceToggle.checked=true;localStorage.setItem(ONLINE_VOICE_KEY,'on');";
-if(!appCode.includes(onlineDefault))throw Error('Online-Stimmen-Schalter nicht gefunden');
+if(!appCode.includes(onlineDefault))throw Error('Sprachmodul wurde verändert');
 appCode=appCode.replace(onlineDefault,"onlineVoiceToggle.checked=false;localStorage.setItem(ONLINE_VOICE_KEY,'off');");
 const selectedVoice="u.voice=voices().find(v=>v.name===select.value)||null;";
-if(!appCode.includes(selectedVoice))throw Error('Stimmen-Zuweisung nicht gefunden');
-// Null means: use Android's configured default voice; never force Hans.
+if(!appCode.includes(selectedVoice))throw Error('Stimmenzuweisung wurde verändert');
 appCode=appCode.replace(selectedVoice,"u.voice=null;");
-// Do not allow the old automatic male preference to change the actual voice.
-// The selector remains visible for diagnostics, but Android's default is used.
-appCode=appCode.replace("u.lang='de-DE';u.rate=isCuteVoice()?1.04:.91;u.pitch=isCuteVoice()?1.48:.93;", "u.lang='de-DE';u.rate=1.0;u.pitch=1.0;");
-appCode=appCode.replace("u.voice=null;onlineVoiceStatus.textContent='Aktive Audioquelle: Android-Browserstimme '+(u.voice?.name||'(Systemstandard)');", "u.voice=null;onlineVoiceStatus.textContent='Aktive Audioquelle: Android-Standardstimme (ohne Hans-Zwang)';");
+appCode=appCode.replace("u.lang='de-DE';u.rate=isCuteVoice()?1.04:.91;u.pitch=isCuteVoice()?1.48:.93;", "u.lang='';u.rate=1;u.pitch=1;");
+// Never enter cloud or Piper TTS branches, even if old settings were stored.
+appCode=appCode.replace('if(onlineVoiceToggle.checked){clearTimeout(mouthStartTimer);', 'if(false){clearTimeout(mouthStartTimer);');
+appCode=appCode.replace('if(piperEnabled.checked){clearTimeout(mouthStartTimer);', 'if(false){clearTimeout(mouthStartTimer);');
+// Voice list remains in app.js for compatibility, but is not used for speaking.
 const appBlob=URL.createObjectURL(new Blob([appCode],{type:'text/javascript'}));
 source=source.replace(/src="\.\/app\.js\?v=290"/,'src="'+appBlob+'"');
-source=source.replace(/<\/body>/i,'<script src="./vivi-classic-animation.js?v=350" defer></'+'script></body>');
+source=source.replace(/<\/body>/i,'<script src="./vivi-default-voice-ui.js?v=360" defer></'+'script></body>');
+source=source.replace(/<\/body>/i,'<script src="./vivi-classic-animation.js?v=370" defer></'+'script><script src="./vivi-alive.js?v=390" defer></'+'script><script src="./vivi-mesh-mimik.js?v=390" defer></'+'script></body>');
 document.open();document.write(source);document.close();
 }catch(e){document.getElementById('status').textContent='Vivi konnte nicht geladen werden: '+e.message;}})();
 </script></body></html>
