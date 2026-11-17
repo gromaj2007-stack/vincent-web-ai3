@@ -6,9 +6,9 @@ let value='',shift=false,numbers=false,readTimer=0,peekTimer=0;
 const active=()=>!panel.hidden;
 function drawDraft(){draft.textContent=value||'Schreib Vincent etwas …';draft.classList.toggle('empty',!value)}
 function pose(name,ms=1100){if(!active())return;window.vincentChatPose?.(name,ms);figure.classList.toggle('chat-read',name==='reading');clearTimeout(readTimer);if(name==='reading')readTimer=setTimeout(()=>figure.classList.remove('chat-read'),ms)}
-function open(opened){panel.hidden=!opened;main.classList.toggle('chat-open',opened);toggle.setAttribute('aria-expanded',String(opened));toggle.textContent=opened?'✕ Chat':'⌨ Chat';toggle.setAttribute('aria-label',opened?'Chat schließen':'Chat öffnen');window.vincentChatOpen=opened;window.vincentChatPose?.(opened?'peek':'neutral',1400);if(opened){figure.classList.remove('chat-peek');void figure.offsetWidth;figure.classList.add('chat-peek');clearTimeout(peekTimer);peekTimer=setTimeout(()=>figure.classList.remove('chat-peek'),1100);log.scrollTop=log.scrollHeight}}
+function open(opened){panel.hidden=!opened;main.classList.toggle('chat-open',opened);toggle.setAttribute('aria-expanded',String(opened));toggle.textContent=opened?'✕ Chat':'⌨ Chat';toggle.setAttribute('aria-label',opened?'Chat schließen':'Chat öffnen');window.vincentChatOpen=opened;window.vincentChatPose?.(opened?'peek':'neutral',1400);window.vincentController?.chat(opened);if(opened){figure.classList.remove('chat-peek');void figure.offsetWidth;figure.classList.add('chat-peek');clearTimeout(peekTimer);peekTimer=setTimeout(()=>figure.classList.remove('chat-peek'),1100);log.scrollTop=log.scrollHeight}}
 toggle.addEventListener('click',()=>open(!active()));
-function addMessage(who,message){const s=String(message||'').trim();if(!s)return;const item=document.createElement('div');item.className='chat-message '+(who==='user'?'user':'vincent');item.textContent=s;log.append(item);while(log.children.length>65)log.firstElementChild.remove();log.scrollTop=log.scrollHeight;if(who==='vincent')pose('speaking',Math.min(4000,900+s.length*28));}
+function addMessage(who,message){const s=String(message||'').trim();if(!s)return;const item=document.createElement('div');item.className='chat-message '+(who==='user'?'user':'vincent');item.textContent=s;log.append(item);while(log.children.length>65)log.firstElementChild.remove();log.scrollTop=log.scrollHeight;if(who==='vincent'){pose('speaking',Math.min(4000,900+s.length*28));window.vincentController?.message(s)}}
 window.vincentChatMessage=addMessage;
 // Persistent key nodes: no expensive keyboard re-render after every character.
 let caps=false,repeatTimer=0,repeatDelay=0;
@@ -23,8 +23,8 @@ function applyKey(output){
  else if(output==='SHIFT'){shift=!shift;redrawLabels()}
  else if(output==='NUM'){numbers=!numbers;requestAnimationFrame(renderKeys)}
  else if(output==='SEND'){sendMessage();return}
- else {value+=output==='SPACE'?' ':shift?output.toUpperCase():output;if(shift){shift=false;redrawLabels()}}
- drawDraft();
+ else {value+=output==='SPACE'?' ':shift?output.toUpperCase():output.toLowerCase();if(shift){shift=false;redrawLabels()}}
+ drawDraft();if(output!=='SHIFT'&&output!=='NUM')window.vincentController?.typing();
 }
 function pickerClose(commit=true){if(!activePicker)return;const x=activePicker;activePicker=null;x.node.remove();if(commit)applyKey(x.options[x.selected]);}
 function pickerShow(button,output){
@@ -60,7 +60,7 @@ function key(label,output,extra='',hint=''){
 }
 function renderKeys(){
  keyButtons.length=0;keys.replaceChildren();
- const rows=numbers?['1234567890','@#€%&-+()/','*"\':;!?.,']:['QWERTZUIOP','ASDFGHJKL','YXCVBNM'];
+ const rows=numbers?['1234567890','@#€%&-+()/','*"\':;!?.,']:['qwertzuiop','asdfghjkl','yxcvbnm'];
  const fragment=document.createDocumentFragment();
  if(numbers){const toolbar=document.createElement('div');toolbar.className='vincent-symbol-toolbar';for(const ch of ['€','@','#','&','%','+','-','/','?','!'])toolbar.append(key(ch,ch,'symbol'));fragment.append(toolbar);}
  rows.forEach((letters,i)=>{const row=document.createElement('div');row.className='chat-key-row';if(i===2&&!numbers)row.append(key('⇧','SHIFT','action'));[...letters].forEach((letter,j)=>{const lower=letter.toLowerCase();const hint=!numbers&&i===0?topNumbers[j]:alternates[lower]?.[0]||'';row.append(key(shift?letter.toUpperCase():letter.toLowerCase(),letter,'',hint))});if(i===2)row.append(key('⌫','BACK','action'));fragment.append(row)});

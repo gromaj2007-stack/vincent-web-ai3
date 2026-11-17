@@ -177,7 +177,7 @@ async function sayOnline(message,generation){
   }catch(e){
     if(generation!==speechGeneration)return;
     onlineVoiceBusy=false;speechPending=false;speaking=false;
-    onlineVoiceStatus.textContent='Online-Stimme nicht verfügbar: '+(e?.message||String(e))+'. Browser-Stimme als Ersatz.';
+    onlineVoiceStatus.textContent='Online-Stimme fehlgeschlagen: '+(e?.message||String(e))+'. Jetzt spricht die Android-Ersatzstimme.';
     sayBrowser(message,generation);
   }
 }
@@ -205,7 +205,7 @@ function sayBrowser(message,generation){
   status.textContent='VINCENT BEREITET DIE STIMME VOR';
   const u=new SpeechSynthesisUtterance(message);
   u.lang='de-DE';u.rate=isCuteVoice()?1.04:.91;u.pitch=isCuteVoice()?1.48:.93;
-  u.voice=voices().find(v=>v.name===select.value)||null;
+  u.voice=voices().find(v=>v.name===select.value)||null;onlineVoiceStatus.textContent='Aktive Audioquelle: Android-Browserstimme '+(u.voice?.name||'(Systemstandard)');
   u.onstart=()=>{
     if(generation!==speechGeneration)return;
     speechPending=false;speaking=true;

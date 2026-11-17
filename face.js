@@ -32,6 +32,13 @@ const cur={...poses.neutral,gaze:0,blink:0,open:0};
 let blinkBeat=0;
 function feel(name,duration=2400){if(!poses[name]||mode!=='awake')return;emotion=name;emotionUntil=performance.now()+Math.max(300,Math.min(duration,6500))}
 window.vincentFeel=feel;
+// Dedicated emotion controller: owns interaction states and text-driven reactions.
+const controller={chatOpen:false,typingUntil:0,replyUntil:0,replyMood:'curious',
+ chat(opened){this.chatOpen=!!opened;this.typingUntil=0},
+ typing(){this.typingUntil=performance.now()+900},
+ message(text){const t=String(text).toLowerCase();this.replyMood=/haha|lustig|freu|toll|super|klasse|juhu/.test(t)?'happy':/traurig|schade|leid|sorry/.test(t)?'sad':/wow|oha|unglaublich/.test(t)?'surprised':/\?$/.test(t)?'curious':'playful';this.replyUntil=performance.now()+Math.min(6500,1700+t.length*38);feel(this.replyMood,Math.min(6500,1700+t.length*38));}
+};
+window.vincentController=controller;
 window.vincentReactToText=(value)=>{const t=String(value||'').toLowerCase();let mood=null;
 // Do not confuse words in an ordinary sentence with Vincent's own feelings.
 if(/(?:das tut mir leid|entschuldige|schade|traurig|bedauerlich)/.test(t))mood='sad';
@@ -47,7 +54,12 @@ const lerp=(a,b,k)=>a+(b-a)*k;
 function eyeD(cx,cy,height){const h=Math.max(2,height)/2,w=30;return `M ${cx-w} ${cy} C ${cx-w} ${cy-h*1.3} ${cx+w} ${cy-h*1.3} ${cx+w} ${cy} C ${cx+w} ${cy+h*1.3} ${cx-w} ${cy+h*1.3} ${cx-w} ${cy} Z`}
 function frame(now){requestAnimationFrame(frame);if(document.hidden){last=now;return}const dt=Math.min(.05,Math.max(0,(now-last)/1000));last=now;
 const talking=host.classList.contains('talking')||host.classList.contains('audio-speaking');const thinking=host.classList.contains('thinking');const listening=host.classList.contains('listening');
-let pose=mode==='sleep'?poses.sleepy:mode==='checking'?poses.checking:poses.neutral;if(mode==='awake'&&thinking)pose=poses.thinking;else if(mode==='awake'&&listening)pose=poses.listening;else if(mode==='awake'&&now<emotionUntil)pose=poses[emotion];else if(mode==='awake'&&window.vincentChatOpen&&now<chatUntil)pose=poses[chatPose==='reading'?'curious':chatPose==='peek'?'playful':chatPose==='speaking'?'happy':chatPose==='curious'?'curious':'neutral'];
+let pose=mode==='sleep'?poses.sleepy:mode==='checking'?poses.checking:poses.neutral;if(mode==='awake'&&thinking)pose=poses.thinking;else if(mode==='awake'&&listening)pose=poses.listening;else if(mode==='awake'&&now<emotionUntil)pose=poses[emotion];else if(mode==='awake'&&controller.chatOpen){
+ if(now<controller.replyUntil)pose=poses[controller.replyMood];
+ else if(now<controller.typingUntil)pose=poses.curious;
+ else if(now<chatUntil)pose=poses[chatPose==='reading'?'curious':chatPose==='peek'?'playful':chatPose==='speaking'?'happy':chatPose==='curious'?'curious':'playful'];
+ else pose=poses.playful;
+}
 if(mode==='awake'&&now>=nextBlink){blinkStart=now;blinkDuration=170+Math.random()*70;nextBlink=now+3600+Math.random()*3500}
 const elapsed=now-blinkStart;const blink=mode==='sleep'?0:elapsed>=0&&elapsed<blinkDuration?Math.sin(Math.PI*elapsed/blinkDuration):0;
 if(mode==='awake'&&now>=nextLook){look=(thinking||listening||talking)?0:(Math.random()<.45?0:(Math.random()-.5)*8);nextLook=now+3300+Math.random()*3600}
@@ -60,10 +72,17 @@ cur.open=lerp(cur.open,targetOpen,1-Math.exp(-dt*8));
 const awake=mode==='awake';
 // Slow breathing in eyes and eyebrows; subtle asymmetry, no new emotional poses.
 const breath=awake?Math.sin(now/1050)*.045:0;const wakeT=Math.max(0,1-(now-wakeStart)/1550);const wakeBounce=wakeT?Math.sin((1-wakeT)*Math.PI*3)*wakeT:0;
-const attention=awake&&!thinking&&!listening&&!talking?Math.sin(now/1850)*3.1:0;
+const attention=awake&&!thinking&&!listening&&!talking?Math.sin(now/1350)*(controller.chatOpen?6:3.1):0;
 const talkSmile=awake&&talking?Math.sin(now/390)*.065:0;
 const eyeHeight=112*(cur.eye+breath)*(1-.97*cur.blink)*(wakeT?Math.max(.12,1-wakeT*.86):1);
 if(mode==='sleep'){eyes[0].setAttribute('d',`M 216 292 Q 246 315 276 292`);eyes[1].setAttribute('d',`M 364 292 Q 394 315 424 292`);eyes.forEach(e=>{e.setAttribute('fill','none');e.setAttribute('stroke',glow);e.setAttribute('stroke-width','8');e.setAttribute('stroke-linecap','round')});}else{eyes.forEach(e=>{e.setAttribute('fill',glow);e.setAttribute('stroke','none')});eyes[0].setAttribute('d',eyeD(246+cur.gaze,285,eyeHeight));eyes[1].setAttribute('d',eyeD(394+cur.gaze,285,eyeHeight));}
+// Head tilts and leans smoothly during chat without changing the robot design.
+const chatTilt=awake&&controller.chatOpen?Math.sin(now/1900)*2.3:0;
+const emotionTilt=awake&&now<emotionUntil?(emotion==='curious'?3:emotion==='shy'?-4:emotion==='surprised'?-2:0):0;
+const tilt=chatTilt+emotionTilt;
+const lean=awake&&controller.chatOpen?Math.sin(now/1200)*2.5:0;
+const headGroup=svg.querySelector('#vincent-companion-face');
+if(headGroup)headGroup.setAttribute('transform',`translate(0 ${lean.toFixed(2)}) rotate(${tilt.toFixed(2)} 320 315)`);
 brows.forEach(e=>e.setAttribute('opacity',mode==='sleep'?'0':'.68'));
 brows[0].setAttribute('d',`M 219 ${211+cur.brow+attention} Q 246 ${204+cur.brow+attention} 274 ${211+cur.brow+attention}`);brows[1].setAttribute('d',`M 366 ${211+cur.brow-attention*.6} Q 394 ${204+cur.brow-attention*.6} 421 ${211+cur.brow-attention*.6}`);
 cheeks.forEach(e=>e.setAttribute('opacity',String(Math.max(0,cur.blush)*.38)));

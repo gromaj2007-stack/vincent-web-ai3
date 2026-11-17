@@ -55,3 +55,7 @@ main.chat-open #vincent-chat{flex:0 0 auto;height:min(58dvh,340px)}
 .chat-key.pressed{transform:scale(.975)}
 .vincent-symbol-toolbar{display:flex;gap:3px;min-height:24px}
 .vincent-symbol-toolbar .chat-key{height:24px;background:#17616d;font-size:12px}
+
+/* v203: maintain touch responsiveness on mobile */
+.chat-key{touch-action:none;user-select:none;-webkit-user-select:none;transition:transform 55ms ease,background-color 55ms ease}
+.chat-key.pressed{transform:scale(.95)}
