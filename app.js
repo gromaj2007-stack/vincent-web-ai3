@@ -166,6 +166,7 @@ function say(message){
   if(idlePhase==='sleep')return;
   stopAudio();
   lastSpoken=message;
+  window.vincentChatMessage?.('vincent',message);
   // Kein automatisches Raten von Emotionen anhand einzelner Wörter.
   const generation=++speechGeneration;
   if(onlineVoiceToggle.checked){clearTimeout(mouthStartTimer);if('speechSynthesis' in window)speechSynthesis.cancel();el.classList.remove('talking');void sayOnline(message,generation);return;}
@@ -209,6 +210,7 @@ function sayBrowser(message,generation){
 }
 
 function offline(input){const s=input.toLocaleLowerCase('de-DE');if(/(?:was weißt du|was hast du dir gemerkt|erinnerst du dich|gedächtnis)/.test(s)){const m=memories();return m.length?'Ich weiß noch: '+m.slice(-6).join('. '):'Mein Gedächtnis ist noch leer. Sag: Vincent, merk dir ...'}if(/(?:wie spät|uhrzeit)/.test(s))return 'Es ist '+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr.';if(/(?:hallo|hey|servus|vincent|guten morgen)/.test(s))return 'Servus! Vincent am Start. Fliege sitzt, Gehirn läuft warm.';if(/(?:wie heißt du|wer bist du)/.test(s))return 'Vincent. Dein frecher Assistent mit erstklassigem Anzug.';return 'Das habe ich gehört: '+input+'. Mein Online-Gehirn ist gerade nicht erreichbar. Halte meinen Kopf gedrückt und prüfe die Einstellungen.'}
+window.vincentChatSubmit=(message)=>respond(message);
 async function respond(input){const t=input.trim();if(!t)return;markActivity();addTopic(t);let m=t.match(/(?:merk dir|merke dir)(?: bitte)?[,:]?\s*(.+)/i);if(m){const fact=m[1].trim().slice(0,400);say(save([...memories(),fact])?'Hab ich mir gemerkt. Mein Kopf ist klein, mein Gedächtnis nicht.':'Speichern hat nicht geklappt.');return}if(/(?:vergiss alles|lösche dein gedächtnis)/i.test(t)){say('Zum Löschen öffne bitte meine Einstellungen. Sicher ist sicher.');return}
 status.textContent='VINCENT DENKT';el.classList.add('thinking');window.vincentFeel?.('thinking',5000);try{const reply=await askAI({message:t,memories:memories().slice(-20),topics:recentTopics(),mode:'chat'});say(reply)}catch{el.classList.remove('thinking');say(offline(t))}}
 function listen(){markActivity();if(listening||settings.classList.contains('open')||speaking||speechPending)return;if(!Recognition){status.textContent='SPRACHERKENNUNG IN DIESEM BROWSER NICHT VERFÜGBAR';return}recognizer=new Recognition();recognizer.lang='de-DE';recognizer.continuous=false;recognizer.interimResults=true;recognizer.onstart=()=>{listening=true;el.classList.add('listening');status.textContent='ICH HÖRE ZU'};recognizer.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal){respond(e.results[i][0].transcript);break}}};recognizer.onerror=e=>{status.textContent=e.error==='not-allowed'?'MIKROFON ERLAUBEN':'MIKROFON: '+e.error};recognizer.onend=()=>{listening=false;el.classList.remove('listening');if(!speaking&&!el.classList.contains('thinking'))status.textContent='TIPPEN: GEDANKEN · DOPPELTIPPEN: SPRECHEN'};try{recognizer.start()}catch{status.textContent='MIKROFON KONNTE NICHT STARTEN'}}
