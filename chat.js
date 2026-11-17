@@ -17,7 +17,7 @@ function vibrate(){try{if(navigator.vibrate)navigator.vibrate(8)}catch{}}
 function preview(button,label){
   if(!label||label.length!==1)return;
   const bubble=document.createElement('span');bubble.className='chat-key-popup';bubble.textContent=label;
-  button.append(bubble);clearTimeout(popupTimer);popupTimer=setTimeout(()=>bubble.remove(),190);
+  button.querySelector('.chat-key-popup')?.remove();button.append(bubble);setTimeout(()=>bubble.remove(),240);
 }
 function applyKey(output,button){
   if(output==='BACK')value=value.slice(0,-1);
@@ -28,11 +28,11 @@ function applyKey(output,button){
   if(output!=='SHIFT'&&output!=='BACK'&&output!=='NUM')shift=false;
   drawDraft();
   // Update labels only when shift changes, not the entire DOM.
-  if(output==='SHIFT'||(caps&&!shift)){caps=shift;for(const [node,letter] of keyButtons)node.textContent=shift?letter.toUpperCase():letter.toLowerCase();}
+  if(output==='SHIFT'||caps!==shift){caps=shift;for(const [node,letter] of keyButtons){const labelNode=node.querySelector('.chat-key-label');if(labelNode)labelNode.textContent=shift?letter.toUpperCase():letter.toLowerCase();}}
   pose('reading',850);
 }
 function key(label,output,extra=''){
-  const b=document.createElement('button');b.type='button';b.className='chat-key '+extra;b.textContent=label;b.setAttribute('aria-label',label);
+  const b=document.createElement('button');b.type='button';b.className='chat-key '+extra;const labelNode=document.createElement('span');labelNode.className='chat-key-label';labelNode.textContent=label;b.append(labelNode);b.setAttribute('aria-label',label);
   b.style.touchAction='none';
   if(output.length===1&&/[a-z]/i.test(output))keyButtons.push([b,output]);
   let handled=false;

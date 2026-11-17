@@ -34,3 +34,7 @@ main.chat-open #vincent-chat{flex:0 0 auto;height:min(58dvh,340px)}
 .chat-key-popup{pointer-events:none;position:absolute;left:50%;bottom:calc(100% + 5px);transform:translateX(-50%);min-width:32px;padding:7px 8px;border-radius:9px;background:#b2f9ff;color:#10212b;font-size:20px;font-weight:600;box-shadow:0 5px 15px #0008;z-index:15;animation:vincentKeyPop 120ms ease-out}
 @keyframes vincentKeyPop{from{opacity:.4;transform:translateX(-50%) translateY(6px) scale(.85)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
 @media(prefers-reduced-motion:reduce){.chat-key,.chat-key-popup{transition:none;animation:none}}
+
+#chat-keys,.chat-key-row,.chat-key{overflow:visible}
+.chat-key-label{pointer-events:none}
+.chat-key-popup{z-index:100;white-space:nowrap}

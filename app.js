@@ -342,7 +342,7 @@ async function askAI(payload,timeoutMs=90000){
 
 const autoCheck=$('autothought');
 autoCheck.checked=localStorage.getItem(AUTO)!=='off';
-let idlePhase='awake',idlePrompted=false,idleCheckTimer=null;
+let idlePhase='awake',idlePrompted=false,idleCheckTimer=null;let checkInStarted=0;
 function changeIdle(phase){
  if(idlePhase===phase)return;idlePhase=phase;
  window.vincentSetMode?.(phase==='sleep'?'sleep':phase==='checking'?'checking':'awake');
@@ -354,10 +354,21 @@ function markActivity(){
  if(idlePhase!=='awake'){changeIdle('awake');window.vincentFeel?.('curious',1100)}
 }
 function idleTick(){
- if(document.hidden||settings.classList.contains('open')||speaking||speechPending||listening||el.classList.contains('thinking'))return;
+ if(document.hidden||settings.classList.contains('open')||listening||el.classList.contains('thinking'))return;
  const seconds=(Date.now()-lastActivity)/1000;
- if(seconds>=60){changeIdle('sleep');return;}
- if(seconds>=30&&!idlePrompted){idlePrompted=true;changeIdle('checking');say('Hallooo? Bist du noch da?');}
+ if(seconds>=60){
+   // A stalled check-in TTS request cannot block sleep indefinitely.
+   if((speaking||speechPending)&&checkInStarted&&Date.now()-checkInStarted>25000){
+     speechGeneration++;speechPending=false;speaking=false;onlineVoiceBusy=false;
+     try{stopAudio();speechSynthesis?.cancel()}catch{}
+     el.classList.remove('talking','audio-speaking');
+   }
+   if(!speaking&&!speechPending)changeIdle('sleep');
+   return;
+ }
+ if(seconds>=30&&!idlePrompted&&!speaking&&!speechPending){
+   idlePrompted=true;checkInStarted=Date.now();changeIdle('checking');say('Hallooo? Bist du noch da?');
+ }
 }
 idleCheckTimer=setInterval(idleTick,750);
 
