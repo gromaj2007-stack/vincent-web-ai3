@@ -1,4 +1,4 @@
-/* Vivi Classic 3.1: visual replacement only.
+/* Vivi Classic 3.4: natural restrained animation; visual replacement only.
  * Original app.js, chat.js, speech, memory, brain and settings remain untouched.
  */
 (()=>{'use strict';
@@ -12,15 +12,41 @@
   #vincent.figure{position:relative!important;display:block!important;width:min(98vw,calc(90dvh * .92),650px)!important;height:auto!important;aspect-ratio:1199/1312!important;max-height:90dvh!important;overflow:visible!important;isolation:isolate!important;transform:none!important;animation:none!important;filter:none!important}
   #vincent.figure::before{content:"";position:absolute;inset:15%;border-radius:50%;background:#a33cff38;filter:blur(38px);pointer-events:none;z-index:-1}
   #vincent #vivi-rig,#vincent #vivi-character-art,#vincent > svg,#vincent .vincent-zzz{display:none!important}
-  #vivi-classic-art{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;user-select:none;transform-origin:50% 77%;animation:viviClassicBreath 6.8s ease-in-out infinite;will-change:transform;filter:drop-shadow(0 8px 16px #0008)}
-  @keyframes viviClassicBreath{0%,100%{transform:translateY(2px) rotate(-.3deg) scale(1)}50%{transform:translateY(-3px) rotate(.35deg) scale(1.006)}}
-  #vincent.talking #vivi-classic-art,#vincent.audio-speaking #vivi-classic-art{animation:viviClassicTalk 1.5s ease-in-out infinite alternate}
-  @keyframes viviClassicTalk{from{transform:translateY(0) rotate(-.25deg)}to{transform:translateY(-4px) rotate(.3deg)}}
-  #vincent.listening #vivi-classic-art{animation:viviClassicListen 3.6s ease-in-out infinite alternate}
-  @keyframes viviClassicListen{from{transform:rotate(-.7deg)}to{transform:rotate(1deg) translateY(-2px)}}
-  #vincent.thinking #vivi-classic-art{animation-duration:8s}
-  #vincent.vincent-sleeping #vivi-classic-art{animation-duration:9s;filter:brightness(.75)}
-  @media(prefers-reduced-motion:reduce){#vivi-classic-art{animation:none!important;transform:none!important}}
+  /* Slight asymmetry and pauses make the single-piece illustration feel alive. */
+  #vivi-classic-art{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;user-select:none;transform-origin:50% 72%;animation:viviNaturalIdle 13.5s ease-in-out infinite;will-change:transform;filter:drop-shadow(0 8px 16px #0008)}
+  @keyframes viviNaturalIdle{
+    0%,9%{transform:translateY(1px) rotate(-.15deg) scale(1)}
+    19%{transform:translateY(-2px) rotate(.1deg) scale(1.005)}
+    29%,37%{transform:translateY(0) rotate(.1deg) scale(1)}
+    47%{transform:translateY(-2px) rotate(-.65deg) scale(1.004)}
+    56%,64%{transform:translateY(1px) rotate(-.3deg) scale(1)}
+    73%{transform:translateY(-3px) rotate(.6deg) scale(1.006)}
+    84%,92%{transform:translateY(0) rotate(.1deg) scale(1)}
+    100%{transform:translateY(1px) rotate(-.15deg) scale(1)}
+  }
+  #vincent.talking #vivi-classic-art,#vincent.audio-speaking #vivi-classic-art{animation:viviNaturalTalk 2.6s ease-in-out infinite}
+  @keyframes viviNaturalTalk{
+    0%,100%{transform:translateY(0) rotate(-.2deg) scale(1)}
+    25%{transform:translateY(-2px) rotate(.35deg) scale(1.004)}
+    53%{transform:translateY(-1px) rotate(-.1deg) scale(1)}
+    78%{transform:translateY(-3px) rotate(.2deg) scale(1.005)}
+  }
+  #vincent.listening #vivi-classic-art{animation:viviNaturalListen 6.2s ease-in-out infinite}
+  @keyframes viviNaturalListen{
+    0%,15%,100%{transform:translateY(0) rotate(0)}
+    40%,65%{transform:translateY(-1px) rotate(1.1deg)}
+    85%{transform:translateY(0) rotate(.15deg)}
+  }
+  #vincent.thinking #vivi-classic-art{animation:viviNaturalThink 7.5s ease-in-out infinite}
+  @keyframes viviNaturalThink{
+    0%,100%{transform:translateY(0) rotate(0)}
+    32%,65%{transform:translateY(-2px) rotate(-1deg)}
+  }
+  #vincent.vincent-sleeping #vivi-classic-art{animation:viviNaturalSleep 8.4s ease-in-out infinite;filter:brightness(.78) drop-shadow(0 8px 16px #0008)}
+  @keyframes viviNaturalSleep{0%,100%{transform:translateY(1px) scale(1)}50%{transform:translateY(-2px) scale(1.004)}}
+  #vincent.figure::before{animation:viviNaturalAura 9s ease-in-out infinite alternate}
+  @keyframes viviNaturalAura{from{opacity:.55;transform:scale(.98)}to{opacity:.85;transform:scale(1.03)}}
+  @media(prefers-reduced-motion:reduce){#vivi-classic-art,#vincent.figure::before{animation:none!important;transform:none!important}}
   `;
   document.head.appendChild(style);
   const img=document.createElement('img');img.id='vivi-classic-art';
@@ -31,7 +57,7 @@
   const title=settings?.querySelector('h2');
   if(title)title.textContent='Vivi · Einstellungen';
   const build=document.getElementById('vincent-build');
-  if(build)build.textContent='Vivi 3.1 · Originalfunktionen';
+  if(build)build.textContent='Vivi 3.4 · Natürliche Bewegungen';
  };
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
