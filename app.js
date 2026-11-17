@@ -151,7 +151,7 @@ async function sayOnline(message,generation){
     if(generation!==speechGeneration){stopAudio();return;}
     speaking=true;speechPending=false;onlineVoiceBusy=false;
     el.classList.remove('thinking','talking');el.classList.add('audio-speaking');
-    audioTick();setExpression('happy',900);
+    audioTick(); // The spoken text determines the expression, not the audio start event.
     status.textContent='VINCENT SPRICHT ONLINE';
     onlineVoiceStatus.textContent='Online-Stimme aktiv · Hans (Deutsch, männlich).';
   }catch(e){
@@ -187,7 +187,7 @@ function sayBrowser(message,generation){
     if(generation!==speechGeneration)return;
     speechPending=false;speaking=true;
     el.classList.remove('thinking');
-    setExpression('happy',900);
+    // Preserve the response-specific expression; do not force a smile on every utterance.
     // Android Chrome kann onstart kurz vor dem ersten hörbaren Ton melden.
     // Eine kleine Anlaufzeit verhindert sichtbares Vorauseilen des Mundes.
     clearTimeout(mouthStartTimer);
@@ -341,11 +341,12 @@ document.addEventListener('pointerdown',markActivity,{passive:true});
 document.addEventListener('keydown',markActivity);
 scheduleMuse();
 
-const moods=['look-left','look-right','happy','surprised','sleepy','wink','blinking','curious'];
-function setExpression(name,duration=1000){if(settings.classList.contains('open'))return;clearTimeout(expressionReset);el.classList.remove(...moods);if(name)el.classList.add(name);expressionReset=setTimeout(()=>el.classList.remove(...moods),duration)}
-function animateIdle(){if(document.hidden||settings.classList.contains('open'))return;if(listening){setExpression('curious',750);return}if(speaking||speechPending){if(Math.random()<.45)setExpression(Math.random()<.5?'happy':'look-right',500);return}const mood=moods[Math.floor(Math.random()*moods.length)];setExpression(mood,450+Math.random()*1250)}
-function scheduleIdle(){clearTimeout(expressionTimer);expressionTimer=setTimeout(()=>{animateIdle();scheduleIdle()},1100+Math.random()*2100)}
-scheduleIdle();document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(expressionTimer);el.classList.remove(...moods)}else scheduleIdle()});
+// Facial expressions are controlled exclusively by face.js.
+// Do not schedule random moods; keep existing calls to setExpression compatible.
+function setExpression(name,duration=1000){
+ const map={'look-left':'curious','look-right':'curious',happy:'happy',surprised:'surprised',sleepy:'sleepy',wink:'playful',blinking:'neutral',curious:'curious'};
+ if(name&&map[name])window.vincentFeel?.(map[name],duration);
+}
 el.addEventListener('contextmenu',e=>e.preventDefault());
 el.addEventListener('pointerdown',e=>{if(e.button!==0)return;held=false;pressStart=Date.now();clearTimeout(holdTimer);holdTimer=setTimeout(openSettings,700)});
 for(const event of ['pointerup','pointercancel','pointerleave'])el.addEventListener(event,()=>clearTimeout(holdTimer));
