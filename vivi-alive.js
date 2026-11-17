@@ -51,7 +51,7 @@ const start=()=>{
  const timer=setInterval(motion,6500);
  window.addEventListener('pagehide',()=>clearInterval(timer),{once:true});
  const badge=document.getElementById('vincent-build');
- if(badge)badge.textContent='Vivi 4.0 · Textgesteuerte Animation';
+ if(badge)badge.textContent='Vivi 4.1 · Textgesteuerte Animation';
 };
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();

@@ -1,13 +1,14 @@
-<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vivi 4.0 – Textgesteuerte Animation</title><style>body{margin:0;background:#130c20;color:#eee;font:16px system-ui;min-height:100dvh;display:grid;place-items:center;text-align:center}#status{padding:20px}</style></head><body><div id="status">Vivi wird geladen …</div><script>
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vivi 4.3 – Schneller Start</title><style>body{margin:0;background:#130c20;color:#eee;font:16px system-ui;min-height:100dvh;display:grid;place-items:center;text-align:center}#status{padding:20px}</style></head><body><div id="status">Vivi wird geladen …</div><script>
 (async()=>{try{
 const url='https://raw.githubusercontent.com/gromaj2007-stack/vincent-web-ai3/a2a53c04ec/index.html';
-const res=await fetch(url,{cache:'no-store'});if(!res.ok)throw Error('Originalversion HTTP '+res.status);
+const res=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(20000)});if(!res.ok)throw Error('Originalversion HTTP '+res.status);
 let source=await res.text();if(!source.includes('vivi-rig-v28.js')||!source.includes('app.js'))throw Error('Originaldatei unerwartet');
 // Keep the original AI, chat, voice and memory scripts unchanged.
 // Resolve the relative assets against the existing GitHub Pages deployment.
 source=source.replace(/<head>/i,'<head><base href="https://gromaj2007-stack.github.io/vincent-web-ai3/">');
 // Patch only the original speech code; keep all AI/chat/memory logic intact.
-const appResponse=await fetch('https://gromaj2007-stack.github.io/vincent-web-ai3/app.js',{cache:'no-store'});
+document.getElementById('status').textContent='Vivi startet: KI und Stimme vorbereiten …';
+const appResponse=await fetch('https://gromaj2007-stack.github.io/vincent-web-ai3/app.js',{cache:'no-store',signal:AbortSignal.timeout(20000)});
 if(!appResponse.ok)throw Error('app.js HTTP '+appResponse.status);
 let appCode=await appResponse.text();
 // Use only browser/Android default TTS; no voice name or paid TTS provider.
@@ -17,8 +18,8 @@ appCode=appCode.replace(onlineDefault,"onlineVoiceToggle.checked=false;localStor
 const selectedVoice="u.voice=voices().find(v=>v.name===select.value)||null;";
 if(!appCode.includes(selectedVoice))throw Error('Stimmenzuweisung wurde verändert');
 appCode=appCode.replace(selectedVoice,`const available=speechSynthesis.getVoices();
-  const female=available.find(v=>/^de(?:-|$)/i.test(v.lang)&&/(female|weiblich|anna|vicki|katja|helena|petra|marlene|lea|lena|sarah|sophie|google deutsch)/i.test(v.name)&&!/hans|male|männ|mann|markus|daniel|conrad|stefan|thomas|florian/i.test(v.name));
-  if(!female){speechPending=false;status.textContent='KEINE WEIBLICHE DEUTSCHE BROWSERSTIMME VERFÜGBAR';onlineVoiceStatus.textContent='Chrome bietet keine eindeutig weibliche deutsche Stimme an. Hans wird nicht verwendet.';return;}
+  const female=available.find(v=>/^de(?:-|$)/i.test(v.lang)&&/(female|weiblich|anna|vicki|katja|helena|petra|marlene|lea|lena|sarah|sophie)/i.test(v.name)&&!/hans|male|männ|mann|markus|daniel|conrad|stefan|thomas|florian/i.test(v.name));
+  if(!female){speechPending=false;speaking=false;el.classList.remove('talking');status.textContent='KEINE WEIBLICHE DEUTSCHE STIMME IN CHROME';onlineVoiceStatus.textContent='Hans gesperrt. Bitte eine weibliche deutsche Stimme im Browser verfügbar machen.';return;}
   u.voice=female;onlineVoiceStatus.textContent='Aktive Stimme: '+female.name;`);
 appCode=appCode.replace("u.lang='de-DE';u.rate=isCuteVoice()?1.04:.91;u.pitch=isCuteVoice()?1.48:.93;", "u.lang='de-DE';u.rate=1;u.pitch=1;");
 // Never enter cloud or Piper TTS branches, even if old settings were stored.
@@ -26,11 +27,55 @@ appCode=appCode.replace('if(onlineVoiceToggle.checked){clearTimeout(mouthStartTi
 appCode=appCode.replace('if(piperEnabled.checked){clearTimeout(mouthStartTimer);', 'if(false){clearTimeout(mouthStartTimer);');
 appCode=appCode.replace('u.onstart=()=>{',"u.onstart=()=>{window.dispatchEvent(new Event('vivi-speech-start'));");
 appCode=appCode.replace('const done=()=>{',"const done=()=>{window.dispatchEvent(new Event('vivi-speech-end'));");
+// Offline-first: always select the existing Qwen/WebGPU worker instead of paid Puter.
+const modeLine="brainMode.value=localStorage.getItem('vincent_brain_mode')||'cloud';";
+if(!appCode.includes(modeLine))throw Error('KI-Modus-Code wurde verändert');
+appCode=appCode.replace(modeLine,"brainMode.value='local';localStorage.setItem('vincent_brain_mode','local');");
+// Start once; keep the UI responsive while the local model downloads.
+const aiHead="async function askAI(payload,timeoutMs=90000){";
+if(!appCode.includes(aiHead))throw Error('Lokale KI-Funktion nicht gefunden');
+appCode=appCode.replace(aiHead,`async function askAI(payload,timeoutMs=180000){
+  if(brainMode.value!=='local'){brainMode.value='local';localStorage.setItem('vincent_brain_mode','local');}
+  if(!('gpu' in navigator))throw Error('WebGPU nicht verfügbar');
+  if(!brainReady){
+    if(!window.viviBrainLoading)startBrain();
+    await new Promise((resolve,reject)=>{
+      const started=Date.now();
+      const tick=setInterval(()=>{
+        if(brainReady){clearInterval(tick);resolve();}
+        else if(window.viviBrainError){clearInterval(tick);reject(Error(window.viviBrainError));}
+        else if(Date.now()-started>120000){clearInterval(tick);reject(Error('KI-Laden dauert zu lange. Bitte in Einstellungen erneut versuchen.'));}
+      },400);
+    });
+  }
+`);
+const brainStart="function startBrain(){if(!('gpu'in navigator))";
+if(appCode.includes(brainStart))appCode=appCode.replace(brainStart,"function startBrain(){if(window.viviBrainLoading||brainReady)return;window.viviBrainLoading=true;window.viviBrainError='';if(!('gpu'in navigator))");
+appCode=appCode.replace("brainState('WebGPU ist in diesem Browser nicht verfügbar.');return}","brainState('WebGPU ist in diesem Browser nicht verfügbar.');window.viviBrainLoading=false;window.viviBrainError='WebGPU nicht verfügbar';return}");
+appCode=appCode.replace("if(d.type==='ready'){brainReady=true;","if(d.type==='ready'){window.viviBrainLoading=false;window.viviBrainError='';brainReady=true;");
+appCode=appCode.replace("if(d.type==='error'&&d.id==null){brainState(","if(d.type==='error'&&d.id==null){window.viviBrainLoading=false;window.viviBrainError=String(d.message||'KI-Modellfehler');brainState(");
+appCode=appCode.replace("brainWorker.onerror=e=>{brainState(","brainWorker.onerror=e=>{window.viviBrainLoading=false;window.viviBrainError='KI-Worker fehlgeschlagen';brainState(");
+appCode=appCode.replace("function stopBrain(){if(brainWorker)","function stopBrain(){window.viviBrainLoading=false;if(brainWorker)");
+// Avoid automatic paid cloud use even if an old setting remains.
+appCode=appCode.replace("brainMode.value==='cloud'?'Online-Gehirn ausgewählt. Mit „Online-Gehirn verbinden“ starten.':'Lokales Gehirn ausgewählt.'","'Lokales Gehirn ausgewählt. Keine Puter-Kosten.'");
+appCode=appCode.replace("if(brainMode.value==='cloud'){if(!aiEnabled.checked)throw Error('KI deaktiviert');return askCloud(payload)}","if(brainMode.value==='cloud')throw Error('Online-KI ist deaktiviert');");
+// A local load is intentionally initiated after app initialization.
+appCode += "\nsetTimeout(()=>{if('gpu' in navigator && brainMode.value==='local' && aiEnabled.checked && !brainReady && !window.viviBrainLoading)startBrain();},700);\n";
+
+// Hard-disable any legacy paid/cloud voice invocation, including Hans fallbacks.
+// The existing say() uses sayBrowser() exclusively; keep the function as a safe stub.
+const onlineStart=appCode.indexOf('async function sayOnline(');
+if(onlineStart>=0){let brace=appCode.indexOf('{',onlineStart),depth=0,end=-1;
+  for(let i=brace;i<appCode.length;i++){if(appCode[i]==='{')depth++;else if(appCode[i]==='}'&&--depth===0){end=i+1;break;}}
+  if(end>brace)appCode=appCode.slice(0,onlineStart)+"async function sayOnline(message,generation){sayBrowser(message,generation)}"+appCode.slice(end);
+}
+// Clear any previously stored Hans selection.
+appCode += "\ntry{localStorage.removeItem('vincent_voice_v3');}catch{}\n";
 // Voice list remains in app.js for compatibility, but is not used for speaking.
 const appBlob=URL.createObjectURL(new Blob([appCode],{type:'text/javascript'}));
 source=source.replace(/src="\.\/app\.js\?v=290"/,'src="'+appBlob+'"');
-source=source.replace(/<\/body>/i,'<script src="./vivi-default-voice-ui.js?v=400" defer></'+'script></body>');
-source=source.replace(/<\/body>/i,'<script src="./vivi-classic-animation.js?v=400" defer></'+'script><script src="./vivi-alive.js?v=400" defer></'+'script><script src="./vivi-mesh-mimik.js?v=400" defer></'+'script></body>');
-source=source.replace(/Vivi 2\.9\.0/g,'Vivi 4.0');document.open();document.write(source);document.close();
-}catch(e){document.getElementById('status').textContent='Vivi konnte nicht geladen werden: '+e.message;}})();
+source=source.replace(/<\/body>/i,'<script src="./vivi-default-voice-ui.js?v=430" defer></'+'script></body>');
+source=source.replace(/<\/body>/i,'<script src="./vivi-classic-animation.js?v=430" defer></'+'script><script src="./vivi-alive.js?v=430" defer></'+'script><script src="./vivi-mesh-mimik.js?v=430" defer></'+'script></body>');
+source=source.replace(/Vivi 2\.9\.0/g,'Vivi 4.3');document.open();document.write(source);document.close();
+}catch(e){document.getElementById('status').innerHTML='Vivi konnte nicht geladen werden: '+String(e.message).replace(/[<>&]/g,'')+'<p><button onclick="location.reload()" style="font:inherit;padding:12px 22px;border-radius:12px">Erneut versuchen</button></p>';}})();
 </script></body></html>
