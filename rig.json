@@ -1,0 +1,88 @@
+{
+  "version": "0.5-layered-animation",
+  "canvas": [
+    1341,
+    1173
+  ],
+  "layers": [
+    "hair-left",
+    "hair-right",
+    "thigh-left",
+    "shin-left",
+    "thigh-right",
+    "shin-right",
+    "torso",
+    "upperarm-left",
+    "forearm-left",
+    "upperarm-right",
+    "forearm-right",
+    "head",
+    "hand-left",
+    "hand-right",
+    "foot-left",
+    "foot-right"
+  ],
+  "joints": {
+    "hip_left": [
+      636,
+      790
+    ],
+    "knee_left": [
+      618,
+      946
+    ],
+    "hip_right": [
+      713,
+      790
+    ],
+    "knee_right": [
+      733,
+      946
+    ],
+    "shoulder_left": [
+      553,
+      650
+    ],
+    "elbow_left": [
+      488,
+      742
+    ],
+    "shoulder_right": [
+      790,
+      650
+    ],
+    "elbow_right": [
+      856,
+      743
+    ],
+    "neck": [
+      670,
+      575
+    ],
+    "hair_left": [
+      464,
+      245
+    ],
+    "hair_right": [
+      876,
+      245
+    ],
+    "wrist_left": [
+      417,
+      818
+    ],
+    "wrist_right": [
+      915,
+      819
+    ],
+    "ankle_left": [
+      570,
+      1090
+    ],
+    "ankle_right": [
+      771,
+      1090
+    ]
+  },
+  "notes": "Prototype with 16+ independent image layers and hierarchical joint animation. Original facial pixels retained; eyelids are an approximate overlay, not a reconstructed multi-pose face. Hidden artwork still requires painting."
+}

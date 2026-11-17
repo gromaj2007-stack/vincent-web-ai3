@@ -1,183 +1,31 @@
-<!doctype html><html lang="de"><head><meta http-equiv="Cache-Control" content="no-cache"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#07131f"><meta name="mobile-web-app-capable" content="yes"><link rel="manifest" href="./manifest.webmanifest"><title>Vivi Alive – Companion</title><style>
-:root{color-scheme:dark}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#06101b;color:#e2f8ff;font-family:system-ui,-apple-system,sans-serif}main{height:100dvh;width:100%;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 44%,#1c3d4f 0%,#0c2030 45%,#040913 100%)}.figure{width:min(94vw,calc(91dvh * .89),660px);aspect-ratio:640/720;max-height:91dvh;cursor:pointer;touch-action:manipulation;filter:drop-shadow(0 18px 28px #0009);animation:float 5s ease-in-out infinite}@keyframes float{50%{transform:translateY(-8px)}}svg{width:100%;height:100%;display:block}html,body,main,.figure,.figure *{-webkit-tap-highlight-color:transparent!important} .figure{outline:none;user-select:none;-webkit-user-select:none} .figure:focus,.figure:active{outline:none} .figure:focus-visible{outline:2px solid #b98aff;outline-offset:4px}.eye{transform-box:fill-box;transform-origin:center;animation:blink 7s infinite;filter:drop-shadow(0 0 10px #d3a5ff)}@keyframes blink{0%,43%,47%,100%{transform:scaleY(1)}45%{transform:scaleY(.07)}}#mouth{transform-box:fill-box;transform-origin:center;filter:drop-shadow(0 0 8px #d3a5ff)}.talking #mouth{animation:talk .17s ease-in-out infinite alternate}@keyframes talk{from{transform:scaleY(.42)}to{transform:scaleY(1.6)}}.listening .eye{filter:drop-shadow(0 0 25px #d6b2ff)}.thinking .eye{animation:blink 2.5s infinite}#status{display:none;position:fixed;bottom:max(12px,env(safe-area-inset-bottom));left:10px;right:10px;text-align:center;font-size:11px;letter-spacing:.09em;color:#acc8d2;pointer-events:none}#settings{display:none;position:fixed;z-index:5;inset:auto 12px max(42px,env(safe-area-inset-bottom)) 12px;margin:auto;max-width:430px;max-height:80dvh;overflow:auto;background:#122633;border:1px solid #3a6672;border-radius:20px;padding:18px;box-shadow:0 18px 65px #000d}#settings.open{display:block}h2{font-size:18px;margin:0 0 12px}label{font-size:13px;display:block;margin:12px 0 5px}button,select,input,textarea{font:inherit;color:#eefaff;background:#1b3b4a;border:1px solid #47717d;border-radius:10px;padding:10px;max-width:100%}select,input,textarea{width:100%}textarea{min-height:68px;resize:vertical}button{cursor:pointer}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}p{font-size:12px;color:#b7cbd3;line-height:1.5}.danger{border-color:#a76d70}#memlist{max-height:115px;overflow:auto;font-size:12px;color:#cde8ee;padding-left:22px}.autotoggle{display:flex;align-items:center;gap:10px}.autotoggle input{width:auto;min-width:20px;height:20px}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
-
-@media(prefers-reduced-motion:reduce){.figure{animation:none}.figure .eye{transition:none}}
-.audio-speaking #mouth{animation:none!important;transform:scaleY(var(--audio-mouth-scale,.42));transition:transform 55ms linear}
-/* Calm Hatchimals-like breathing: tiny, slow movement instead of constant wobbling. */
-.figure{animation:vincentCalm 6.8s ease-in-out infinite}
-@keyframes vincentCalm{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-@media(prefers-reduced-motion:reduce){.figure{animation:none!important}}
-/* Schlafmodus: ruhiges Atmen und sanfte Zzz oberhalb des Kopfes. */
-.figure.vincent-sleeping{animation:vincentSleepBreath 5.8s ease-in-out infinite!important}
-@keyframes vincentSleepBreath{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-2px) rotate(-2deg)}}
-.vincent-zzz{display:none;position:absolute;top:4%;right:9%;font-size:clamp(16px,4vw,34px);color:#69e9ff;letter-spacing:.18em;pointer-events:none;text-shadow:0 0 12px #3de8ff88}
-.vincent-sleeping .vincent-zzz{display:block;animation:vincentZzz 3s ease-in-out infinite}
-@keyframes vincentZzz{0%{opacity:0;transform:translate(0,9px) scale(.8)}40%{opacity:.85}100%{opacity:0;transform:translate(10px,-24px) scale(1.08)}}
-@media(prefers-reduced-motion:reduce){.vincent-zzz{animation:none!important}}
-
-/* Dedicated gesture controller: face and body remain smoothly coupled. */
-.figure:not(.vincent-sleeping){animation:none!important;transform:translateY(var(--vivi-lift,0px)) rotate(var(--vivi-lean,0deg));transition:none;will-change:transform}
-.figure #vivi-left-hand,.figure #vivi-right-hand{filter:drop-shadow(0 3px 3px #0007)}
-@media(prefers-reduced-motion:reduce){.figure:not(.vincent-sleeping){transform:none!important}}
-/* Kawaii pink glow while preserving the existing dimensional shell */
-main{background:radial-gradient(ellipse at 50% 42%,#46273e 0%,#24172d 48%,#090913 100%)}
-.figure:not(.vincent-sleeping){transform:translateY(var(--vivi-lift,0px)) rotate(var(--vivi-lean,0deg));}
-main.chat-open .figure.vivi-chat-lean{z-index:3;overflow:visible;transform:translateY(var(--vivi-lift,24px)) rotate(var(--vivi-lean,0deg)) scale(1.12);transform-origin:center bottom;pointer-events:auto}
-/* The approved concept image is the character itself, rather than an SVG approximation. */
-.figure{aspect-ratio:3/2!important;width:min(98vw,130dvh)!important;max-height:94dvh!important;overflow:visible!important;position:relative!important}
-#vivi-character-art{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none;user-select:none;filter:drop-shadow(0 8px 16px #8c45ff44);transform:translateY(var(--vivi-art-y,0px)) rotate(var(--vivi-art-angle,0deg));transition:transform 1.4s cubic-bezier(.22,.68,.18,1)}
-.figure>svg{position:absolute!important;opacity:0!important;pointer-events:none!important;width:1px!important;height:1px!important}
-.figure:not(.vincent-sleeping){transform:none!important}
-@media(prefers-reduced-motion:reduce){#vivi-character-art{transition:none!important}}
-
-
-
-/* Vivi 2.3: responsive 2D character, respecting existing gesture transforms */
-.figure{isolation:isolate}
-.figure::before{content:"";position:absolute;inset:12% 13% 7%;border-radius:50%;background:radial-gradient(ellipse,#b54aff25 0%,#9d37e01c 40%,transparent 72%);filter:blur(18px);z-index:-1;pointer-events:none;animation:viviAura 5.2s ease-in-out infinite}
-@keyframes viviAura{0%,100%{opacity:.55;scale:.94}50%{opacity:1;scale:1.07}}
-#vivi-character-art{transform-origin:50% 65%;animation:viviLiving 5.8s ease-in-out infinite;will-change:transform,filter;transition:filter .35s ease}
-@keyframes viviLiving{0%,100%{transform:translateY(var(--vivi-art-y,0px)) rotate(var(--vivi-art-angle,0deg)) scale(1)}50%{transform:translateY(calc(var(--vivi-art-y,0px) - 4px)) rotate(calc(var(--vivi-art-angle,0deg) + 1deg)) scale(1.01)}}
-.figure.talking #vivi-character-art,.figure.audio-speaking #vivi-character-art{animation:viviSpeaking .42s ease-in-out infinite alternate;filter:drop-shadow(0 8px 24px #bf68ffc0)}
-@keyframes viviSpeaking{from{transform:translateY(-1px) rotate(-.6deg) scale(1.005)}to{transform:translateY(-5px) rotate(.8deg) scale(1.016)}}
-.figure.listening #vivi-character-art{animation:viviListening 3.2s ease-in-out infinite;filter:drop-shadow(0 8px 24px #a35dffb0)}
-@keyframes viviListening{0%,100%{transform:translateY(-2px) rotate(-2deg)}50%{transform:translateY(-4px) rotate(2deg)}}
-.figure.thinking #vivi-character-art{animation:viviThinking 4.3s ease-in-out infinite}
-@keyframes viviThinking{0%,100%{transform:rotate(-2deg) translateY(0)}50%{transform:rotate(3deg) translateY(-4px)}}
-.figure.vincent-sleeping #vivi-character-art{animation-duration:7.5s;filter:brightness(.8) drop-shadow(0 5px 12px #8d49ff55)}
-@media(prefers-reduced-motion:reduce){.figure::before,#vivi-character-art{animation:none!important;transform:none!important}}
-
-/* Vivi 2.4: independent transparent body, ponytail, arm, expression layers */
-.figure{width:min(98vw,calc(86dvh * 1.143),620px)!important;aspect-ratio:1341/1173!important;max-height:88dvh!important;position:relative!important;overflow:visible!important}
-#vivi-rig{position:absolute;inset:0;pointer-events:none;transform-origin:50% 76%;animation:rigBreath 5s ease-in-out infinite;filter:drop-shadow(0 0 11px #a33aff8a)}
-.rig-part{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;transform-origin:50% 50%;will-change:transform}
-.rig-hair-left{transform-origin:34% 16%;animation:rigHairLeft 4.8s ease-in-out infinite}
-.rig-hair-right{transform-origin:70% 16%;animation:rigHairRight 5.2s ease-in-out infinite}
-.rig-arm-left{transform-origin:43% 56%;animation:rigArmLeft 5.6s ease-in-out infinite}
-.rig-arm-right{transform-origin:59% 56%;animation:rigArmRight 6.3s ease-in-out infinite}
-.rig-mouth{position:absolute;left:47.1%;top:39.5%;width:5%;height:1.1%;border-bottom:2px solid #1d0a2c;border-radius:0 0 50% 50%;transform-origin:center;opacity:.8}
-.rig-eyes{position:absolute;left:36.5%;top:30%;width:28%;height:12%;display:flex;justify-content:space-between;pointer-events:none}
-.rig-eyes span{width:23%;height:4%;margin-top:22%;background:#35124c;border-radius:50%;opacity:0;transform:scaleY(.1);animation:rigBlink 6.2s infinite}
-.rig-eyes span:last-child{animation-delay:.04s}
-.figure.talking .rig-mouth,.figure.audio-speaking .rig-mouth{height:2.3%;border:2px solid #6d2c91;background:#2d0b48;animation:rigSpeak .22s infinite alternate}
-.figure.talking .rig-arm-right,.figure.audio-speaking .rig-arm-right{animation:rigGesture .9s ease-in-out infinite alternate}
-.figure.listening .rig-arm-left{animation:rigListen 2s ease-in-out infinite alternate}
-.figure.thinking .rig-hair-left{animation-duration:6.5s}
-.figure.talking #vivi-rig{animation-duration:2.8s}
-@keyframes rigBreath{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-3px) scale(1.006)}}
-@keyframes rigHairLeft{0%,100%{transform:rotate(0)}50%{transform:rotate(2.5deg)}}
-@keyframes rigHairRight{0%,100%{transform:rotate(0)}50%{transform:rotate(-2.8deg)}}
-@keyframes rigArmLeft{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(3deg)}}
-@keyframes rigArmRight{0%,100%{transform:rotate(1deg)}50%{transform:rotate(-3deg)}}
-@keyframes rigGesture{from{transform:rotate(-5deg)}to{transform:rotate(-19deg)}}
-@keyframes rigListen{from{transform:rotate(0)}to{transform:rotate(11deg)}}
-@keyframes rigSpeak{from{transform:scaleY(.5)}to{transform:scaleY(1.7)}}
-@keyframes rigBlink{0%,43%,46%,100%{opacity:0}44%,45%{opacity:.8}}
-@media(prefers-reduced-motion:reduce){#vivi-rig,.rig-part,.rig-mouth,.rig-eyes span{animation:none!important}}
-
-/* 2.9.0: original smile replaced in the underlying face texture; only ONE mouth visible. */
-.rig-mouth{display:none!important}
-.rig-face-mouth{position:absolute!important;left:45.9%!important;top:39.4%!important;width:5.9%!important;height:3.8%!important;overflow:visible!important;pointer-events:none!important;filter:drop-shadow(0 0 2px #b86dff);transform-origin:50% 48%}
-.figure.talking .rig-face-mouth,.figure.audio-speaking .rig-face-mouth{animation:rigRealMouth .22s ease-in-out infinite alternate}
-@keyframes rigRealMouth{0%{transform:scaleY(.55) scaleX(.95)}100%{transform:scaleY(1.65) scaleX(.82)}}
-/* Arms remain attached to the torso; no duplicated arm overlay or seams. */
-.rig-arm-left,.rig-arm-right{display:none!important}
-.figure.talking #vivi-rig,.figure.audio-speaking #vivi-rig{animation:rigTalkBody 1.5s ease-in-out infinite alternate}
-@keyframes rigTalkBody{from{transform:translateY(0) rotate(-.35deg)}to{transform:translateY(-4px) rotate(.35deg)}}
-@media(prefers-reduced-motion:reduce){.rig-face-mouth{animation:none!important}}
-
-/* Vivi 2.5: only one mouth, driven by speech boundaries and audio intensity. */
-.rig-face-mouth{animation:none!important;transform:none!important;transition:transform 85ms ease-out;z-index:5}
-.figure.talking .rig-face-mouth,.figure.audio-speaking .rig-face-mouth{animation:none!important}
-#vivi-mouth-line,#vivi-mouth-fill{transition:d 85ms ease-out,fill-opacity 85ms ease-out}
-/* Move hair roots gently; do not detach limbs from the illustration. */
-.rig-hair-left{animation:hairSoftL 5.7s cubic-bezier(.45,0,.55,1) infinite;transform-origin:34% 16%}
-.rig-hair-right{animation:hairSoftR 6.2s cubic-bezier(.45,0,.55,1) infinite;transform-origin:70% 16%}
-@keyframes hairSoftL{0%,100%{transform:rotate(-.6deg)}50%{transform:rotate(1.25deg)}}
-@keyframes hairSoftR{0%,100%{transform:rotate(.5deg)}50%{transform:rotate(-1.3deg)}}
-.figure.listening #vivi-rig{filter:drop-shadow(0 0 17px #a865ffbb)}
-.figure.thinking #vivi-rig{filter:drop-shadow(0 0 10px #b65aff88)}
-@media(prefers-reduced-motion:reduce){.rig-hair-left,.rig-hair-right,.rig-face-mouth{animation:none!important;transition:none!important}}
-
-/* Vivi 2.6 - segmented arms, anchored shoulders, face articulation */
-.rig-arm-left,.rig-arm-right{display:block!important;animation:none!important;transition:transform .2s ease-out;will-change:transform}
-.rig-arm-left{transform-origin:40% 55%}.rig-arm-right{transform-origin:60% 55%}
-.figure:not(.talking):not(.audio-speaking):not(.listening) .rig-arm-left{animation:armBreatheL 6s ease-in-out infinite!important}
-.figure:not(.talking):not(.audio-speaking):not(.listening) .rig-arm-right{animation:armBreatheR 6.4s ease-in-out infinite!important}
-.figure.talking .rig-arm-right,.figure.audio-speaking .rig-arm-right{animation:armGestureR 1.8s ease-in-out infinite!important}
-.figure.listening .rig-arm-left{animation:armListenL 2.6s ease-in-out infinite!important}
-.figure.rig-happy .rig-arm-left{animation:armHappyL .85s ease-in-out 3!important}
-.figure.rig-question .rig-arm-right{animation:armQuestionR 1.2s ease-in-out 2!important}
-@keyframes armBreatheL{0%,100%{transform:rotate(0)}50%{transform:rotate(1.4deg)}}
-@keyframes armBreatheR{0%,100%{transform:rotate(0)}50%{transform:rotate(-1.4deg)}}
-@keyframes armGestureR{0%,100%{transform:rotate(0)}50%{transform:rotate(-5deg)}}
-@keyframes armListenL{0%,100%{transform:rotate(0)}50%{transform:rotate(3deg)}}
-@keyframes armHappyL{0%,100%{transform:rotate(0)}50%{transform:rotate(5deg)}}
-@keyframes armQuestionR{0%,100%{transform:rotate(0)}50%{transform:rotate(-7deg)}}
-#vivi-rig{animation:rigBreath 5.5s ease-in-out infinite}
-.rig-face-mouth{will-change:contents}
-@media(prefers-reduced-motion:reduce){.rig-arm-left,.rig-arm-right{animation:none!important;transition:none!important}}
-
-/* Vivi 2.7: head, eyelids and articulated sprite layers */
-#vivi-rig{isolation:isolate}
-#vivi-rig .rig-head{z-index:3;transform-origin:50% 47%;animation:viviHeadTilt 7.3s ease-in-out infinite;will-change:transform}
-#vivi-rig .rig-hair-left,#vivi-rig .rig-hair-right{z-index:4}
-#vivi-rig .rig-arm-left,#vivi-rig .rig-arm-right{z-index:2}
-#vivi-rig .rig-base{z-index:1}
-#vivi-rig .rig-face-mouth{z-index:7;animation:viviHeadTilt 7.3s ease-in-out infinite!important}
-.vivi-blink-layer{position:absolute;inset:0;pointer-events:none;z-index:6;animation:viviHeadTilt 7.3s ease-in-out infinite;transform-origin:50% 47%}
-.vivi-blink-layer i{position:absolute;top:30.8%;width:8.2%;height:11.8%;border-radius:48%;background:linear-gradient(180deg,#aa72d4 0%,#7154a7 75%,#d368fa 100%);border-bottom:2px solid #e48aff;box-shadow:0 0 6px #b83fff88;transform:scaleY(0);transform-origin:50% 50%;animation:viviNaturalBlink 6.1s infinite}
-.vivi-blink-layer i:first-child{left:35.9%}.vivi-blink-layer i:last-child{left:52.1%;animation-delay:.035s}
-@keyframes viviNaturalBlink{0%,37%,40%,76%,79%,100%{transform:scaleY(0)}38%,77%{transform:scaleY(.94)}}
-@keyframes viviHeadTilt{0%,100%{transform:rotate(-.8deg) translateY(0)}45%{transform:rotate(1.1deg) translateY(-2px)}75%{transform:rotate(-.2deg) translateY(1px)}}
-.figure.listening .rig-head,.figure.listening .vivi-blink-layer,.figure.listening .rig-face-mouth{animation-duration:4s!important}
-.figure.talking .rig-head,.figure.audio-speaking .rig-head,.figure.talking .vivi-blink-layer,.figure.audio-speaking .vivi-blink-layer,.figure.talking .rig-face-mouth,.figure.audio-speaking .rig-face-mouth{animation-duration:2.6s!important}
-@media(prefers-reduced-motion:reduce){.rig-head,.vivi-blink-layer,.vivi-blink-layer i,.rig-face-mouth{animation:none!important}}
-</style><link rel="stylesheet" href="./chat.css?v=290"><style id="vivi-v28-css">
-#vivi-rig.vivi-rig-v28{animation:none!important;filter:drop-shadow(0 0 9px #a349ff6c);overflow:visible;transform-origin:50% 75%;}
-#vivi-rig.vivi-rig-v28 .v28-base,#vivi-rig.vivi-rig-v28 .v28-part{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;will-change:transform;}
-#vivi-rig.vivi-rig-v28 .v28-base{opacity:1;}
-#vivi-rig.vivi-rig-v28 .v28-part{transform:rotate(var(--angle,0deg)) translateY(var(--lift,0px));transition:transform .12s ease-out;}
-#vivi-rig.vivi-rig-v28 .v28-head{transform-origin:49% 47%;}
-#vivi-rig.vivi-rig-v28 .v28-hair-left{transform-origin:31% 17%;}
-#vivi-rig.vivi-rig-v28 .v28-hair-right{transform-origin:70% 17%;}
-#vivi-rig.vivi-rig-v28 .v28-left-upper-arm{transform-origin:41% 52%;}
-#vivi-rig.vivi-rig-v28 .v28-right-upper-arm{transform-origin:60% 52%;}
-#vivi-rig.vivi-rig-v28 .v28-left-forearm{transform-origin:38% 63%;}
-#vivi-rig.vivi-rig-v28 .v28-right-forearm{transform-origin:66% 63%;}
-#vivi-rig.vivi-rig-v28 .v28-left-hand{transform-origin:33% 70%;}
-#vivi-rig.vivi-rig-v28 .v28-right-hand{transform-origin:69% 70%;}
-#vivi-rig.vivi-rig-v28 .v28-left-thigh{transform-origin:44% 67%;}
-#vivi-rig.vivi-rig-v28 .v28-right-thigh{transform-origin:55% 67%;}
-#vivi-rig.vivi-rig-v28 .v28-left-boot{transform-origin:44% 79%;}
-#vivi-rig.vivi-rig-v28 .v28-right-boot{transform-origin:56% 79%;}
-#vivi-rig.vivi-rig-v28 .rig-face-mouth{z-index:15;}
-#vivi-rig.vivi-rig-v28 .v28-eyelid{position:absolute;top:31.1%;height:8.5%;width:7.5%;border-radius:50%;background:linear-gradient(#8a4fc0,#c8a9d8);transform:scaleY(0);transform-origin:center;opacity:.94;z-index:16;pointer-events:none;}
-#vivi-rig.vivi-rig-v28 .v28-eye-l{left:36.2%;}#vivi-rig.vivi-rig-v28 .v28-eye-r{left:51.4%;}
-#vivi-rig.vivi-rig-v28.blink .v28-eyelid{transform:scaleY(1);}
-@media(prefers-reduced-motion:reduce){#vivi-rig.vivi-rig-v28 .v28-part{transform:none!important;transition:none!important}}
-</style><style id="vivi-v29-joints">
-/* Joints overlap, with hidden artwork removed from the nonmoving backing. */
-#vivi-rig.vivi-rig-v28 .v28-base{z-index:0}
-#vivi-rig.vivi-rig-v28 .v28-part{transition:transform .09s linear}
-#vivi-rig.vivi-rig-v28 .v28-torso{z-index:3}
-#vivi-rig.vivi-rig-v28 .v28-left-thigh,#vivi-rig.vivi-rig-v28 .v28-right-thigh{z-index:4}
-#vivi-rig.vivi-rig-v28 .v28-left-boot,#vivi-rig.vivi-rig-v28 .v28-right-boot{z-index:5}
-#vivi-rig.vivi-rig-v28 .v28-left-upper-arm,#vivi-rig.vivi-rig-v28 .v28-right-upper-arm{z-index:6}
-#vivi-rig.vivi-rig-v28 .v28-left-forearm,#vivi-rig.vivi-rig-v28 .v28-right-forearm{z-index:7}
-#vivi-rig.vivi-rig-v28 .v28-left-hand,#vivi-rig.vivi-rig-v28 .v28-right-hand{z-index:8}
-#vivi-rig.vivi-rig-v28 .v28-head{z-index:9}
-#vivi-rig.vivi-rig-v28 .v28-hair-left,#vivi-rig.vivi-rig-v28 .v28-hair-right{z-index:10}
-</style></head><body><main><button id="chat-toggle" type="button" aria-expanded="false" aria-controls="vincent-chat" aria-label="Chat öffnen">⌨ Chat</button><div id="vincent" class="figure" role="button" tabindex="0" aria-label="Einmal tippen: Gedanken hören. Zweimal tippen: Mikrofon. Lange drücken: Einstellungen"><div id="vivi-rig" class="vivi-rig-v28" aria-label="Vivi, animierte 2D-Figur"><img class="v28-base" src="./rig-backing.png?v=290" alt=""><img class="v28-part v28-hair-left" src="./rig-hair-left.png?v=290" alt=""><img class="v28-part v28-hair-right" src="./rig-hair-right.png?v=290" alt=""><img class="v28-part v28-left-boot" src="./rig-left-boot.png?v=290" alt=""><img class="v28-part v28-right-boot" src="./rig-right-boot.png?v=290" alt=""><img class="v28-part v28-left-thigh" src="./rig-left-thigh.png?v=290" alt=""><img class="v28-part v28-right-thigh" src="./rig-right-thigh.png?v=290" alt=""><img class="v28-part v28-torso" src="./rig-torso.png?v=290" alt=""><img class="v28-part v28-left-upper-arm" src="./rig-left-upper-arm.png?v=290" alt=""><img class="v28-part v28-right-upper-arm" src="./rig-right-upper-arm.png?v=290" alt=""><img class="v28-part v28-left-forearm" src="./rig-left-forearm.png?v=290" alt=""><img class="v28-part v28-right-forearm" src="./rig-right-forearm.png?v=290" alt=""><img class="v28-part v28-left-hand" src="./rig-left-hand.png?v=290" alt=""><img class="v28-part v28-right-hand" src="./rig-right-hand.png?v=290" alt=""><img class="v28-part v28-head" src="./rig-head.png?v=290" alt=""><svg class="rig-face-mouth" viewBox="0 0 100 65" aria-hidden="true" preserveAspectRatio="none"><path id="vivi-mouth-fill" d="M13 22 Q50 59 87 18 Q50 42 13 22 Z" fill="#3a0c4e" fill-opacity="0"/><path id="vivi-mouth-line" d="M13 22 Q50 59 87 18" fill="none" stroke="#260d35" stroke-width="5" stroke-linecap="round"/></svg><div class="v28-eyelid v28-eye-l"></div><div class="v28-eyelid v28-eye-r"></div></div><span class="vincent-zzz" aria-hidden="true">Z z z</span><svg viewBox="0 0 640 720" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="shell" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#5b6972"/><stop offset=".27" stop-color="#303b44"/><stop offset=".75" stop-color="#18232d"/><stop offset="1" stop-color="#0b121a"/></linearGradient><linearGradient id="ear" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#56636e"/><stop offset=".45" stop-color="#28353e"/><stop offset="1" stop-color="#111a22"/></linearGradient><linearGradient id="suit" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#3c4853"/><stop offset=".45" stop-color="#19232e"/><stop offset="1" stop-color="#070f19"/></linearGradient><radialGradient id="screen" cx=".45" cy=".38" r=".8"><stop stop-color="#132733"/><stop offset=".65" stop-color="#071019"/><stop offset="1" stop-color="#02050a"/></radialGradient><radialGradient id="gloss" cx=".2" cy=".1" r="1"><stop stop-color="#ffffff" stop-opacity=".17"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
-<!-- jacket --> <path d="M230 482 Q136 486 90 542 Q63 578 62 694 L578 694 Q579 578 550 542 Q505 486 410 482Z" fill="url(#suit)" stroke="#36434e" stroke-width="9"/><path d="M254 500 L320 533 L386 500 L368 694 L273 694Z" fill="#e0e9eb"/><path d="M237 493 L320 538 L272 585 L303 693 L156 539Z" fill="#19252f" stroke="#41505c" stroke-width="4"/><path d="M403 493 L320 538 L368 585 L337 693 L484 539Z" fill="#101a25" stroke="#394853" stroke-width="4"/><path d="M276 507 L320 530 L364 507 L354 553 L320 544 L286 553Z" fill="#f5f6f6"/><path d="M320 530 L278 513 L277 557 L320 542 L363 557 L362 513Z" fill="#080c11" stroke="#28333d" stroke-width="3"/><circle cx="320" cy="537" r="12" fill="#151d27"/><path d="M98 554 Q111 531 149 519" stroke="#fff" stroke-opacity=".08" stroke-width="12" fill="none" stroke-linecap="round"/>
-<!-- neck and head --> <rect x="252" y="449" width="136" height="67" rx="19" fill="#17222c"/><rect x="113" y="86" width="414" height="412" rx="148" fill="url(#shell)" stroke="#101821" stroke-width="11"/><rect x="132" y="103" width="376" height="373" rx="133" fill="#141e27" stroke="#53616b" stroke-width="4"/><rect x="154" y="124" width="332" height="328" rx="112" fill="url(#screen)"/><rect x="151" y="121" width="338" height="334" rx="114" fill="url(#gloss)"/>
-<!-- soft side seams: no headphones or headset -->
-<path d="M145 238 Q135 282 145 332" fill="none" stroke="#b993f0" stroke-opacity=".34" stroke-width="5" stroke-linecap="round"/>
-<path d="M495 238 Q505 282 495 332" fill="none" stroke="#b993f0" stroke-opacity=".34" stroke-width="5" stroke-linecap="round"/>
-<!-- softly sculpted small twin tails, separate animated fibre strands -->
-<g id="vivi-hair-left" transform-origin="178px 164px"><path d="M179 156 Q131 165 122 224 Q113 282 130 335 Q142 374 115 410 Q160 416 186 380 Q204 351 189 303 Q173 259 190 205Z" fill="#584076" stroke="#ad8ad2" stroke-width="6"/><path d="M164 193 Q139 247 152 311 Q163 351 140 378" stroke="#d7b4ff" stroke-width="11" opacity=".53" fill="none" stroke-linecap="round"/></g>
-<g id="vivi-hair-right" transform-origin="462px 164px"><path d="M461 156 Q509 165 518 224 Q527 282 510 335 Q498 374 525 410 Q480 416 454 380 Q436 351 451 303 Q467 259 450 205Z" fill="#584076" stroke="#ad8ad2" stroke-width="6"/><path d="M476 193 Q501 247 488 311 Q477 351 500 378" stroke="#d7b4ff" stroke-width="11" opacity=".53" fill="none" stroke-linecap="round"/></g>
-<path d="M158 178 Q165 98 254 85 Q344 65 431 96 Q479 124 483 172 Q450 154 423 145 Q388 168 353 144 Q318 172 282 145 Q234 172 195 157 Q173 168 158 178Z" fill="#49365e" stroke="#a78ac5" stroke-width="5"/>
-<path d="M185 148 Q231 94 303 103 Q346 107 371 119 Q314 126 286 144 Q245 127 185 148Z" fill="#b496d4" opacity=".7"/>
-<path d="M212 127 Q253 102 286 111 M389 112 Q427 120 454 149" fill="none" stroke="#f0d9ff" opacity=".55" stroke-width="7" stroke-linecap="round"/>
-<!-- expression --> <rect class="eye" x="215" y="229" width="61" height="112" rx="30" fill="#b98aff"/><rect class="eye" x="364" y="229" width="61" height="112" rx="30" fill="#b98aff"/><path id="mouth" d="M270 373 Q320 393 370 373 L370 393 Q320 436 270 393Z" fill="#b98aff"/></svg></div><div id="status" aria-live="polite"></div><section id="vincent-chat" aria-label="Vivi Chat" hidden><div id="chat-log" role="log" aria-live="polite" aria-relevant="additions"></div><div id="chat-compose"><div id="chat-draft" aria-label="Nachrichtentext" role="textbox" aria-readonly="true">Schreib Vivi etwas …</div><button type="button" id="chat-send" aria-label="Nachricht senden">➤</button></div><div id="chat-keys" aria-label="Vivis Tastatur"></div></section><section id="settings" aria-label="Vincent Einstellungen"><h2>Vivi · Lila Kawaii 2.9.0 Einstellungen</h2><h2>Vivis Stimme</h2><label for="voicestyle">Stimmcharakter</label><select id="voicestyle"><option value="cute" selected>Niedlich · hoch und verspielt</option><option value="classic">Klassisch · Hans</option></select><p>Im niedlichen Modus wird eine hellere deutsche Stimme (Vicki) angefragt. Falls sie nicht verfügbar ist, wird Hans verwendet. Die Wiedergabe ist nur leicht beschleunigt; eine exakte Comic-Stimme ist nicht garantiert.</p><h2>Neue Online-Stimme</h2><label class="autotoggle"><input id="onlinevoice" type="checkbox" checked> Online-Stimme verwenden</label><p>Vivi spricht über Puter mit der gewählten deutschen Stimme. Bei einem Verbindungsfehler verwendet er automatisch die Browser-Stimme. Der Anbieter kann Anmeldung, Limits oder Kosten verlangen; vor einer Zahlung bitte prüfen.</p><p id="onlinevoicestatus" aria-live="polite">Online-Stimme bereit zum Testen.</p><label for="voice">Deutsche Stimme</label><select id="voice"></select><p>Eine männliche Stimme wird bevorzugt, falls dein Gerät sie anbietet. Eine exakte Synchronsprecher-Stimme ist nicht enthalten.</p><label for="mouthdelay">Mund und Stimme synchronisieren: <output id="mouthdelayvalue">0 ms</output></label><input id="mouthdelay" type="range" min="0" max="1500" step="50" value="0"><p>Wenn Vivis Mund vor der Stimme startet, den Regler nach rechts schieben. Erst „Stimme testen“ drücken, dann nach Bedarf in 100-ms-Schritten erhöhen. Der Wert wird auf diesem Gerät gespeichert.</p><div class="actions"><button id="resetmouth" type="button">Synchronisation zurücksetzen</button></div><h2>Lokale deutsche KI-Stimme · Piper</h2><label class="autotoggle"><input id="piperenabled" type="checkbox"> Piper als lokale Stimme verwenden</label><p>Erzeugt deutsche Sprache direkt im Browser. Beim ersten Start müssen Bibliothek und Sprachmodell heruntergeladen werden. Die Audio-Mundanimation reagiert anschließend auf den tatsächlichen Ton. Bei einem Ladefehler schalte Piper aus, um wieder die bisherige Browser-Stimme zu nutzen.</p><div class="actions"><button id="loadpiper" type="button">Deutsches Sprachmodell laden</button></div><p id="piperstatus" aria-live="polite">Piper ist noch nicht geladen.</p><h2>Audio-Synchronisation · Test</h2><p>Hier kannst du eine deutsche Sprachaufnahme als Audiodatei testen. Vivis Mund reagiert direkt auf den abgespielten Ton, ohne Verzögerungsregler. Seine bisherigen gesprochenen Antworten verwenden weiterhin die Browser-Stimme und sind noch nicht audio-synchronisiert.</p><label for="audiofile">Sprachdatei auswählen (MP3, WAV, OGG oder M4A)</label><input id="audiofile" type="file" accept="audio/*"><div class="actions"><button id="playaudio" type="button" disabled>Sprachdatei abspielen</button><button id="stopaudio" type="button">Audio stoppen</button></div><p id="audiostatus" aria-live="polite">Noch keine Audiodatei ausgewählt.</p><audio id="voiceaudio" preload="metadata" hidden></audio><label class="autotoggle"><input id="autothought" type="checkbox" checked> Vivi darf gelegentlich selbst einen Gedanken sagen</label><p>Nur wenn die Seite offen ist und du mindestens 120 Sekunden nichts gemacht hast. Er unterbricht dich nicht. In den Einstellungen abschaltbar.</p><label class="autotoggle"><input id="aienabled" type="checkbox" checked> KI-Gehirn verwenden</label><label for="brainmode">Gehirn auswählen</label><select id="brainmode"><option value="cloud" selected>Online-KI (Puter – ggf. Anmeldung und Nutzungslimits)</option><option value="local">Lokales Qwen-Gehirn (WebGPU)</option></select><div class="actions"><button id="connectcloud" type="button">Online-Gehirn verbinden</button></div><p>Online-KI über Puter: kein API-Schlüssel in der Website erforderlich. Der Anbieter kann eine Anmeldung verlangen und Nutzungslimits festlegen. Bei Online-KI werden Fragen und ausgewählte Erinnerungen an den Anbieter übertragen. Keine Passwörter oder vertraulichen Daten eingeben.</p><div class="actions"><button id="loadbrain">Lokales Gehirn herunterladen / starten</button><button id="stopbrain">Gehirn entladen</button></div><p id="brainstatus" aria-live="polite">Lokales Modell noch nicht geladen.</p><p>Qwen2.5 0.5B Instruct (4-Bit) wird beim ersten Start aus dem Internet heruntergeladen. Der Download kann groß sein. Anschließend kann das Modell aus dem Browsercache geladen werden, solange die Daten erhalten bleiben. WebGPU und ausreichend freier Speicher sind erforderlich.</p><label for="initiative">Spontane Gedanken</label><select id="initiative"><option value="quiet">Selten</option><option value="normal" selected>Ausgewogen</option><option value="lively">Lebendig</option></select><label for="note">Vivi etwas beibringen</label><textarea id="note" placeholder="Zum Beispiel: Meine Lieblingsfarbe ist Blau"></textarea><div class="actions"><button id="remember">Merken</button><button id="test">Stimme testen</button><button id="export">Gedächtnis sichern</button><button id="import">Gedächtnis importieren</button><input id="importfile" type="file" accept="application/json,.json" hidden><button id="clear" class="danger">Gedächtnis löschen</button><button id="close">Schließen</button></div><label>Gespeicherte Erinnerungen</label><ol id="memlist"></ol><p>Tippen: Gedanken · Doppeltippen: zuhören · Lange drücken: Einstellungen. Das Gedächtnis liegt lokal in diesem Browser. Bei Online-KI werden Fragen und ausgewählte Erinnerungen an den KI-Anbieter gesendet; bei lokaler KI bleiben sie auf deinem Gerät; für den ersten Modell-Download ist Internet nötig. Bei einem Browserwechsel ist ein Import nötig. Keine Passwörter speichern.</p><p id="aistatus">Lokales Gehirn: noch nicht gestartet.</p><p>Bei Lade- oder Speicherfehlern funktionieren Vincents Animationen und vorbereitete Gedanken weiterhin. Chrome-Spracherkennung kann eine Internetverbindung benötigen.</p></section></main><script src="https://js.puter.com/v2/"></script><script src="./face.js?v=290" defer></script><script src="./app.js?v=290" defer></script><script src="./chat.js?v=290" defer></script><script src="./vivi-motion.js?v=290" defer></script><script src="./vivi-idle.js?v=290" defer></script><script src="./vivi-chat-stage.js?v=290" defer></script><div id="vincent-build" style="position:fixed;bottom:3px;right:7px;font:10px sans-serif;color:#78b9c6;opacity:.8;pointer-events:none;z-index:9999">Vivi 2.9.0</div><script src="./vivi-update.js?v=290" defer></script><script src="./vivi-rig.js?v=290" defer></script><script src="./vivi-rig-v28.js?v=290" defer></script></body></html>
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vivi · Ebenenmodell 07</title><style>*{box-sizing:border-box}body{margin:0;background:#100b1d;color:#f8efff;font:15px system-ui;text-align:center}header{padding:14px 8px 8px}h1{font-size:21px;margin:0}p{color:#cbb9e0;max-width:620px;margin:8px auto;padding:0 12px}canvas{display:block;width:min(96vw,600px);height:auto;margin:auto;background:radial-gradient(ellipse at 50% 38%,#34234d,#100b1d 74%);border-radius:18px}button{border:1px solid #8057a9;background:#2c1b42;color:#fff;border-radius:10px;padding:11px 13px;margin:4px;cursor:pointer;font:inherit}button.active{background:#8743bb}label{display:inline-flex;gap:7px;align-items:center;margin:7px}input[type=range]{width:130px}small{display:block;color:#baa8cf;max-width:650px;margin:12px auto 28px;padding:0 12px}.status{font-size:12px;color:#cbb9e0}</style></head><body><header><h1>Vivi · Ebenenmodell 07</h1><p>Bereinigte Animationssteuerung, unabhängig regelbare Haarbewegung und Gelenke</p></header><canvas id="stage" width="1341" height="1173"></canvas><div><button data-mode="idle" class="active">Atmen</button><button data-mode="wave">Winken</button><button data-mode="walk">Gehen</button><button data-mode="talk">Sprechen</button><button data-mode="all">Alles</button><button id="pause">Pause</button></div><div><label><input id="hair" type="checkbox" checked>Haarphysik</label><label><input id="blink" type="checkbox" checked>Blinzeln</label><label>Haarschwung <input id="hairAmount" type="range" min="0" max="100" value="45"></label><label>Stärke <input id="amount" type="range" min="0" max="100" value="55"></label></div><div class="status" id="status">Lade Ebenen …</div><small>Lokaler Rig-Prototyp. Getrennte Gelenke und Haarsteuerung. Originalgesicht und Haarstruktur bleiben erhalten. Augenlider und Sprechen sind vorläufige Overlays; weiche Gelenkunterlagen und reduzierte Überschneidungen wurden ergänzt; verdeckte Originalbereiche und Mimik sind noch nicht vollständig rekonstruiert. Keine Änderung an Vivis KI-Website.</small><script>
+'use strict';
+const W=1341,H=1173,canvas=document.getElementById('stage'),ctx=canvas.getContext('2d');
+const names=['hair-left','hair-right','thigh-left','shin-left','thigh-right','shin-right','foot-left','foot-right','torso','upperarm-left','forearm-left','hand-left','upperarm-right','forearm-right','hand-right','head'];
+const imgs={};let loaded=0,mode='idle',paused=false,clock=0,last=0;
+for(const name of names){const im=new Image();im.onload=()=>{loaded++;document.getElementById('status').textContent=`${loaded}/${names.length} Ebenen geladen`};im.onerror=()=>document.getElementById('status').textContent='Fehlende Datei: '+name+'.png';im.src=name+'.png';imgs[name]=im}
+const jointNames=['shoulder-left','shoulder-right','elbow-left','elbow-right','wrist-left','wrist-right','hip-left','hip-right','knee-left','knee-right','ankle-left','ankle-right','neck'];
+for(const name of jointNames){const im=new Image();im.src='joint-'+name+'.png';imgs['joint-'+name]=im}
+function cap(name){draw('joint-'+name)}
+document.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click',()=>{mode=btn.dataset.mode;document.querySelectorAll('[data-mode]').forEach(x=>x.classList.toggle('active',x===btn))}));
+document.getElementById('pause').onclick=()=>{paused=!paused;document.getElementById('pause').textContent=paused?'Weiter':'Pause'};
+function draw(name){const im=imgs[name];if(im?.naturalWidth)ctx.drawImage(im,0,0)}
+function around(point,angle,fn){ctx.save();ctx.translate(point[0],point[1]);ctx.rotate(angle);ctx.translate(-point[0],-point[1]);fn();ctx.restore()}
+function limb(upper,lower,tip,root,hinge,wrist,a,b,c){const s=upper.endsWith('left')?'left':'right';around(root,a,()=>{cap('shoulder-'+s);draw(upper);around(hinge,b,()=>{cap('elbow-'+s);draw(lower);around(wrist,c,()=>{cap('wrist-'+s);draw(tip)})})})}
+function leg(side,hip,knee,ankle,a,b,c){around(hip,a,()=>{cap('hip-'+side);draw('thigh-'+side);around(knee,b,()=>{cap('knee-'+side);draw('shin-'+side);around(ankle,c,()=>{cap('ankle-'+side);draw('foot-'+side)})})})}
+function eyelids(blink){if(blink<.03)return; // Soft skin-toned eyelid cover, clipped to eye ellipses; keep eyelashes visible at full open.
+for(const [x,y] of [[516,360],[737,360]]){ctx.save();ctx.beginPath();ctx.ellipse(x,y,65,73,0,0,Math.PI*2);ctx.clip();const h=135*blink;const grad=ctx.createLinearGradient(x,y-80,x,y+80);grad.addColorStop(0,'#a17bbd');grad.addColorStop(.52,'#d9c0e9');grad.addColorStop(1,'#b992cf');ctx.fillStyle=grad;ctx.fillRect(x-70,y-78,140,h);if(blink>.8){ctx.strokeStyle='#5b306d';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x-46,y+5);ctx.quadraticCurveTo(x,y+17,x+46,y+5);ctx.stroke()}ctx.restore()}}
+function frame(ms){requestAnimationFrame(frame);if(!last)last=ms;const dt=Math.min(.05,(ms-last)/1000);last=ms;if(!paused)clock+=dt;const t=clock;ctx.clearRect(0,0,W,H);if(loaded!==names.length)return;
+const hairA=+document.getElementById('hairAmount').value/100;const A=+document.getElementById('amount').value/100,walk=mode==='walk'||mode==='all',wave=mode==='wave'||mode==='all',talk=mode==='talk'||mode==='all';const breath=Math.sin(t*2.1),step=Math.sin(t*5.1),sway=Math.sin(t*1.7)*A*.015,bob=A*2.2*breath;
+ctx.save();ctx.translate(0,bob);
+// Separate hair joints; never inherit arm rotation.
+const hOn=document.getElementById('hair').checked;around([464,245],hOn?hairA*.075*Math.sin(t*2.05):0,()=>draw('hair-left'));around([876,245],hOn?-hairA*.085*Math.sin(t*1.95+.6):0,()=>draw('hair-right'));
+for(const side of ['left','right']){const L=side==='left',sign=L?1:-1,hip=L?[636,790]:[713,790],knee=L?[618,946]:[733,946],ankle=L?[570,1090]:[771,1090];leg(side,hip,knee,ankle,walk?sign*step*.13*A:0,walk?Math.max(0,sign*step)*.14*A:0,walk?-sign*step*.07*A:0)}
+around([670,700],sway,()=>draw('torso'));
+limb('upperarm-left','forearm-left','hand-left',[553,650],[488,742],[417,818],-A*.025*breath,-A*.025*breath,A*.06*Math.sin(t*2.8));
+const shoulder=wave?(-.31+.14*Math.sin(t*6))*A:A*.025*breath,elbow=wave?(-.25+.18*Math.sin(t*6+.8))*A:-A*.025*breath,wrist=wave?A*.25*Math.sin(t*8):A*.06*Math.sin(t*2.8);
+limb('upperarm-right','forearm-right','hand-right',[790,650],[856,743],[915,819],shoulder,elbow,wrist);
+around([670,575],A*.018*Math.sin(t*1.65),()=>{cap('neck');draw('head');if(document.getElementById('blink').checked){const cycle=t%4.5;const blink=(cycle>3.85&&cycle<4.1)?Math.sin((cycle-3.85)/.25*Math.PI):0;eyelids(blink)}if(talk){const o=(.5+.5*Math.sin(t*11))*A;ctx.fillStyle='rgba(45,13,63,.82)';ctx.beginPath();ctx.ellipse(655,458,8,2+8*o,0,0,Math.PI*2);ctx.fill()}});
+ctx.restore();}
+requestAnimationFrame(frame);
+</script></body></html>
