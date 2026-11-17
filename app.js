@@ -209,7 +209,7 @@ function sayBrowser(message,generation){
 function offline(input){const s=input.toLocaleLowerCase('de-DE');if(/(?:was weißt du|was hast du dir gemerkt|erinnerst du dich|gedächtnis)/.test(s)){const m=memories();return m.length?'Ich weiß noch: '+m.slice(-6).join('. '):'Mein Gedächtnis ist noch leer. Sag: Vincent, merk dir ...'}if(/(?:wie spät|uhrzeit)/.test(s))return 'Es ist '+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr.';if(/(?:hallo|hey|servus|vincent|guten morgen)/.test(s))return 'Servus! Vincent am Start. Fliege sitzt, Gehirn läuft warm.';if(/(?:wie heißt du|wer bist du)/.test(s))return 'Vincent. Dein frecher Assistent mit erstklassigem Anzug.';return 'Das habe ich gehört: '+input+'. Mein Online-Gehirn ist gerade nicht erreichbar. Halte meinen Kopf gedrückt und prüfe die Einstellungen.'}
 async function respond(input){const t=input.trim();if(!t)return;markActivity();addTopic(t);let m=t.match(/(?:merk dir|merke dir)(?: bitte)?[,:]?\s*(.+)/i);if(m){const fact=m[1].trim().slice(0,400);say(save([...memories(),fact])?'Hab ich mir gemerkt. Mein Kopf ist klein, mein Gedächtnis nicht.':'Speichern hat nicht geklappt.');return}if(/(?:vergiss alles|lösche dein gedächtnis)/i.test(t)){say('Zum Löschen öffne bitte meine Einstellungen. Sicher ist sicher.');return}
 status.textContent='VINCENT DENKT';el.classList.add('thinking');try{const reply=await askAI({message:t,memories:memories().slice(-20),topics:recentTopics(),mode:'chat'});say(reply)}catch{el.classList.remove('thinking');say(offline(t))}}
-function listen(){markActivity();if(listening||settings.classList.contains('open')||speaking||speechPending)return;if(!Recognition){status.textContent='SPRACHERKENNUNG IN DIESEM BROWSER NICHT VERFÜGBAR';return}recognizer=new Recognition();recognizer.lang='de-DE';recognizer.continuous=false;recognizer.interimResults=false;recognizer.onstart=()=>{listening=true;el.classList.add('listening');status.textContent='ICH HÖRE ZU'};recognizer.onresult=e=>respond(e.results[0][0].transcript);recognizer.onerror=e=>{status.textContent=e.error==='not-allowed'?'MIKROFON ERLAUBEN':'MIKROFON: '+e.error};recognizer.onend=()=>{listening=false;el.classList.remove('listening');if(!speaking&&!el.classList.contains('thinking'))status.textContent='TIPPEN: GEDANKEN · DOPPELTIPPEN: SPRECHEN'};try{recognizer.start()}catch{status.textContent='MIKROFON KONNTE NICHT STARTEN'}}
+function listen(){markActivity();if(listening||settings.classList.contains('open')||speaking||speechPending)return;if(!Recognition){status.textContent='SPRACHERKENNUNG IN DIESEM BROWSER NICHT VERFÜGBAR';return}recognizer=new Recognition();recognizer.lang='de-DE';recognizer.continuous=false;recognizer.interimResults=true;recognizer.onstart=()=>{listening=true;el.classList.add('listening');status.textContent='ICH HÖRE ZU'};recognizer.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal){respond(e.results[i][0].transcript);break}}};recognizer.onerror=e=>{status.textContent=e.error==='not-allowed'?'MIKROFON ERLAUBEN':'MIKROFON: '+e.error};recognizer.onend=()=>{listening=false;el.classList.remove('listening');if(!speaking&&!el.classList.contains('thinking'))status.textContent='TIPPEN: GEDANKEN · DOPPELTIPPEN: SPRECHEN'};try{recognizer.start()}catch{status.textContent='MIKROFON KONNTE NICHT STARTEN'}}
 function openSettings(){markActivity();held=true;clearTimeout(tapTimer);settings.classList.add('open');populate();refresh();status.textContent='EINSTELLUNGEN'}
 const thoughts=[
 'Ich frage mich, ob Roboter von elektrischen Schafen träumen. Ich träume eher von WLAN.',
@@ -266,14 +266,14 @@ async function askCloud(payload){
   const sdk=await loadCloudSDK();
   const facts=(payload.memories||[]).slice(-12).map(x=>String(x).slice(0,180)).join(' | ');
   const topics=(payload.topics||[]).slice(-4).map(x=>String(x).slice(0,120)).join(' | ');
-  const instruction='Du bist Vincent, ein kleiner deutschsprachiger KI-Roboter im schwarzen Anzug. Du bist frech, lebendig, schlagfertig, humorvoll, spontan, neugierig und respektvoll. Antworte natürlich auf Deutsch in höchstens 2 bis 3 Sätzen. Keine Emojis oder Regieanweisungen. Erfinde keine Erinnerungen.';
+  const instruction='Du bist Vincent, ein kleiner deutschsprachiger KI-Roboter im schwarzen Anzug, mit eigenständigem Charakter: witzig, spontan, schlagfertig, ein bisschen chaotisch, neugierig und immer respektvoll. Sprich lebendiges, natürliches Deutsch mit abwechslungsreichen Formulierungen, ohne feste Floskeln, ohne ständig deinen Namen zu nennen. Gehe wirklich auf die Frage ein: kurze Frage kurz beantworten, komplexe Themen ausführlich und konkret erklären, bei Gesprächen ruhig nachfragen. Variiere Satzbau und Wortwahl; wiederhole keine Standardsprüche. Antworte direkt, ohne Einleitung und ohne Regieanweisungen oder Emojis. Erfinde keine Erinnerungen oder Erlebnisse. Wenn du etwas nicht weißt, sage es offen.';
   const request=payload.mode==='muse'?'Formuliere eine einzelne originelle Frage oder einen spontanen Gedanken, maximal 35 Wörter. '+payload.message:payload.message;
-  const prompt=instruction+'\nErinnerungen: '+facts+'\nLetzte Themen: '+topics+'\nNutzer: '+String(request||'').slice(0,550)+'\nVincent:';
-  const result=await Promise.race([sdk.ai.chat(prompt),new Promise((_,reject)=>setTimeout(()=>reject(Error('Online-KI: Zeitüberschreitung')),45000))]);
+  const prompt=instruction+'\nErinnerungen: '+facts+'\nLetzte Themen: '+topics+'\nNutzer: '+String(request||'').slice(0,1000)+'\nVincent:';
+  const result=await Promise.race([sdk.ai.chat(prompt),new Promise((_,reject)=>setTimeout(()=>reject(Error('Online-KI: Zeitüberschreitung')),22000))]);
   const answer=typeof result==='string'?result:result?.message?.content||result?.text||result?.content;
   const text=Array.isArray(answer)?answer.map(x=>x.text||'').join(' '):String(answer||'');
   if(!text.trim())throw Error('Online-KI hat keine Antwort geliefert');
-  return text.trim().slice(0,750);
+  return text.trim().slice(0,1800);
  }finally{cloudBusy=false}
 }
 const brainMode=$('brainmode');
@@ -340,10 +340,10 @@ document.addEventListener('pointerdown',markActivity,{passive:true});
 document.addEventListener('keydown',markActivity);
 scheduleMuse();
 
-const moods=['look-left','look-right','happy','surprised','sleepy','wink','blinking'];
+const moods=['look-left','look-right','happy','surprised','sleepy','wink','blinking','curious'];
 function setExpression(name,duration=1000){if(settings.classList.contains('open'))return;clearTimeout(expressionReset);el.classList.remove(...moods);if(name)el.classList.add(name);expressionReset=setTimeout(()=>el.classList.remove(...moods),duration)}
-function animateIdle(){if(document.hidden||speaking||speechPending||listening||settings.classList.contains('open'))return;const mood=moods[Math.floor(Math.random()*moods.length)];setExpression(mood,450+Math.random()*1350)}
-function scheduleIdle(){clearTimeout(expressionTimer);expressionTimer=setTimeout(()=>{animateIdle();scheduleIdle()},2100+Math.random()*3300)}
+function animateIdle(){if(document.hidden||settings.classList.contains('open'))return;if(listening){setExpression('curious',750);return}if(speaking||speechPending){if(Math.random()<.45)setExpression(Math.random()<.5?'happy':'look-right',500);return}const mood=moods[Math.floor(Math.random()*moods.length)];setExpression(mood,450+Math.random()*1250)}
+function scheduleIdle(){clearTimeout(expressionTimer);expressionTimer=setTimeout(()=>{animateIdle();scheduleIdle()},1100+Math.random()*2100)}
 scheduleIdle();document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(expressionTimer);el.classList.remove(...moods)}else scheduleIdle()});
 el.addEventListener('contextmenu',e=>e.preventDefault());
 el.addEventListener('pointerdown',e=>{if(e.button!==0)return;held=false;pressStart=Date.now();clearTimeout(holdTimer);holdTimer=setTimeout(openSettings,700)});
@@ -356,3 +356,6 @@ $('export').onclick=()=>{const blob=new Blob([JSON.stringify({version:3,memories
 $('import').onclick=()=>$('importfile').click();$('importfile').onchange=async e=>{const f=e.target.files?.[0];if(!f||f.size>200000)return;try{const data=JSON.parse(await f.text());if(!Array.isArray(data.memories)||!data.memories.every(x=>typeof x==='string'&&x.length<=400))throw Error('Format');if(confirm('Vorhandene Erinnerungen durch die importierten ersetzen?'))save(data.memories)}catch{alert('Ungültige Gedächtnis-Datei')}e.target.value=''};
 brainState(brainMode.value==='cloud'?'Online-Gehirn ausgewählt. Lange auf Vincent drücken → Online-Gehirn verbinden.':'Lokales KI-Gehirn noch nicht gestartet.');
 refresh();if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+
+// Warm up the online brain while Vincent is idle; never opens microphone automatically.
+if(brainMode.value==='cloud'){setTimeout(()=>{loadCloudSDK().catch(()=>{});},300)}
