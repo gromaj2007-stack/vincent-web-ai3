@@ -1,4 +1,4 @@
-<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vivi 3.9 – Lebendige Animation</title><style>body{margin:0;background:#130c20;color:#eee;font:16px system-ui;min-height:100dvh;display:grid;place-items:center;text-align:center}#status{padding:20px}</style></head><body><div id="status">Vivi wird geladen …</div><script>
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vivi 4.0 – Textgesteuerte Animation</title><style>body{margin:0;background:#130c20;color:#eee;font:16px system-ui;min-height:100dvh;display:grid;place-items:center;text-align:center}#status{padding:20px}</style></head><body><div id="status">Vivi wird geladen …</div><script>
 (async()=>{try{
 const url='https://raw.githubusercontent.com/gromaj2007-stack/vincent-web-ai3/a2a53c04ec/index.html';
 const res=await fetch(url,{cache:'no-store'});if(!res.ok)throw Error('Originalversion HTTP '+res.status);
@@ -16,16 +16,21 @@ if(!appCode.includes(onlineDefault))throw Error('Sprachmodul wurde verändert');
 appCode=appCode.replace(onlineDefault,"onlineVoiceToggle.checked=false;localStorage.setItem(ONLINE_VOICE_KEY,'off');");
 const selectedVoice="u.voice=voices().find(v=>v.name===select.value)||null;";
 if(!appCode.includes(selectedVoice))throw Error('Stimmenzuweisung wurde verändert');
-appCode=appCode.replace(selectedVoice,"u.voice=null;");
-appCode=appCode.replace("u.lang='de-DE';u.rate=isCuteVoice()?1.04:.91;u.pitch=isCuteVoice()?1.48:.93;", "u.lang='';u.rate=1;u.pitch=1;");
+appCode=appCode.replace(selectedVoice,`const available=speechSynthesis.getVoices();
+  const female=available.find(v=>/^de(?:-|$)/i.test(v.lang)&&/(female|weiblich|anna|vicki|katja|helena|petra|marlene|lea|lena|sarah|sophie|google deutsch)/i.test(v.name)&&!/hans|male|männ|mann|markus|daniel|conrad|stefan|thomas|florian/i.test(v.name));
+  if(!female){speechPending=false;status.textContent='KEINE WEIBLICHE DEUTSCHE BROWSERSTIMME VERFÜGBAR';onlineVoiceStatus.textContent='Chrome bietet keine eindeutig weibliche deutsche Stimme an. Hans wird nicht verwendet.';return;}
+  u.voice=female;onlineVoiceStatus.textContent='Aktive Stimme: '+female.name;`);
+appCode=appCode.replace("u.lang='de-DE';u.rate=isCuteVoice()?1.04:.91;u.pitch=isCuteVoice()?1.48:.93;", "u.lang='de-DE';u.rate=1;u.pitch=1;");
 // Never enter cloud or Piper TTS branches, even if old settings were stored.
 appCode=appCode.replace('if(onlineVoiceToggle.checked){clearTimeout(mouthStartTimer);', 'if(false){clearTimeout(mouthStartTimer);');
 appCode=appCode.replace('if(piperEnabled.checked){clearTimeout(mouthStartTimer);', 'if(false){clearTimeout(mouthStartTimer);');
+appCode=appCode.replace('u.onstart=()=>{',"u.onstart=()=>{window.dispatchEvent(new Event('vivi-speech-start'));");
+appCode=appCode.replace('const done=()=>{',"const done=()=>{window.dispatchEvent(new Event('vivi-speech-end'));");
 // Voice list remains in app.js for compatibility, but is not used for speaking.
 const appBlob=URL.createObjectURL(new Blob([appCode],{type:'text/javascript'}));
 source=source.replace(/src="\.\/app\.js\?v=290"/,'src="'+appBlob+'"');
-source=source.replace(/<\/body>/i,'<script src="./vivi-default-voice-ui.js?v=360" defer></'+'script></body>');
-source=source.replace(/<\/body>/i,'<script src="./vivi-classic-animation.js?v=370" defer></'+'script><script src="./vivi-alive.js?v=390" defer></'+'script><script src="./vivi-mesh-mimik.js?v=390" defer></'+'script></body>');
-document.open();document.write(source);document.close();
+source=source.replace(/<\/body>/i,'<script src="./vivi-default-voice-ui.js?v=400" defer></'+'script></body>');
+source=source.replace(/<\/body>/i,'<script src="./vivi-classic-animation.js?v=400" defer></'+'script><script src="./vivi-alive.js?v=400" defer></'+'script><script src="./vivi-mesh-mimik.js?v=400" defer></'+'script></body>');
+source=source.replace(/Vivi 2\.9\.0/g,'Vivi 4.0');document.open();document.write(source);document.close();
 }catch(e){document.getElementById('status').textContent='Vivi konnte nicht geladen werden: '+e.message;}})();
 </script></body></html>

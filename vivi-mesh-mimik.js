@@ -12,6 +12,20 @@ const start=()=>{
  function run(){
  const W=canvas.width,H=canvas.height,sx=W/1199,sy=H/1312;
  const t0=performance.now();let last=0,blinkAt=t0+1700+Math.random()*3000,blinkStart=-1;
+ // Actual spoken-word boundaries drive face and body. No random speaking gestures.
+ let lastWord=0, mouthPulse=0, gesturePulse=0, headPulse=0, smilePulse=0;
+ let speechHasBoundaries=false, speechStarted=0;
+ window.addEventListener('vivi-speech-boundary',event=>{
+   const word=String(event.detail?.text||'').toLocaleLowerCase('de-DE');
+   lastWord=performance.now();speechHasBoundaries=true;
+   mouthPulse=/[.!?]$/.test(word)?0.45:1;
+   const emph=/(wirklich|super|toll|wichtig|genau|klar|ja|nein|wow|achtung|schön|freu|liebe|nicht|aber)/.test(word);
+   gesturePulse=emph?1:0.38;
+   headPulse=emph?1:0.24;
+   smilePulse=/(freu|schön|toll|super|haha|witz|glück)/.test(word)?1:0;
+ });
+ window.addEventListener('vivi-speech-start',()=>{speechStarted=performance.now();speechHasBoundaries=false});
+ window.addEventListener('vivi-speech-end',()=>{mouthPulse=0;gesturePulse=0;headPulse=0;smilePulse=0});
  const ease=(x)=>x*x*(3-2*x);
  const bell=(x,center,radius)=>{const u=Math.abs(x-center)/radius;return u>=1?0:Math.pow(1-ease(u),1.6)};
  function map(x,y,blink,mouth,smile){
@@ -43,10 +57,41 @@ const start=()=>{
   if(now>blinkAt&&blinkStart<0)blinkStart=now;
   let blink=0;if(blinkStart>=0){const dt=now-blinkStart;blink=dt<105?ease(dt/105):dt<190?1-ease((dt-105)/85):0;if(dt>=190){blinkStart=-1;blinkAt=now+2200+Math.random()*4200;}}
   const talking=figure.classList.contains('talking')||figure.classList.contains('audio-speaking');
+  if(talking&&!speechStarted){speechStarted=now;speechHasBoundaries=false;}
+  if(!talking){speechStarted=0;speechHasBoundaries=false;}
+  const elapsed=Math.max(0,now-lastWord);
+  const wordEnvelope=Math.max(0,1-elapsed/420);
+  // Only word events move the mouth. If Android omits boundary events, no fake lip sync.
+  const speechMouth=talking&&speechHasBoundaries?mouthPulse*wordEnvelope:0;
+  const speechGesture=talking&&speechHasBoundaries?gesturePulse*Math.max(0,1-elapsed/850):0;
+  const speechHead=talking&&speechHasBoundaries?headPulse*Math.max(0,1-elapsed/700):0;
   const thinking=figure.classList.contains('thinking');
-  const mouth=talking?(.3+.7*Math.abs(Math.sin(now*.014)*Math.sin(now*.0041))):.025;
-  const smile=thinking?.1:(talking?.25:.1);
+  const mouth=speechMouth;
+  const smile=talking?smilePulse*wordEnvelope*.32:(thinking?.08:.07);
   ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,W,H);ctx.drawImage(source,0,0,W,H);
+  // Warp original pixels of neck, torso and arms in response to spoken words.
+  // Region weights keep the background/hair edges anchored to the original image.
+  if(speechGesture>.005||speechHead>.005){
+   function bodyMap(x,y){
+    const neck=bell(x,600,165)*bell(y,660,195);
+    const left=bell(x,355,220)*bell(y,920,300);
+    const right=bell(x,865,220)*bell(y,920,300);
+    const chest=bell(x,605,370)*bell(y,950,340);
+    const head=bell(x,602,275)*bell(y,460,320);
+    const shift=speechHead*head*3.3;
+    const shoulder=(left-right)*speechGesture*4.5;
+    const lift=(left+right)*speechGesture*3.2;
+    const breathe=chest*(talking?0:Math.sin(now/1500)*1.1);
+    return [x+shift+shoulder+neck*speechHead*1.4,y-lift+breathe];
+   }
+   const stepBody=42;
+   for(let y=140;y<1290;y+=stepBody)for(let x=130;x<1080;x+=stepBody){
+    const x2=Math.min(x+stepBody,1080),y2=Math.min(y+stepBody,1290);
+    const a=[x,y],b=[x2,y],c=[x,y2],d=[x2,y2];
+    const aa=bodyMap(x,y),bb=bodyMap(x2,y),cc=bodyMap(x,y2),dd=bodyMap(x2,y2);
+    triangle(a,b,c,aa,bb,cc);triangle(b,d,c,bb,dd,cc);
+   }
+  }
   if(blink<.005&&mouth<.05&&smile<.05)return;
   // Re-render only the existing face pixels inside a local mesh.
   const step=25,x0=400,x1=785,y0=315,y1=600;

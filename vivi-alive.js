@@ -16,7 +16,7 @@ const start=()=>{
   50%{transform:translate3d(var(--vivi-shift),-3px,0) rotate(var(--vivi-tilt)) scale(1.007)}
   75%{transform:translate3d(var(--vivi-shift),-1px,0) rotate(var(--vivi-tilt)) scale(1.004)}
  }
- #vincent.talking #vivi-classic-art,#vincent.audio-speaking #vivi-classic-art{animation:viviAliveTalking 1.85s ease-in-out infinite!important}
+ #vincent.talking #vivi-classic-art,#vincent.audio-speaking #vivi-classic-art{animation:none!important}
  @keyframes viviAliveTalking{
   0%,100%{transform:translate3d(var(--vivi-shift),0,0) rotate(var(--vivi-tilt)) scale(1)}
   24%{transform:translate3d(var(--vivi-shift),-2px,0) rotate(calc(var(--vivi-tilt) + .3deg)) scale(1.004)}
@@ -51,7 +51,7 @@ const start=()=>{
  const timer=setInterval(motion,6500);
  window.addEventListener('pagehide',()=>clearInterval(timer),{once:true});
  const badge=document.getElementById('vincent-build');
- if(badge)badge.textContent='Vivi 3.7 · Lebendig · Standardstimme';
+ if(badge)badge.textContent='Vivi 4.0 · Textgesteuerte Animation';
 };
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
