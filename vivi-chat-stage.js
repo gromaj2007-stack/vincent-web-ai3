@@ -1,18 +1,39 @@
-/* Vivi 2.0.9 – chat choreography: appear, hide, peek left/right. */
-(()=>{'use strict';const main=document.querySelector('main'),figure=document.getElementById('vincent');if(!main||!figure)return;
-let open=false,phase='center',timer=0,lastAction=0,seq=0;
+/* Vivi 2.1.1 — independent chat choreography, safe head-only peeks. */
+(()=>{'use strict';
+const main=document.querySelector('main'),figure=document.getElementById('vincent');
+if(!main||!figure)return;
+let open=false,phase='center',timer=null,step=0,lastInput=0;
 const reduce=matchMedia('(prefers-reduced-motion: reduce)');
-function stage(next){phase=next;main.dataset.viviStage=next;figure.dataset.viviStage=next;}
-function schedule(ms){clearTimeout(timer);if(!open||reduce.matches)return;timer=setTimeout(next,ms);}
-function next(){if(!open)return;const now=performance.now();if(now-lastAction<3500){schedule(4000);return;}
-const states=phase==='center'?['duck','peek-left','peek-right']:phase==='duck'?['peek-left','peek-right']:['center','duck'];
-const dest=states[seq++%states.length];stage(dest);schedule(dest==='duck'?750:dest==='center'?6000:3800);
+const states=['center','peek-left','center','duck','peek-right','center','peek-left','center','duck','peek-right'];
+function setPhase(value){
+ phase=value;main.dataset.viviStage=value;
+ figure.dataset.viviStage=value;
+ window.viviMotionGesture?.(value==='peek-left'?'curious':value==='peek-right'?'playful':value==='duck'?'shy':'happy',1250);
 }
-function setOpen(value){open=!!value;clearTimeout(timer);stage(open?'center':'closed');if(open){lastAction=performance.now();schedule(5700);}}
-const observer=new MutationObserver(()=>setOpen(main.classList.contains('chat-open')));
-observer.observe(main,{attributes:true,attributeFilter:['class']});setOpen(main.classList.contains('chat-open'));
-window.viviChatStage={open:setOpen,peek(side){if(!open)return;stage(side==='right'?'peek-right':'peek-left');schedule(3700);},surprise(){if(!open)return;stage('duck');schedule(800);},activity(){lastAction=performance.now();if(open&&phase==='duck')stage('center');schedule(6200);}};
-const log=document.getElementById('chat-log'),keys=document.getElementById('chat-keys');
-keys?.addEventListener('pointerdown',()=>window.viviChatStage.activity(),{passive:true});
-new MutationObserver(()=>{if(open&&log?.lastElementChild?.classList.contains('vincent')){stage('center');lastAction=performance.now();schedule(5500);}}).observe(log||main,{childList:true});
+function schedule(ms){clearTimeout(timer);if(!open||reduce.matches)return;timer=setTimeout(advance,ms)}
+function advance(){
+ if(!open)return;
+ if(performance.now()-lastInput<2200){schedule(2600);return}
+ const value=states[(step++)%states.length];setPhase(value);
+ schedule(value==='duck'?900:value.startsWith('peek')?2600:3500);
+}
+function setOpen(next){
+ const value=!!next;
+ if(value===open)return;
+ open=value;clearTimeout(timer);step=0;
+ setPhase(open?'center':'closed');
+ if(open){lastInput=performance.now();schedule(3600)}
+}
+new MutationObserver(()=>setOpen(main.classList.contains('chat-open')))
+ .observe(main,{attributes:true,attributeFilter:['class']});
+setOpen(main.classList.contains('chat-open'));
+window.viviChatStage={
+ open:setOpen,
+ peek(side){if(!open)return;setPhase(side==='right'?'peek-right':'peek-left');schedule(2700)},
+ surprise(){if(!open)return;setPhase('duck');schedule(900)},
+ activity(){lastInput=performance.now();if(open){setPhase('center');schedule(3700)}}
+};
+document.getElementById('chat-keys')?.addEventListener('pointerdown',()=>window.viviChatStage.activity(),{passive:true});
+const log=document.getElementById('chat-log');
+if(log)new MutationObserver(()=>{if(open){setPhase('center');schedule(3500)}}).observe(log,{childList:true});
 })();
