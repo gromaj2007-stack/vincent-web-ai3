@@ -23,6 +23,7 @@ const poses={
  checking:{eye:1.05,smile:.12,brow:-6,blush:0,gaze:0}
 };
 let chatPose='neutral',chatUntil=0;window.vincentChatPose=(name,duration=1200)=>{chatPose=name;chatUntil=performance.now()+Math.max(200,duration)};
+let wakeStart=0;window.vincentWake=()=>{wakeStart=performance.now();feel('delighted',2200)};
 let mode='awake';
 window.vincentSetMode=(value)=>{if(['awake','checking','sleep'].includes(value)){mode=value;if(value!=='awake'){emotionUntil=0;look=0;}}};
 let emotion='neutral',emotionUntil=0,blinkStart=0,nextBlink=performance.now()+3100,blinkDuration=180,nextLook=performance.now()+6500,look=0,open=0,last=performance.now();
@@ -58,15 +59,15 @@ let targetOpen=0;if(mode!=='sleep'&&talking){const raw=parseFloat(host.style.get
 cur.open=lerp(cur.open,targetOpen,1-Math.exp(-dt*8));
 const awake=mode==='awake';
 // Slow breathing in eyes and eyebrows; subtle asymmetry, no new emotional poses.
-const breath=awake?Math.sin(now/1350)*.027:0;
+const breath=awake?Math.sin(now/1350)*.027:0;const wakeT=Math.max(0,1-(now-wakeStart)/1550);const wakeBounce=wakeT?Math.sin((1-wakeT)*Math.PI*3)*wakeT:0;
 const attention=awake&&!thinking&&!listening&&!talking?Math.sin(now/3100)*1.9:0;
 const talkSmile=awake&&talking?Math.sin(now/390)*.065:0;
-const eyeHeight=112*(cur.eye+breath)*(1-.97*cur.blink);
+const eyeHeight=112*(cur.eye+breath)*(1-.97*cur.blink)*(wakeT?Math.max(.12,1-wakeT*.86):1);
 if(mode==='sleep'){eyes[0].setAttribute('d',`M 216 292 Q 246 315 276 292`);eyes[1].setAttribute('d',`M 364 292 Q 394 315 424 292`);eyes.forEach(e=>{e.setAttribute('fill','none');e.setAttribute('stroke',glow);e.setAttribute('stroke-width','8');e.setAttribute('stroke-linecap','round')});}else{eyes.forEach(e=>{e.setAttribute('fill',glow);e.setAttribute('stroke','none')});eyes[0].setAttribute('d',eyeD(246+cur.gaze,285,eyeHeight));eyes[1].setAttribute('d',eyeD(394+cur.gaze,285,eyeHeight));}
 brows.forEach(e=>e.setAttribute('opacity',mode==='sleep'?'0':'.68'));
 brows[0].setAttribute('d',`M 219 ${211+cur.brow+attention} Q 246 ${204+cur.brow+attention} 274 ${211+cur.brow+attention}`);brows[1].setAttribute('d',`M 366 ${211+cur.brow-attention*.6} Q 394 ${204+cur.brow-attention*.6} 421 ${211+cur.brow-attention*.6}`);
 cheeks.forEach(e=>e.setAttribute('opacity',String(Math.max(0,cur.blush)*.38)));
-const corner=390-11*(cur.smile+talkSmile),mid=390+14*(cur.smile+talkSmile),wide=48;
+const corner=390-11*(cur.smile+talkSmile+wakeBounce*.35),mid=390+14*(cur.smile+talkSmile+wakeBounce*.35),wide=48;
 if(cur.open>.035){const depth=6+cur.open*36;mouth.setAttribute('d',`M ${320-wide} ${corner} Q 320 ${mid} ${320+wide} ${corner} Q 320 ${mid+depth} ${320-wide} ${corner} Z`);mouth.setAttribute('fill',glow)}else{mouth.setAttribute('d',`M ${320-wide} ${corner} Q 320 ${mid+4} ${320+wide} ${corner}`);mouth.setAttribute('fill','none')}
 }
 requestAnimationFrame(frame);
