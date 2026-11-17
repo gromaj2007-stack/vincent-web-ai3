@@ -21,7 +21,7 @@ jobs:
           key = os.environ.get('GROQ_API_KEY', '')
           if not key:
               sys.exit('GROQ_API_KEY fehlt in GitHub Secrets')
-          model = openai/gpt-oss-20b
+          model = 'openai/gpt-oss-20b'
           payload = json.dumps({
               'model': model,
               'messages': [{'role': 'user', 'content': 'Antworte nur mit OK.'}],
