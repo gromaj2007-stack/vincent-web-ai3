@@ -1,8 +1,6 @@
-Vivi 3D Atelier 3.6 – erweiterter 3D-Prototyp
-
-Dateien: index.html, vivi.glb, vorlage.png, build_model.py.
-Zum Testen alle Dateien gemeinsam in einen separaten Ordner auf GitHub Pages laden.
-Drehen und Zoomen per Touch; Vorlagenvergleich und Beleuchtungsmodi.
-
-WICHTIG: Kein fotogetreues oder fertig geriggtes Modell. Die Bildvorlage zeigt eine gerenderte 2D-Ansicht; eine 1:1 3D-Rekonstruktion ist daraus nicht garantiert möglich.
-Die Website lädt Three.js über CDN und benötigt eine Internetverbindung.
+Vivi 4.0: Eigenstaendiger 3D-Nachbau nach den Ansichten aus 7358.mp4.
+Kein Export des Premium-Modells. Kein 1:1-Scan.
+Dateien: GLB, GitHub-Pages-Viewer, Python-Quellcode, Referenzframes.
+Zum Testen gesamten Ordner auf GitHub Pages hochladen.
+Neu generieren: python build_model.py (numpy, trimesh).
+Der Browser-Viewer benoetigt Internet fuer Three.js CDN.
