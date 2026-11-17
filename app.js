@@ -27,7 +27,9 @@ function audioTick(){
   if(voiceAudio.paused||voiceAudio.ended){stopAudioMouth();return}
   audioAnalyser.getByteTimeDomainData(audioData);
   let sum=0;for(let i=0;i<audioData.length;i++){const v=(audioData[i]-128)/128;sum+=v*v}
-  const rms=Math.sqrt(sum/audioData.length);
+  let rms=Math.sqrt(sum/audioData.length);
+  // Remote audio may be opaque to Web Audio; use a gentle speech-like motion instead.
+  if(rms<0.003 && onlineVoiceToggle?.checked)rms=.10+.06*Math.abs(Math.sin(performance.now()/145));
   const open=Math.min(1,Math.max(0,(rms-.012)*12));
   el.style.setProperty('--audio-mouth-scale',String(.35+open*1.55));
   audioFrame=requestAnimationFrame(audioTick);
@@ -121,11 +123,53 @@ async function sayPiper(message,generation){
 }
 voiceAudio.addEventListener('ended',()=>{speaking=false;piperBusy=false;speechPending=false;status.textContent='TIPPEN: GEDANKEN · DOPPELTIPPEN: SPRECHEN'});
 $('loadpiper').addEventListener('click',async()=>{piperStatus.textContent='Prüfe deutsches Sprachmodell …';try{await ensurePiper()}catch(e){console.error('Vincent Piper:',e)}});
+// Online voice through Puter.js; browser TTS remains an automatic fallback.
+const ONLINE_VOICE_KEY='vincent_online_voice_v1';
+const onlineVoiceToggle=$('onlinevoice'),onlineVoiceStatus=$('onlinevoicestatus');
+onlineVoiceToggle.checked=localStorage.getItem(ONLINE_VOICE_KEY)!=='off';
+onlineVoiceToggle.onchange=()=>{localStorage.setItem(ONLINE_VOICE_KEY,onlineVoiceToggle.checked?'on':'off');onlineVoiceStatus.textContent=onlineVoiceToggle.checked?'Online-Stimme aktiviert.':'Browser-Stimme aktiviert.'};
+let onlineVoiceBusy=false;
+async function sayOnline(message,generation){
+  onlineVoiceBusy=true;speechPending=true;speaking=false;
+  status.textContent='VINCENT ERZEUGT ONLINE-STIMME';
+  onlineVoiceStatus.textContent='Erzeuge männliche deutsche Online-Stimme …';
+  try{
+    if(!window.puter?.ai?.txt2speech)throw new Error('Puter.js ist nicht geladen');
+    // German male voice from AWS Polly. No API key in the public website.
+    let generated;
+    try{generated=await window.puter.ai.txt2speech(message.slice(0,2900),{provider:'aws-polly',voice:'Hans',language:'de-DE',engine:'neural'});}
+    catch{generated=await window.puter.ai.txt2speech(message.slice(0,2900),{provider:'aws-polly',voice:'Hans',language:'de-DE',engine:'standard'});}
+    if(generation!==speechGeneration)return;
+    const src=generated?.src;
+    if(!src)throw new Error('Der Anbieter hat keine Audiodatei geliefert');
+    // Play the returned audio directly; no third-party credentials exposed.
+    if(audioUrl){URL.revokeObjectURL(audioUrl);audioUrl=null;}
+    voiceAudio.src=src;
+    if(!audioCtx){audioCtx=new (window.AudioContext||window.webkitAudioContext)();audioAnalyser=audioCtx.createAnalyser();audioAnalyser.fftSize=1024;audioData=new Uint8Array(audioAnalyser.fftSize);audioSource=audioCtx.createMediaElementSource(voiceAudio);audioSource.connect(audioAnalyser);audioAnalyser.connect(audioCtx.destination)}
+    await audioCtx.resume();
+    await voiceAudio.play();
+    if(generation!==speechGeneration){stopAudio();return;}
+    speaking=true;speechPending=false;onlineVoiceBusy=false;
+    el.classList.remove('thinking','talking');el.classList.add('audio-speaking');
+    audioTick();setExpression('happy',900);
+    status.textContent='VINCENT SPRICHT ONLINE';
+    onlineVoiceStatus.textContent='Online-Stimme aktiv · Hans (Deutsch, männlich).';
+  }catch(e){
+    if(generation!==speechGeneration)return;
+    onlineVoiceBusy=false;speechPending=false;speaking=false;
+    onlineVoiceStatus.textContent='Online-Stimme nicht verfügbar: '+(e?.message||String(e))+'. Browser-Stimme als Ersatz.';
+    sayBrowser(message,generation);
+  }
+}
 let lastSpoken='';
 function say(message){
   stopAudio();
   lastSpoken=message;
   const generation=++speechGeneration;
+  if(onlineVoiceToggle.checked){clearTimeout(mouthStartTimer);if('speechSynthesis' in window)speechSynthesis.cancel();el.classList.remove('talking');void sayOnline(message,generation);return;}
+  sayBrowser(message,generation);
+}
+function sayBrowser(message,generation){
   if(piperEnabled.checked){clearTimeout(mouthStartTimer);if('speechSynthesis' in window)speechSynthesis.cancel();speaking=false;speechPending=true;el.classList.remove('talking');status.textContent='VINCENT ERZEUGT LOKALE STIMME';void sayPiper(message,generation);return;}
   if(!('speechSynthesis' in window)){
     status.textContent='SPRACHAUSGABE NICHT VERFÜGBAR';return;
@@ -162,7 +206,7 @@ function say(message){
   try{speechSynthesis.speak(u)}catch{done()}
 }
 
-function offline(input){const s=input.toLocaleLowerCase('de-DE');if(/(?:was weißt du|was hast du dir gemerkt|erinnerst du dich|gedächtnis)/.test(s)){const m=memories();return m.length?'Ich weiß noch: '+m.slice(-6).join('. '):'Mein Gedächtnis ist noch leer. Sag: Vincent, merk dir ...'}if(/(?:wie spät|uhrzeit)/.test(s))return 'Es ist '+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr.';if(/(?:hallo|hey|servus|vincent|guten morgen)/.test(s))return 'Servus! Vincent am Start. Fliege sitzt, Gehirn läuft warm.';if(/(?:wie heißt du|wer bist du)/.test(s))return 'Vincent. Dein frecher Assistent mit erstklassigem Anzug.';return 'Das habe ich gehört: '+input+'. Mein lokales KI-Gehirn ist noch nicht gestartet. Halte meinen Kopf gedrückt und starte es in den Einstellungen.'}
+function offline(input){const s=input.toLocaleLowerCase('de-DE');if(/(?:was weißt du|was hast du dir gemerkt|erinnerst du dich|gedächtnis)/.test(s)){const m=memories();return m.length?'Ich weiß noch: '+m.slice(-6).join('. '):'Mein Gedächtnis ist noch leer. Sag: Vincent, merk dir ...'}if(/(?:wie spät|uhrzeit)/.test(s))return 'Es ist '+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr.';if(/(?:hallo|hey|servus|vincent|guten morgen)/.test(s))return 'Servus! Vincent am Start. Fliege sitzt, Gehirn läuft warm.';if(/(?:wie heißt du|wer bist du)/.test(s))return 'Vincent. Dein frecher Assistent mit erstklassigem Anzug.';return 'Das habe ich gehört: '+input+'. Mein Online-Gehirn ist gerade nicht erreichbar. Halte meinen Kopf gedrückt und prüfe die Einstellungen.'}
 async function respond(input){const t=input.trim();if(!t)return;markActivity();addTopic(t);let m=t.match(/(?:merk dir|merke dir)(?: bitte)?[,:]?\s*(.+)/i);if(m){const fact=m[1].trim().slice(0,400);say(save([...memories(),fact])?'Hab ich mir gemerkt. Mein Kopf ist klein, mein Gedächtnis nicht.':'Speichern hat nicht geklappt.');return}if(/(?:vergiss alles|lösche dein gedächtnis)/i.test(t)){say('Zum Löschen öffne bitte meine Einstellungen. Sicher ist sicher.');return}
 status.textContent='VINCENT DENKT';el.classList.add('thinking');try{const reply=await askAI({message:t,memories:memories().slice(-20),topics:recentTopics(),mode:'chat'});say(reply)}catch{el.classList.remove('thinking');say(offline(t))}}
 function listen(){markActivity();if(listening||settings.classList.contains('open')||speaking||speechPending)return;if(!Recognition){status.textContent='SPRACHERKENNUNG IN DIESEM BROWSER NICHT VERFÜGBAR';return}recognizer=new Recognition();recognizer.lang='de-DE';recognizer.continuous=false;recognizer.interimResults=false;recognizer.onstart=()=>{listening=true;el.classList.add('listening');status.textContent='ICH HÖRE ZU'};recognizer.onresult=e=>respond(e.results[0][0].transcript);recognizer.onerror=e=>{status.textContent=e.error==='not-allowed'?'MIKROFON ERLAUBEN':'MIKROFON: '+e.error};recognizer.onend=()=>{listening=false;el.classList.remove('listening');if(!speaking&&!el.classList.contains('thinking'))status.textContent='TIPPEN: GEDANKEN · DOPPELTIPPEN: SPRECHEN'};try{recognizer.start()}catch{status.textContent='MIKROFON KONNTE NICHT STARTEN'}}
@@ -200,6 +244,42 @@ aiEnabled.checked=localStorage.getItem('vincent_ai_enabled')!=='off';
 initiative.value=localStorage.getItem('vincent_initiative')||'normal';
 aiEnabled.onchange=()=>localStorage.setItem('vincent_ai_enabled',aiEnabled.checked?'on':'off');
 initiative.onchange=()=>localStorage.setItem('vincent_initiative',initiative.value);
+// Cloud brain: Puter.js supplies hosted AI without embedding a private API key.
+// The provider may require sign-in and may enforce usage limits.
+let cloudLoading=null,cloudBusy=false;
+function loadCloudSDK(){
+ if(window.puter?.ai?.chat)return Promise.resolve(window.puter);
+ if(cloudLoading)return cloudLoading;
+ cloudLoading=new Promise((resolve,reject)=>{
+  const script=document.createElement('script');script.src='https://js.puter.com/v2/';script.async=true;
+  const timeout=setTimeout(()=>reject(Error('Online-Dienst antwortet nicht')),20000);
+  script.onload=()=>{clearTimeout(timeout);window.puter?.ai?.chat?resolve(window.puter):reject(Error('Online-KI nicht verfügbar'))};
+  script.onerror=()=>{clearTimeout(timeout);reject(Error('Online-KI konnte nicht geladen werden'))};
+  document.head.append(script);
+ }).catch(e=>{cloudLoading=null;throw e});
+ return cloudLoading;
+}
+async function askCloud(payload){
+ if(cloudBusy)throw Error('Vincent denkt bereits');
+ cloudBusy=true;
+ try{
+  const sdk=await loadCloudSDK();
+  const facts=(payload.memories||[]).slice(-12).map(x=>String(x).slice(0,180)).join(' | ');
+  const topics=(payload.topics||[]).slice(-4).map(x=>String(x).slice(0,120)).join(' | ');
+  const instruction='Du bist Vincent, ein kleiner deutschsprachiger KI-Roboter im schwarzen Anzug. Du bist frech, lebendig, schlagfertig, humorvoll, spontan, neugierig und respektvoll. Antworte natürlich auf Deutsch in höchstens 2 bis 3 Sätzen. Keine Emojis oder Regieanweisungen. Erfinde keine Erinnerungen.';
+  const request=payload.mode==='muse'?'Formuliere eine einzelne originelle Frage oder einen spontanen Gedanken, maximal 35 Wörter. '+payload.message:payload.message;
+  const prompt=instruction+'\nErinnerungen: '+facts+'\nLetzte Themen: '+topics+'\nNutzer: '+String(request||'').slice(0,550)+'\nVincent:';
+  const result=await Promise.race([sdk.ai.chat(prompt),new Promise((_,reject)=>setTimeout(()=>reject(Error('Online-KI: Zeitüberschreitung')),45000))]);
+  const answer=typeof result==='string'?result:result?.message?.content||result?.text||result?.content;
+  const text=Array.isArray(answer)?answer.map(x=>x.text||'').join(' '):String(answer||'');
+  if(!text.trim())throw Error('Online-KI hat keine Antwort geliefert');
+  return text.trim().slice(0,750);
+ }finally{cloudBusy=false}
+}
+const brainMode=$('brainmode');
+brainMode.value=localStorage.getItem('vincent_brain_mode')||'cloud';
+brainMode.onchange=()=>{localStorage.setItem('vincent_brain_mode',brainMode.value);brainState(brainMode.value==='cloud'?'Online-Gehirn ausgewählt. Mit „Online-Gehirn verbinden“ starten.':'Lokales Gehirn ausgewählt.')};
+$('connectcloud').onclick=async()=>{brainState('Verbinde Online-KI …');try{await loadCloudSDK();brainState('Online-KI verbunden. Beim ersten Gespräch kann eine Anmeldung nötig sein.')}catch(e){brainState('Online-KI: '+e.message)}};
 // Local WebGPU inference runs in a worker to keep Vincent animated.
 let brainWorker=null,brainReady=false,brainBusy=false,brainSeq=0;
 const brainWait=new Map();
@@ -224,6 +304,7 @@ function startBrain(){if(!('gpu'in navigator)){brainState('WebGPU ist in diesem 
 }
 $('loadbrain').onclick=startBrain;$('stopbrain').onclick=stopBrain;
 async function askAI(payload,timeoutMs=90000){
+ if(brainMode.value==='cloud'){if(!aiEnabled.checked)throw Error('KI deaktiviert');return askCloud(payload)}
  if(!aiEnabled.checked||!brainReady)throw Error('Lokales Gehirn noch nicht bereit');
  if(brainBusy)throw Error('Vincent denkt bereits');
  brainBusy=true;const id=++brainSeq;
@@ -273,5 +354,5 @@ $('close').onclick=()=>{settings.classList.remove('open');status.textContent='TI
 $('clear').onclick=()=>{if(confirm('Wirklich alle lokalen Vincent-Erinnerungen löschen?')){save([]);status.textContent='GEDÄCHTNIS GELÖSCHT'}};
 $('export').onclick=()=>{const blob=new Blob([JSON.stringify({version:3,memories:memories()},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='vincent-gedaechtnis-v3.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000)};
 $('import').onclick=()=>$('importfile').click();$('importfile').onchange=async e=>{const f=e.target.files?.[0];if(!f||f.size>200000)return;try{const data=JSON.parse(await f.text());if(!Array.isArray(data.memories)||!data.memories.every(x=>typeof x==='string'&&x.length<=400))throw Error('Format');if(confirm('Vorhandene Erinnerungen durch die importierten ersetzen?'))save(data.memories)}catch{alert('Ungültige Gedächtnis-Datei')}e.target.value=''};
-brainState('Lokales KI-Gehirn noch nicht gestartet. Lange auf Vincent drücken → Gehirn starten.');
+brainState(brainMode.value==='cloud'?'Online-Gehirn ausgewählt. Lange auf Vincent drücken → Online-Gehirn verbinden.':'Lokales KI-Gehirn noch nicht gestartet.');
 refresh();if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
