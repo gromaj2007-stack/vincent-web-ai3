@@ -1,4 +1,4 @@
-<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vivi 4.3 – Schneller Start</title><style>body{margin:0;background:#130c20;color:#eee;font:16px system-ui;min-height:100dvh;display:grid;place-items:center;text-align:center}#status{padding:20px}</style></head><body><div id="status">Vivi wird geladen …</div><script>
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vivi 4.4 – Weibliche lokale Piper-Stimme</title><style>body{margin:0;background:#130c20;color:#eee;font:16px system-ui;min-height:100dvh;display:grid;place-items:center;text-align:center}#status{padding:20px}</style></head><body><div id="status">Vivi wird geladen …</div><script>
 (async()=>{try{
 const url='https://raw.githubusercontent.com/gromaj2007-stack/vincent-web-ai3/a2a53c04ec/index.html';
 const res=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(20000)});if(!res.ok)throw Error('Originalversion HTTP '+res.status);
@@ -11,6 +11,17 @@ document.getElementById('status').textContent='Vivi startet: KI und Stimme vorbe
 const appResponse=await fetch('https://gromaj2007-stack.github.io/vincent-web-ai3/app.js',{cache:'no-store',signal:AbortSignal.timeout(20000)});
 if(!appResponse.ok)throw Error('app.js HTTP '+appResponse.status);
 let appCode=await appResponse.text();
+// Enable offline Piper female TTS; never invoke Puter or browser Hans.
+const piperOriginal="const PIPER_VOICE='de_DE-thorsten-low';";
+if(!appCode.includes(piperOriginal))throw Error('Piper-Modul fehlt');
+appCode=appCode.replace(piperOriginal,"const PIPER_VOICE='de_DE-kerstin-low';");
+const piperSetting="piperEnabled.checked=localStorage.getItem('vincent_piper_enabled')==='on';";
+if(!appCode.includes(piperSetting))throw Error('Piper-Einstellung fehlt');
+appCode=appCode.replace(piperSetting,"piperEnabled.checked=true;localStorage.setItem('vincent_piper_enabled','on');");
+// On failed download show a retry hint; never switch to a male voice.
+const piperFallback="piperEnabled.checked=false;\n  try{localStorage.setItem('vincent_piper_enabled','off')}catch{}\n  status.textContent='PIPER NICHT VERFÜGBAR · BROWSER-STIMME AKTIV';\n  if(generation===speechGeneration){say(message)}";
+if(!appCode.includes(piperFallback))throw Error('Piper-Fehlerbehandlung fehlt');
+appCode=appCode.replace(piperFallback,"status.textContent='WEIBLICHE STIMME NICHT GELADEN · IN EINSTELLUNGEN ERNEUT VERSUCHEN';");
 // Use only browser/Android default TTS; no voice name or paid TTS provider.
 const onlineDefault="onlineVoiceToggle.checked=true;localStorage.setItem(ONLINE_VOICE_KEY,'on');";
 if(!appCode.includes(onlineDefault))throw Error('Sprachmodul wurde verändert');
@@ -24,7 +35,7 @@ appCode=appCode.replace(selectedVoice,`const available=speechSynthesis.getVoices
 appCode=appCode.replace("u.lang='de-DE';u.rate=isCuteVoice()?1.04:.91;u.pitch=isCuteVoice()?1.48:.93;", "u.lang='de-DE';u.rate=1;u.pitch=1;");
 // Never enter cloud or Piper TTS branches, even if old settings were stored.
 appCode=appCode.replace('if(onlineVoiceToggle.checked){clearTimeout(mouthStartTimer);', 'if(false){clearTimeout(mouthStartTimer);');
-appCode=appCode.replace('if(piperEnabled.checked){clearTimeout(mouthStartTimer);', 'if(false){clearTimeout(mouthStartTimer);');
+// Piper remains enabled. Only the paid online voice is disabled.
 appCode=appCode.replace('u.onstart=()=>{',"u.onstart=()=>{window.dispatchEvent(new Event('vivi-speech-start'));");
 appCode=appCode.replace('const done=()=>{',"const done=()=>{window.dispatchEvent(new Event('vivi-speech-end'));");
 // Offline-first: always select the existing Qwen/WebGPU worker instead of paid Puter.
@@ -74,8 +85,8 @@ appCode += "\ntry{localStorage.removeItem('vincent_voice_v3');}catch{}\n";
 // Voice list remains in app.js for compatibility, but is not used for speaking.
 const appBlob=URL.createObjectURL(new Blob([appCode],{type:'text/javascript'}));
 source=source.replace(/src="\.\/app\.js\?v=290"/,'src="'+appBlob+'"');
-source=source.replace(/<\/body>/i,'<script src="./vivi-default-voice-ui.js?v=430" defer></'+'script></body>');
-source=source.replace(/<\/body>/i,'<script src="./vivi-classic-animation.js?v=430" defer></'+'script><script src="./vivi-alive.js?v=430" defer></'+'script><script src="./vivi-mesh-mimik.js?v=430" defer></'+'script></body>');
-source=source.replace(/Vivi 2\.9\.0/g,'Vivi 4.3');document.open();document.write(source);document.close();
+source=source.replace(/<\/body>/i,'<script src="./vivi-piper-voice-ui.js?v=440" defer></'+'script></body>');
+source=source.replace(/<\/body>/i,'<script src="./vivi-classic-animation.js?v=440" defer></'+'script><script src="./vivi-alive.js?v=440" defer></'+'script><script src="./vivi-mesh-mimik.js?v=440" defer></'+'script></body>');
+source=source.replace(/Vivi 2\.9\.0/g,'Vivi 4.4');document.open();document.write(source);document.close();
 }catch(e){document.getElementById('status').innerHTML='Vivi konnte nicht geladen werden: '+String(e.message).replace(/[<>&]/g,'')+'<p><button onclick="location.reload()" style="font:inherit;padding:12px 22px;border-radius:12px">Erneut versuchen</button></p>';}})();
 </script></body></html>
