@@ -412,7 +412,7 @@ $('clear').onclick=()=>{if(confirm('Wirklich alle lokalen Vincent-Erinnerungen l
 $('export').onclick=()=>{const blob=new Blob([JSON.stringify({version:3,memories:memories()},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='vincent-gedaechtnis-v3.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000)};
 $('import').onclick=()=>$('importfile').click();$('importfile').onchange=async e=>{const f=e.target.files?.[0];if(!f||f.size>200000)return;try{const data=JSON.parse(await f.text());if(!Array.isArray(data.memories)||!data.memories.every(x=>typeof x==='string'&&x.length<=400))throw Error('Format');if(confirm('Vorhandene Erinnerungen durch die importierten ersetzen?'))save(data.memories)}catch{alert('Ungültige Gedächtnis-Datei')}e.target.value=''};
 brainState(brainMode.value==='cloud'?'Online-Gehirn ausgewählt. Lange auf Vincent drücken → Online-Gehirn verbinden.':'Lokales KI-Gehirn noch nicht gestartet.');
-refresh();if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=212', {updateViaCache:'none'}).catch(()=>{}));
+refresh();if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=213', {updateViaCache:'none'}).catch(()=>{}));
 
 // Warm up the online brain while Vincent is idle; never opens microphone automatically.
 if(brainMode.value==='cloud'){setTimeout(()=>{loadCloudSDK().catch(()=>{});},300)}
