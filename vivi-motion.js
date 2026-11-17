@@ -2,9 +2,7 @@
 (()=>{'use strict';
 const host=document.getElementById('vincent'),svg=host?.querySelector('svg'),panel=document.getElementById('vincent-chat');if(!host||!svg)return;
 const ns='http://www.w3.org/2000/svg';const mk=(tag,attrs,parent)=>{const e=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);parent.append(e);return e};
-const left=mk('g',{id:'vivi-left-hand'},svg),right=mk('g',{id:'vivi-right-hand'},svg);
-function hand(group,flip){const cx=flip?526:114;mk('path',{d:`M ${cx} 578 Q ${cx+(flip?-29:29)} 550 ${cx+(flip?-34:34)} 525`,stroke:'#263b49','stroke-width':'27',fill:'none','stroke-linecap':'round'},group);mk('ellipse',{cx:cx+(flip?-34:34),cy:519,rx:23,ry:24,fill:'#3b5260',stroke:'#8aa8b1','stroke-width':3},group);mk('ellipse',{cx:cx+(flip?-39:39),cy:514,rx:9,ry:10,fill:'#6e8c98',opacity:'.65'},group)}hand(left,false);hand(right,true);
-const sparkle=mk('g',{id:'vivi-sparkles',opacity:'0'},svg);for(const [x,y,r] of [[171,185,12],[479,199,9],[492,351,8]])mk('path',{d:`M ${x} ${y-r} Q ${x+2} ${y-2} ${x+r} ${y} Q ${x+2} ${y+2} ${x} ${y+r} Q ${x-2} ${y+2} ${x-r} ${y} Q ${x-2} ${y-2} ${x} ${y-r}`,fill:'#b2f5ff'},sparkle);
+const sparkle=mk('g',{id:'vivi-sparkles',opacity:'0'},svg);for(const [x,y,r] of [[171,185,12],[479,199,9],[492,351,8]])mk('path',{d:`M ${x} ${y-r} Q ${x+2} ${y-2} ${x+r} ${y} Q ${x+2} ${y+2} ${x} ${y+r} Q ${x-2} ${y+2} ${x-r} ${y} Q ${x-2} ${y-2} ${x} ${y-r}`,fill:'#ffb4e1'},sparkle);
 const bow=mk('path',{d:'M 305 538 Q 320 531 335 538',fill:'none',stroke:'#ff9acb','stroke-width':4,opacity:'.85'},svg);
 let last=performance.now(),mood='neutral',moodEnd=0,chat=false,typingEnd=0,wakeEnd=0,lastSpeech=false,lastSleep=false,gesture='idle',gestureEnd=0;
 const choose=(name,duration=1900)=>{mood=name;moodEnd=performance.now()+duration;window.vincentFeel?.(name,duration)};
@@ -25,18 +23,17 @@ const sleeping=host.classList.contains('vincent-sleeping'),speaking=host.classLi
 if(lastSleep&&!sleeping){wakeEnd=now+2200;gesture='wake';gestureEnd=wakeEnd;chirp()}lastSleep=sleeping;
 if(!lastSpeech&&speaking){gesture='talk';gestureEnd=now+1800}lastSpeech=speaking;
 const chatOpen=chat||(!panel?.hidden),active=now<gestureEnd,typing=now<typingEnd,waking=now<wakeEnd;
-let lt=0,rt=0,st=0,at=0,dy=0;
-if(sleeping){lt=-10;rt=10;st=0;at=-2;dy=4}
-else if(waking){const p=1-(wakeEnd-now)/2400;lt=-35*Math.sin(p*Math.PI);rt=35*Math.sin(p*Math.PI);st=1;at=Math.sin(p*Math.PI*2)*3;dy=-7*Math.sin(p*Math.PI)}
-else if(chatOpen){lt=-28+Math.sin(now/420)*3;rt=28+Math.sin(now/470)*3;st=.6;at=typing?3:Math.sin(now/1250)*2.5;dy=typing?-7:-4+Math.sin(now/650)*2}
-else if(speaking){lt=-14+Math.sin(now/210)*12;rt=14+Math.sin(now/290)*14;st=.8;at=Math.sin(now/390)*2.7;dy=Math.sin(now/360)*3}
-else if(listening){lt=-20;rt=20;at=4;dy=-4}
-else if(thinking){lt=7;rt=-15;at=-4;dy=-2}
-else if(active){lt=-25;rt=30;at=4;dy=-4}
-else{lt=Math.sin(now/1400)*5;rt=-Math.sin(now/1550)*5;at=Math.sin(now/2500)*1.4;dy=Math.sin(now/1100)*2.5}
-l=smooth(l,lt,dt,6);r=smooth(r,rt,dt,6);s=smooth(s,st,dt,5);angle=smooth(angle,at,dt,3.8);shift=smooth(shift,dy,dt,4.5);
-left.setAttribute('transform',`rotate(${l.toFixed(2)} 114 578)`);right.setAttribute('transform',`rotate(${r.toFixed(2)} 526 578)`);
-// Full-body lean is applied to the existing figure, independently of facial expressions.
+let at=0,dy=0;
+if(sleeping){at=-2;dy=2}
+else if(waking){const p=Math.max(0,Math.min(1,1-(wakeEnd-now)/2400));at=Math.sin(p*Math.PI*2)*5;dy=-12*Math.sin(p*Math.PI)}
+else if(chatOpen){at=typing?-3:Math.sin(now/1250)*3.8;dy=typing?28:24+Math.sin(now/880)*4}
+else if(speaking){at=Math.sin(now/380)*4.4;dy=Math.sin(now/450)*5}
+else if(listening){at=5;dy=-4}
+else if(thinking){at=-5;dy=-2}
+else if(active){at=4;dy=-3}
+else{at=Math.sin(now/2200)*2.2;dy=Math.sin(now/1450)*3.5}
+angle=smooth(angle,at,dt,3.8);shift=smooth(shift,dy,dt,4.5);
+host.classList.toggle('vivi-chat-lean',chatOpen);
 host.style.setProperty('--vivi-lean',`${angle.toFixed(2)}deg`);host.style.setProperty('--vivi-lift',`${shift.toFixed(2)}px`);
 sparkle.setAttribute('opacity',String((now<moodEnd&&['happy','delighted','surprised','playful'].includes(mood))?(.45+.4*Math.sin(now/200)**2):0));
 }

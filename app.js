@@ -187,7 +187,7 @@ function say(message){
   stopAudio();
   lastSpoken=message;
   window.vincentChatMessage?.('vincent',message);
-  window.vincentReactToText?.(message);
+  window.vincentReactToText?.(message);window.viviSpeechEmotion?.(message);
   // Kein automatisches Raten von Emotionen anhand einzelner Wörter.
   const generation=++speechGeneration;
   if(onlineVoiceToggle.checked){clearTimeout(mouthStartTimer);if('speechSynthesis' in window)speechSynthesis.cancel();el.classList.remove('talking');void sayOnline(message,generation);return;}

@@ -3,7 +3,7 @@
 const host=document.getElementById('vincent'),svg=host?.querySelector('svg');if(!host||!svg)return;
 const NS='http://www.w3.org/2000/svg';function add(tag,attrs,parent=svg){const e=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);parent.append(e);return e}
 svg.querySelectorAll('.eye').forEach(e=>e.style.display='none');const old=svg.querySelector('#mouth');if(old)old.style.display='none';
-const g=add('g',{id:'vincent-companion-face'});const glow='#62eaff';
+const g=add('g',{id:'vincent-companion-face'});const glow='#ff82cb';
 const eyes=[add('path',{fill:glow},g),add('path',{fill:glow},g)];const brows=[add('path',{fill:'none',stroke:glow,'stroke-width':5,'stroke-linecap':'round',opacity:'.68'},g),add('path',{fill:'none',stroke:glow,'stroke-width':5,'stroke-linecap':'round',opacity:'.68'},g)];const mouth=add('path',{stroke:glow,'stroke-width':5,'stroke-linecap':'round','stroke-linejoin':'round',fill:'none'},g);const cheeks=[add('ellipse',{cx:196,cy:366,rx:21,ry:11,fill:'#ff8fc6',opacity:0},g),add('ellipse',{cx:444,cy:366,rx:21,ry:11,fill:'#ff8fc6',opacity:0},g)];
 // Values are continuous, not jump-cut poses. Eyes stay within the original screen.
 const poses={
@@ -22,7 +22,7 @@ const poses={
  sleepy:{eye:.06,smile:.28,brow:2,blush:0,gaze:0},
  checking:{eye:1.05,smile:.12,brow:-6,blush:0,gaze:0}
 };
-let chatPose='neutral',chatUntil=0;window.vincentChatPose=(name,duration=1200)=>{chatPose=name;chatUntil=performance.now()+Math.max(200,duration)};
+let speechText='',speechStarted=0,speechMood='playful';window.viviSpeechEmotion=(text)=>{speechText=String(text||'').toLowerCase();speechStarted=performance.now();speechMood=/traurig|schade|leid|sorry|entschuldige/.test(speechText)?'sad':/wow|unglaublich|überrasch/.test(speechText)?'surprised':/freu|super|klasse|toll|juhu/.test(speechText)?'delighted':/\?/.test(speechText)?'curious':'playful';feel(speechMood,4200)};let chatPose='neutral',chatUntil=0;window.vincentChatPose=(name,duration=1200)=>{chatPose=name;chatUntil=performance.now()+Math.max(200,duration)};
 let wakeStart=0;window.vincentWake=()=>{wakeStart=performance.now();feel('delighted',2200)};
 let mode='awake';
 window.vincentSetMode=(value)=>{if(['awake','checking','sleep'].includes(value)){mode=value;if(value!=='awake'){emotionUntil=0;look=0;}}};
@@ -60,6 +60,7 @@ let pose=mode==='sleep'?poses.sleepy:mode==='checking'?poses.checking:poses.neut
  else if(now<chatUntil)pose=poses[chatPose==='reading'?'curious':chatPose==='peek'?'playful':chatPose==='speaking'?'happy':chatPose==='curious'?'curious':'playful'];
  else pose=poses.playful;
 }
+if(mode==='awake'&&talking&&speechStarted&&now-speechStarted<16000){const phase=Math.floor((now-speechStarted)/1450)%4;pose=poses[phase===0?speechMood:phase===1?'curious':phase===2?'happy':speechMood]||pose;}
 if(mode==='awake'&&now>=nextBlink){blinkStart=now;blinkDuration=170+Math.random()*70;nextBlink=now+3600+Math.random()*3500}
 const elapsed=now-blinkStart;const blink=mode==='sleep'?0:elapsed>=0&&elapsed<blinkDuration?Math.sin(Math.PI*elapsed/blinkDuration):0;
 if(mode==='awake'&&now>=nextLook){look=(thinking||listening||talking)?0:(Math.random()<.45?0:(Math.random()-.5)*8);nextLook=now+3300+Math.random()*3600}

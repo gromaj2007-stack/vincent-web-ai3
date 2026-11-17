@@ -66,3 +66,11 @@ main.chat-open #vincent-chat{flex:0 0 auto;height:min(58dvh,340px)}
 
 /* Vivi 2.0.5: the animation controller owns the entire figure, not the keyboard. */
 .chat-open .figure.chat-peek,.chat-open .figure.chat-read{animation:none!important}
+
+/* Kawaii pink accents */
+#vincent-chat{border-color:#b45b91;box-shadow:0 -8px 26px #ff8fca2b}
+#vincent-chat::before{background:#ff8ac9;box-shadow:0 0 15px #ff8ac999}
+#chat-toggle{border-color:#ff8ac9;background:#43233d}
+.chat-key.action{color:#ffd0ed;background:#663354}
+.chat-key.pressed{background:#b44b89}
+.chat-message.user{background:#7b3867;border-color:#b65b97}
