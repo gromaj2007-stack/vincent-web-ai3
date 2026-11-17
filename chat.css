@@ -19,3 +19,11 @@ main.chat-open .figure.chat-peek{animation:vincentPeek .9s ease-out 1!important}
 main.chat-open .figure.chat-read{filter:drop-shadow(0 13px 25px #0009) drop-shadow(0 0 8px #5af3f333)}
 @media (prefers-reduced-motion:reduce){main.chat-open .figure,main.chat-open .figure.chat-peek{animation:none!important}}
 @media(max-height:420px){#vincent-chat{height:56dvh;padding:5px 7px 3px}#chat-log{gap:2px}.chat-message{padding:3px 7px;font-size:11px}#chat-draft{min-height:26px;padding:4px 7px}.chat-key{height:clamp(21px,5.5dvh,27px)}}
+
+/* Reserve a real, non-distorted upper stage in landscape. */
+main.chat-open{height:100dvh;max-height:100dvh;overflow:hidden}
+main.chat-open .figure{flex:1 1 0;min-height:0;max-height:43dvh;width:auto;height:auto;aspect-ratio:640/720;object-fit:contain;filter:none}
+main.chat-open .figure svg{width:100%;height:100%;max-height:100%;object-fit:contain}
+main.chat-open #vincent-chat{flex:0 0 auto;height:min(58dvh,340px)}
+#chat-toggle,.chat-key,#chat-send{-webkit-tap-highlight-color:transparent}
+@media(max-height:420px){main.chat-open .figure{max-height:39dvh}main.chat-open #vincent-chat{height:59dvh}}
