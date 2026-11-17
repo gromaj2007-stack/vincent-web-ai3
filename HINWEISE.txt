@@ -1,0 +1,1 @@
+Vivi 7.1 Detailmodell. Die Texturen und Körpergeometrie von 7.0 bleiben erhalten. Zusätzliche Augen-, Wimpern-, Lippen- und Kopfhörerdetails sind echte GLB-Geometrie. Optische Passform ist noch nicht auf dem Xiaomi geprüft. Dateien index.html und vivi_detail.glb zusammen auf GitHub Pages hochladen.
