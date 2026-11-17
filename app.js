@@ -10,7 +10,7 @@ function memories(){try{const a=JSON.parse(localStorage.getItem(KEY)||'[]');retu
 function save(items){try{localStorage.setItem(KEY,JSON.stringify(items.slice(-150)));refresh();return true}catch{return false}}
 function refresh(){const list=$('memlist');list.replaceChildren();for(const m of memories()){const li=document.createElement('li');li.textContent=m;list.append(li)}}
 function voices(){return 'speechSynthesis' in window?speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith('de')):[]}
-function populate(){const v=voices(),old=localStorage.getItem(VOICE)||select.value;select.replaceChildren();if(!v.length){const o=document.createElement('option');o.textContent='Keine deutsche Stimme gefunden';select.append(o);return}for(const x of v){const o=document.createElement('option');o.value=x.name;o.textContent=x.name+' ('+x.lang+')';select.append(o)}const preferred=v.find(x=>/male|männ|mann|markus|daniel|conrad|stefan|thomas|florian/i.test(x.name));select.value=v.some(x=>x.name===old)?old:preferred?.name||v[0].name}
+function populate(){const v=voices(),old=localStorage.getItem(VOICE)||select.value;select.replaceChildren();if(!v.length){const o=document.createElement('option');o.textContent='Keine deutsche Stimme gefunden';select.append(o);return}for(const x of v){const o=document.createElement('option');o.value=x.name;o.textContent=x.name+' ('+x.lang+')';select.append(o)}const preferred=v.find(x=>/male|männ|mann|markus|daniel|conrad|stefan|thomas|florian|hans/i.test(x.name));select.value=preferred?.name||(v.some(x=>x.name===old)?old:v[0].name)}
 if('speechSynthesis'in window){speechSynthesis.addEventListener('voiceschanged',populate);populate()}select.onchange=()=>localStorage.setItem(VOICE,select.value);
 let speechGeneration=0, speechPending=false, mouthStartTimer=null;
 const SYNC_KEY='vincent_mouth_delay_ms_v112';
@@ -128,12 +128,12 @@ $('loadpiper').addEventListener('click',async()=>{piperStatus.textContent='Prüf
 // Online voice through Puter.js; browser TTS remains an automatic fallback.
 const ONLINE_VOICE_KEY='vincent_online_voice_v1';
 const onlineVoiceToggle=$('onlinevoice'),onlineVoiceStatus=$('onlinevoicestatus');
-onlineVoiceToggle.checked=localStorage.getItem(ONLINE_VOICE_KEY)!=='off';
+onlineVoiceToggle.checked=true;localStorage.setItem(ONLINE_VOICE_KEY,'on');
 onlineVoiceToggle.onchange=()=>{localStorage.setItem(ONLINE_VOICE_KEY,onlineVoiceToggle.checked?'on':'off');onlineVoiceStatus.textContent=onlineVoiceToggle.checked?'Online-Stimme aktiviert.':'Browser-Stimme aktiviert.'};
 // Voice personality: cute by default, classic Hans remains selectable.
 const VOICE_STYLE_KEY='vincent_voice_style_v129';
 const voiceStyle=$('voicestyle');
-if(voiceStyle){voiceStyle.value=localStorage.getItem(VOICE_STYLE_KEY)||'cute';voiceStyle.addEventListener('change',()=>{localStorage.setItem(VOICE_STYLE_KEY,voiceStyle.value);onlineVoiceStatus.textContent='Stimme ausgewählt: '+(voiceStyle.value==='cute'?'Niedlich (Vicki wird beim nächsten Sprechen getestet)':'Klassisch (Hans)')+'. Bitte Stimme testen.';});}
+if(voiceStyle){voiceStyle.value='cute';localStorage.setItem(VOICE_STYLE_KEY,'cute');voiceStyle.addEventListener('change',()=>{localStorage.setItem(VOICE_STYLE_KEY,voiceStyle.value);onlineVoiceStatus.textContent='Stimme ausgewählt: '+(voiceStyle.value==='cute'?'Niedlich (Vicki wird beim nächsten Sprechen getestet)':'Klassisch (Hans)')+'. Bitte Stimme testen.';});}
 const isCuteVoice=()=>!voiceStyle||voiceStyle.value==='cute';
 let onlineVoiceBusy=false;
 async function sayOnline(message,generation){
@@ -372,7 +372,7 @@ function idleTick(){
 }
 idleCheckTimer=setInterval(idleTick,750);
 
-function canMuse(){return idlePhase==='awake'&&autoCheck.checked&&!document.hidden&&!speaking&&!speechPending&&!listening&&!autoBusy&&!settings.classList.contains('open')&&!el.classList.contains('thinking')&&Date.now()-lastActivity>120000&&Date.now()-lastAuto>(initiative.value==='quiet'?480000:initiative.value==='lively'?150000:240000)}
+function canMuse(){return (idlePhase==='awake'||idlePhase==='sleep')&&autoCheck.checked&&!document.hidden&&!speaking&&!speechPending&&!listening&&!autoBusy&&!settings.classList.contains('open')&&!el.classList.contains('thinking')&&Date.now()-lastActivity>120000&&Date.now()-lastAuto>(initiative.value==='quiet'?480000:initiative.value==='lively'?150000:240000)}
 const musings=[
  'Moment mal. Wenn man eine Idee lange genug betrachtet, wird sie dann besser oder nur seltsamer?',
  'Ich grüble gerade: Warum kommen einem die besten Einfälle immer dann, wenn man gerade etwas anderes vorhat?',
@@ -385,7 +385,9 @@ const musings=[
 let museIndex=-1;
 function fallbackMuse(){const facts=memories(),topics=recentTopics();if(facts.length&&Math.random()<.45){const fact=facts[Math.floor(Math.random()*facts.length)].slice(0,110);return 'Ich habe noch im Kopf: '+fact+'. Gibt es dazu etwas Neues?'}if(topics.length&&Math.random()<.5)return 'Ich denke noch über unser Thema nach: '+topics[topics.length-1]+'. Wie siehst du das inzwischen?';let n=Math.floor(Math.random()*musings.length);if(n===museIndex)n=(n+1)%musings.length;museIndex=n;return musings[n]}
 async function muse(){if(!canMuse())return;autoBusy=true;lastAuto=Date.now();el.classList.add('thinking');setExpression('look-left',1600);let line='';try{line=await askAI({message:'Formuliere eine einzelne kurze, originelle Frage oder einen spontanen Gedanken auf Deutsch, der sich auf Erinnerungen beziehen darf. Sei frech, freundlich und unaufdringlich. Höchstens 35 Wörter. Behaupte nicht, bewusst zu sein.',memories:memories().slice(-12),topics:recentTopics(),mode:'muse'},90000)}catch{}finally{autoBusy=false;el.classList.remove('thinking')}
- if(idlePhase!=='awake'||document.hidden||settings.classList.contains('open')||speaking||speechPending||listening||Date.now()-lastActivity<120000)return;
+ if(document.hidden||settings.classList.contains('open')||speaking||speechPending||listening||Date.now()-lastActivity<120000)return;
+ if(idlePhase==='sleep'){changeIdle('awake');window.vincentWake?.();}
+ window.vincentFeel?.('curious',1800);
  say(line||fallbackMuse());
 }
 function scheduleMuse(){clearTimeout(autoTimer);autoTimer=setTimeout(async()=>{await muse();scheduleMuse()},18000)}

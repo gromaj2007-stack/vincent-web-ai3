@@ -48,3 +48,10 @@ main.chat-open #vincent-chat{flex:0 0 auto;height:min(58dvh,340px)}
 .vincent-option.selected{background:#3b9dab;color:white;border-radius:9px}
 @keyframes vincentOptionsIn{from{opacity:.4;transform:translateY(5px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(prefers-reduced-motion:reduce){.vincent-key-options{animation:none}}
+
+/* v2.0.2: lightweight touch interactions and dedicated symbol bar */
+#chat-keys{touch-action:none;contain:layout style}
+.chat-key{will-change:auto;box-shadow:none;transition:background-color 65ms linear,transform 65ms ease-out}
+.chat-key.pressed{transform:scale(.975)}
+.vincent-symbol-toolbar{display:flex;gap:3px;min-height:24px}
+.vincent-symbol-toolbar .chat-key{height:24px;background:#17616d;font-size:12px}

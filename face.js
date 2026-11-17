@@ -53,14 +53,14 @@ const elapsed=now-blinkStart;const blink=mode==='sleep'?0:elapsed>=0&&elapsed<bl
 if(mode==='awake'&&now>=nextLook){look=(thinking||listening||talking)?0:(Math.random()<.45?0:(Math.random()-.5)*8);nextLook=now+3300+Math.random()*3600}
 // No random emotions. Only calm eye micro-movements and conversation-driven expressions.
 // Smooth exponential easing is frame-rate independent.
-const k=1-Math.exp(-dt*3.5);for(const prop of ['eye','smile','brow','blush'])cur[prop]=lerp(cur[prop],pose[prop],k);
+const k=1-Math.exp(-dt*5.2);for(const prop of ['eye','smile','brow','blush'])cur[prop]=lerp(cur[prop],pose[prop],k);
 cur.gaze=lerp(cur.gaze,mode==='awake'?pose.gaze+look:0,1-Math.exp(-dt*1.7));cur.blink=lerp(cur.blink,blink,1-Math.exp(-dt*28));
 let targetOpen=0;if(mode!=='sleep'&&talking){const raw=parseFloat(host.style.getPropertyValue('--audio-mouth-scale'));targetOpen=host.classList.contains('audio-speaking')&&Number.isFinite(raw)?Math.max(.1,Math.min(.95,(raw-.3)/1.8)):.10+.25*(.5+.5*Math.sin(now/190));}else if(now<emotionUntil&&emotion==='surprised')targetOpen=.38;
 cur.open=lerp(cur.open,targetOpen,1-Math.exp(-dt*8));
 const awake=mode==='awake';
 // Slow breathing in eyes and eyebrows; subtle asymmetry, no new emotional poses.
-const breath=awake?Math.sin(now/1350)*.027:0;const wakeT=Math.max(0,1-(now-wakeStart)/1550);const wakeBounce=wakeT?Math.sin((1-wakeT)*Math.PI*3)*wakeT:0;
-const attention=awake&&!thinking&&!listening&&!talking?Math.sin(now/3100)*1.9:0;
+const breath=awake?Math.sin(now/1050)*.045:0;const wakeT=Math.max(0,1-(now-wakeStart)/1550);const wakeBounce=wakeT?Math.sin((1-wakeT)*Math.PI*3)*wakeT:0;
+const attention=awake&&!thinking&&!listening&&!talking?Math.sin(now/1850)*3.1:0;
 const talkSmile=awake&&talking?Math.sin(now/390)*.065:0;
 const eyeHeight=112*(cur.eye+breath)*(1-.97*cur.blink)*(wakeT?Math.max(.12,1-wakeT*.86):1);
 if(mode==='sleep'){eyes[0].setAttribute('d',`M 216 292 Q 246 315 276 292`);eyes[1].setAttribute('d',`M 364 292 Q 394 315 424 292`);eyes.forEach(e=>{e.setAttribute('fill','none');e.setAttribute('stroke',glow);e.setAttribute('stroke-width','8');e.setAttribute('stroke-linecap','round')});}else{eyes.forEach(e=>{e.setAttribute('fill',glow);e.setAttribute('stroke','none')});eyes[0].setAttribute('d',eyeD(246+cur.gaze,285,eyeHeight));eyes[1].setAttribute('d',eyeD(394+cur.gaze,285,eyeHeight));}

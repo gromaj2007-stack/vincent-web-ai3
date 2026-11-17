@@ -21,10 +21,10 @@ function redrawLabels(){for(const [node,letter] of keyButtons){const label=node.
 function applyKey(output){
  if(output==='BACK')value=Array.from(value).slice(0,-1).join('');
  else if(output==='SHIFT'){shift=!shift;redrawLabels()}
- else if(output==='NUM'){numbers=!numbers;renderKeys()}
+ else if(output==='NUM'){numbers=!numbers;requestAnimationFrame(renderKeys)}
  else if(output==='SEND'){sendMessage();return}
  else {value+=output==='SPACE'?' ':shift?output.toUpperCase():output;if(shift){shift=false;redrawLabels()}}
- drawDraft();pose('reading',600);
+ drawDraft();
 }
 function pickerClose(commit=true){if(!activePicker)return;const x=activePicker;activePicker=null;x.node.remove();if(commit)applyKey(x.options[x.selected]);}
 function pickerShow(button,output){
@@ -55,13 +55,14 @@ function key(label,output,extra='',hint=''){
  b.addEventListener('pointermove',e=>{if(down&&activePicker)pickerMove(e.clientX)});
  b.addEventListener('pointerup',e=>{if(!down)return;down=false;clearTimeout(longTimer);clearTimeout(repeatDelay);clearInterval(repeatTimer);b.classList.remove('pressed');if(activePicker)pickerClose(true);else if(!wasLong&&output!=='BACK'&&!['SPACE','SEND','SHIFT','NUM'].includes(output))applyKey(output);});
  b.addEventListener('pointercancel',()=>{down=false;clearTimeout(longTimer);clearTimeout(repeatDelay);clearInterval(repeatTimer);b.classList.remove('pressed');pickerClose(false)});
- b.addEventListener('click',()=>{if(ignoreClick){ignoreClick=false;return}applyKey(output)});
+ b.addEventListener('click',e=>{if(ignoreClick){ignoreClick=false;return}applyKey(output)});
  return b;
 }
 function renderKeys(){
  keyButtons.length=0;keys.replaceChildren();
  const rows=numbers?['1234567890','@#€%&-+()/','*"\':;!?.,']:['QWERTZUIOP','ASDFGHJKL','YXCVBNM'];
  const fragment=document.createDocumentFragment();
+ if(numbers){const toolbar=document.createElement('div');toolbar.className='vincent-symbol-toolbar';for(const ch of ['€','@','#','&','%','+','-','/','?','!'])toolbar.append(key(ch,ch,'symbol'));fragment.append(toolbar);}
  rows.forEach((letters,i)=>{const row=document.createElement('div');row.className='chat-key-row';if(i===2&&!numbers)row.append(key('⇧','SHIFT','action'));[...letters].forEach((letter,j)=>{const lower=letter.toLowerCase();const hint=!numbers&&i===0?topNumbers[j]:alternates[lower]?.[0]||'';row.append(key(shift?letter.toUpperCase():letter.toLowerCase(),letter,'',hint))});if(i===2)row.append(key('⌫','BACK','action'));fragment.append(row)});
  const last=document.createElement('div');last.className='chat-key-row';last.append(key(numbers?'ABC':'123','NUM','action'),key(', ',','),key('Leerzeichen','SPACE','wide'),key('.','.'),key('↵','SEND','action'));fragment.append(last);keys.append(fragment);
 }
