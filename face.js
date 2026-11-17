@@ -4,10 +4,10 @@ const host=document.getElementById('vincent'),svg=host?.querySelector('svg');if(
 const NS='http://www.w3.org/2000/svg';function add(tag,attrs,parent=svg){const e=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);parent.append(e);return e}
 svg.querySelectorAll('.eye').forEach(e=>e.style.display='none');const old=svg.querySelector('#mouth');if(old)old.style.display='none';
 const g=add('g',{id:'vincent-companion-face'});const glow='#bb8aff';
-const eyes=[add('path',{fill:glow},g),add('path',{fill:glow},g)];const brows=[add('path',{fill:'none',stroke:glow,'stroke-width':5,'stroke-linecap':'round',opacity:'.68'},g),add('path',{fill:'none',stroke:glow,'stroke-width':5,'stroke-linecap':'round',opacity:'.68'},g)];const pupils=[add('ellipse',{fill:'#2c123d',opacity:'.55'},g),add('ellipse',{fill:'#2c123d',opacity:'.55'},g)];
-const glints=[add('ellipse',{fill:'#ffffff',opacity:'.93'},g),add('ellipse',{fill:'#ffffff',opacity:'.93'},g)];
-const lashes=[add('path',{fill:'none',stroke:glow,'stroke-width':5,'stroke-linecap':'round'},g),add('path',{fill:'none',stroke:glow,'stroke-width':5,'stroke-linecap':'round'},g)];
-const mouth=add('path',{stroke:glow,'stroke-width':5,'stroke-linecap':'round','stroke-linejoin':'round',fill:'none'},g);const cheeks=[add('ellipse',{cx:196,cy:366,rx:21,ry:11,fill:'#c9a0ff',opacity:0},g),add('ellipse',{cx:444,cy:366,rx:21,ry:11,fill:'#c9a0ff',opacity:0},g)];
+const eyes=[add('path',{fill:glow},g),add('path',{fill:glow},g)];const brows=[add('path',{fill:'none',stroke:glow,'stroke-width':2.5,'stroke-linecap':'round',opacity:'.68'},g),add('path',{fill:'none',stroke:glow,'stroke-width':2.5,'stroke-linecap':'round',opacity:'.68'},g)];const pupils=[add('ellipse',{fill:'#7750ba',opacity:'.20'},g),add('ellipse',{fill:'#7750ba',opacity:'.20'},g)];
+const glints=[add('ellipse',{fill:'#fff8ff',opacity:'.70'},g),add('ellipse',{fill:'#fff8ff',opacity:'.70'},g)];
+const lashes=[add('path',{fill:'none',stroke:glow,'stroke-width':2.5,'stroke-linecap':'round'},g),add('path',{fill:'none',stroke:glow,'stroke-width':2.5,'stroke-linecap':'round'},g)];
+const mouth=add('path',{stroke:glow,'stroke-width':2.5,'stroke-linecap':'round','stroke-linejoin':'round',fill:'none'},g);const cheeks=[add('ellipse',{cx:196,cy:366,rx:21,ry:11,fill:'#c9a0ff',opacity:0},g),add('ellipse',{cx:444,cy:366,rx:21,ry:11,fill:'#c9a0ff',opacity:0},g)];
 // Values are continuous, not jump-cut poses. Eyes stay within the original screen.
 const poses={
  neutral:{eye:1,smile:.32,brow:0,blush:0,gaze:0},
@@ -89,14 +89,14 @@ for(let i=0;i<2;i++){
  pupils[i].setAttribute('cy',String(285+Math.min(8,ey*.1)));
  pupils[i].setAttribute('rx',String(Math.max(7,Math.min(15,ey*.16))));
  pupils[i].setAttribute('ry',String(Math.max(5,Math.min(24,ey*.28))));
- pupils[i].setAttribute('opacity',visible?'.50':'0');
+ pupils[i].setAttribute('opacity',visible?'.13':'0');
  glints[i].setAttribute('cx',String(cx-11));
  glints[i].setAttribute('cy',String(265+Math.max(0,48-ey*.4)));
- glints[i].setAttribute('rx','8');glints[i].setAttribute('ry','11');
- glints[i].setAttribute('opacity',visible?'.94':'0');
+ glints[i].setAttribute('rx','9');glints[i].setAttribute('ry','9');
+ glints[i].setAttribute('opacity',visible?'.68':'0');
  const edge=i?426:213,dir=i?1:-1;
- lashes[i].setAttribute('d',`M ${edge} 254 q ${dir*12} -7 ${dir*17} -20 M ${edge} 267 q ${dir*13} -1 ${dir*19} -12`);
- lashes[i].setAttribute('opacity',mode==='sleep'?'0':String(Math.min(.85,.4+cur.eye*.3)));
+ lashes[i].setAttribute('d',`M ${edge} 258 q ${dir*8} -5 ${dir*10} -10`);
+ lashes[i].setAttribute('opacity',mode==='sleep'?'0':String(Math.min(.32,.13+cur.eye*.13)));
 }
 // Head tilts and leans smoothly during chat without changing the robot design.
 const chatTilt=awake&&controller.chatOpen?Math.sin(now/1600)*4:0;

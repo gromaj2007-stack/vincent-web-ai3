@@ -113,3 +113,15 @@ main.chat-open .figure.vivi-chat-typing{filter:drop-shadow(0 12px 25px #bb8aff99
  main.chat-open .figure{height:92dvh!important;top:-12dvh!important;max-height:none!important}
  main.chat-open #vincent-chat{height:58dvh!important}
 }
+
+/* Vivi 2.0.9: figure always above panel, choreographed on a separate layer. */
+main.chat-open{position:relative!important;display:block!important;isolation:isolate!important;overflow:hidden!important}
+main.chat-open #vincent-chat{position:absolute!important;z-index:5!important;bottom:0!important;left:50%!important;transform:translateX(-50%)!important;height:57dvh!important;width:min(98vw,720px)!important;overflow:hidden!important}
+main.chat-open .figure{position:absolute!important;z-index:8!important;top:-10dvh!important;left:50%!important;width:auto!important;height:64dvh!important;max-width:none!important;max-height:none!important;min-height:0!important;aspect-ratio:640/720!important;transform-origin:center center!important;animation:none!important;transition:transform 850ms cubic-bezier(.22,1,.36,1),opacity 550ms ease,filter 550ms ease!important;will-change:transform,opacity!important;filter:drop-shadow(0 9px 18px #0008)!important;transform:translate3d(-50%,0,0) scale(.88)!important;opacity:1!important;pointer-events:auto!important}
+main.chat-open[data-vivi-stage="center"] .figure{transform:translate3d(-50%,0,0) rotate(-3deg) scale(.88)!important;opacity:1!important}
+main.chat-open[data-vivi-stage="duck"] .figure{transform:translate3d(-50%,-115dvh,0) rotate(-13deg) scale(.80)!important;opacity:0!important}
+main.chat-open[data-vivi-stage="peek-left"] .figure{transform:translate3d(calc(-50% - 38vw),15dvh,0) rotate(14deg) scale(.76)!important;opacity:1!important}
+main.chat-open[data-vivi-stage="peek-right"] .figure{transform:translate3d(calc(-50% + 38vw),15dvh,0) rotate(-14deg) scale(.76)!important;opacity:1!important}
+main.chat-open #chat-toggle{z-index:20!important}
+@media(max-height:420px){main.chat-open .figure{height:65dvh!important;top:-12dvh!important}}
+@media(prefers-reduced-motion:reduce){main.chat-open .figure{transition:none!important}}
