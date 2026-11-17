@@ -1,4 +1,4 @@
-<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vivi 5.0 – Emotionsanimation und lokale KI</title><style>body{margin:0;background:#130c20;color:#eee;font:16px system-ui;min-height:100dvh;display:grid;place-items:center;text-align:center}#status{padding:20px}</style></head><body><div id="status">Vivi wird geladen …</div><script>
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vivi 5.1 – Ein Videokörper und lokale KI</title><style>body{margin:0;background:#130c20;color:#eee;font:16px system-ui;min-height:100dvh;display:grid;place-items:center;text-align:center}#status{padding:20px}</style></head><body><div id="status">Vivi wird geladen …</div><script>
 (async()=>{try{
 const url='https://raw.githubusercontent.com/gromaj2007-stack/vincent-web-ai3/a2a53c04ec/index.html';
 const res=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(20000)});if(!res.ok)throw Error('Originalversion HTTP '+res.status);
@@ -86,8 +86,37 @@ appCode += "\ntry{localStorage.removeItem('vincent_voice_v3');}catch{}\n";
 const appBlob=URL.createObjectURL(new Blob([appCode],{type:'text/javascript'}));
 source=source.replace(/src="\.\/app\.js\?v=290"/,'src="'+appBlob+'"');
 source=source.replace(/<\/body>/i,'<script src="./vivi-piper-voice-ui.js?v=440" defer></'+'script></body>');
-source=source.replace(/<\/body>/i,'<script src="./vivi-classic-animation.js?v=440" defer></'+'script><script src="./vivi-alive.js?v=440" defer></'+'script><script src="./vivi-mesh-mimik.js?v=440" defer></'+'script></body>');
-source=source.replace(/<\/body>/i,'<script src="./vivi-video-emotions.js?v=500" defer></'+'script></body>');
-source=source.replace(/Vivi 2\.9\.0/g,'Vivi 5.0');document.open();document.write(source);document.close();
+
+
+// Vivi 5.1: only one visible video-body layer. Preserve the AI/chat/voice code.
+const doc=new DOMParser().parseFromString(source,'text/html');
+for(const script of [...doc.querySelectorAll('script[src]')]){
+ const src=script.getAttribute('src')||'';
+ if(/(?:face|vivi-motion|vivi-idle|vivi-chat-stage|vivi-rig|vivi-rig-v28)\.js/i.test(src))script.remove();
+}
+const figure=doc.getElementById('vincent');
+if(!figure)throw Error('Vivi-Figur fehlt in der Originaldatei');
+figure.replaceChildren();
+figure.setAttribute('aria-label','Vivi mit einem einzigen animierten Videokörper');
+const bodyImage=doc.createElement('img');
+bodyImage.id='vivi-video-body';
+bodyImage.src='./vivi-original.gif?v=510';
+bodyImage.alt='Vivi – animierter Videokörper';
+bodyImage.draggable=false;
+figure.appendChild(bodyImage);
+const videoStyle=doc.createElement('style');
+videoStyle.textContent=`
+#vincent.figure{overflow:hidden!important;position:relative!important;isolation:isolate!important}
+#vivi-video-body{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;object-position:center!important;pointer-events:none!important;transform:none!important;animation:none!important;filter:none!important}
+#vincent::before,#vincent::after{animation:none!important}
+`;
+doc.head.appendChild(videoStyle);
+const videoScript=doc.createElement('script');
+videoScript.src='./vivi-video-body.js?v=510';
+videoScript.defer=true;
+doc.body.appendChild(videoScript);
+source='<!doctype html>'+doc.documentElement.outerHTML;
+source=source.replace(/Vivi 2\.9\.0/g,'Vivi 5.1');
+document.open();document.write(source);document.close();
 }catch(e){document.getElementById('status').innerHTML='Vivi konnte nicht geladen werden: '+String(e.message).replace(/[<>&]/g,'')+'<p><button onclick="location.reload()" style="font:inherit;padding:12px 22px;border-radius:12px">Erneut versuchen</button></p>';}})();
 </script></body></html>
