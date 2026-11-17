@@ -38,24 +38,3 @@ main.chat-open #vincent-chat{flex:0 0 auto;height:min(58dvh,340px)}
 #chat-keys,.chat-key-row,.chat-key{overflow:visible}
 .chat-key-label{pointer-events:none}
 .chat-key-popup{z-index:100;white-space:nowrap}
-
-/* Alive 2.0: lightweight GPU-friendly keyboard motion and accessible long-press strip. */
-.chat-key{contain:layout style;transform:translateZ(0);transition:transform 100ms cubic-bezier(.2,.85,.3,1),background-color 100ms ease;position:relative}
-.chat-key.pressed{transform:translateZ(0) scale(.955)}
-.chat-key-hint{position:absolute;right:3px;top:0;font-size:8px;color:#a3eaf2;opacity:.72;pointer-events:none}
-.vincent-key-options{position:fixed;z-index:9999;display:flex;align-items:stretch;min-height:43px;background:#b9faff;color:#0b2934;border:1px solid #4ac9da;border-radius:12px;box-shadow:0 5px 18px #0009;overflow:hidden;touch-action:none;animation:vincentOptionsIn 115ms ease-out}
-.vincent-option{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:650}
-.vincent-option.selected{background:#3b9dab;color:white;border-radius:9px}
-@keyframes vincentOptionsIn{from{opacity:.4;transform:translateY(5px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
-@media(prefers-reduced-motion:reduce){.vincent-key-options{animation:none}}
-
-/* v2.0.2: lightweight touch interactions and dedicated symbol bar */
-#chat-keys{touch-action:none;contain:layout style}
-.chat-key{will-change:auto;box-shadow:none;transition:background-color 65ms linear,transform 65ms ease-out}
-.chat-key.pressed{transform:scale(.975)}
-.vincent-symbol-toolbar{display:flex;gap:3px;min-height:24px}
-.vincent-symbol-toolbar .chat-key{height:24px;background:#17616d;font-size:12px}
-
-/* v203: maintain touch responsiveness on mobile */
-.chat-key{touch-action:none;user-select:none;-webkit-user-select:none;transition:transform 55ms ease,background-color 55ms ease}
-.chat-key.pressed{transform:scale(.95)}
