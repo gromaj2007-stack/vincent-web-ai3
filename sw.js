@@ -1,5 +1,5 @@
-// Vivi 2.3.0: network-first for all local assets, no persistent app cache.
-const CACHE = 'vivi-230-network-only';
+// Vivi 2.4.0: network-first for all local assets, no persistent app cache.
+const CACHE = 'vivi-240-network-only';
 self.addEventListener('install', event => event.waitUntil(self.skipWaiting()));
 self.addEventListener('activate', event => event.waitUntil((async () => {
   for (const name of await caches.keys()) await caches.delete(name);

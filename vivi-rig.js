@@ -1,0 +1,6 @@
+/* Optional semantic gestures, without changing existing chat/voice logic. */
+(()=>{'use strict';const fig=document.getElementById('vincent');if(!fig)return;
+let gestureTimer;function react(text){const s=String(text||'').toLowerCase();fig.classList.remove('rig-happy','rig-question');if(/freu|super|toll|klasse|hallo|hey|glück|danke/.test(s))fig.classList.add('rig-happy');else if(/[?]|warum|wie|was|wieso/.test(s))fig.classList.add('rig-question');clearTimeout(gestureTimer);gestureTimer=setTimeout(()=>fig.classList.remove('rig-happy','rig-question'),4200)}
+const log=document.getElementById('chat-log');if(log){const observer=new MutationObserver(records=>{for(const record of records){for(const n of record.addedNodes){if(n.nodeType===1)react(n.textContent)}}});observer.observe(log,{childList:true,subtree:false})}
+const style=document.createElement('style');style.textContent='.figure.rig-happy .rig-arm-left{animation:rigGesture .75s ease-in-out 3 alternate}.figure.rig-question .rig-hair-right{animation:rigHairRight 1.4s ease-in-out 3}';document.head.append(style);
+})();
