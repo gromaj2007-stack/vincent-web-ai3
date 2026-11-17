@@ -68,9 +68,21 @@ main.chat-open #vincent-chat{flex:0 0 auto;height:min(58dvh,340px)}
 .chat-open .figure.chat-peek,.chat-open .figure.chat-read{animation:none!important}
 
 /* Kawaii pink accents */
-#vincent-chat{border-color:#b45b91;box-shadow:0 -8px 26px #ff8fca2b}
-#vincent-chat::before{background:#ff8ac9;box-shadow:0 0 15px #ff8ac999}
-#chat-toggle{border-color:#ff8ac9;background:#43233d}
-.chat-key.action{color:#ffd0ed;background:#663354}
-.chat-key.pressed{background:#b44b89}
-.chat-message.user{background:#7b3867;border-color:#b65b97}
+#vincent-chat{border-color:#8e5cc4;box-shadow:0 -8px 26px #b98aff2b}
+#vincent-chat::before{background:#ad7cff;box-shadow:0 0 15px #ad7cff99}
+#chat-toggle{border-color:#ad7cff;background:#342147}
+.chat-key.action{color:#e9d8ff;background:#4c306e}
+.chat-key.pressed{background:#8854b9}
+.chat-message.user{background:#553273;border-color:#9362c3}
+
+/* 2.0.7: genuinely overlap the chat edge, rather than a barely visible tilt. */
+main.chat-open{position:relative;isolation:isolate;overflow:hidden}
+main.chat-open .figure{overflow:visible!important;z-index:5!important;transform-origin:50% 70%!important;filter:drop-shadow(0 9px 14px #0b001b99)}
+main.chat-open .figure.vivi-chat-lean{transform:translate3d(0,var(--vivi-lift,72px),0) rotate(var(--vivi-lean,0deg)) scale(1.23)!important;transition:none!important}
+main.chat-open .figure.vivi-chat-typing{filter:drop-shadow(0 10px 16px #8e5cc499)}
+main.chat-open #vincent-chat{z-index:3!important;overflow:visible;box-shadow:0 -8px 26px #ae7bff55;border-color:#aa7be8}
+#vincent-chat::before{background:#b98aff;box-shadow:0 0 15px #b98aff99}
+#chat-toggle{border-color:#b98aff}
+.chat-key.pressed{background:#8e5cc4}
+.chat-key-popup,.vincent-key-options{background:#e2d1ff;color:#2a153c}
+.vincent-option.selected{background:#8e5cc4}

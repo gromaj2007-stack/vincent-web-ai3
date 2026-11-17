@@ -2,8 +2,8 @@
 (()=>{'use strict';
 const host=document.getElementById('vincent'),svg=host?.querySelector('svg'),panel=document.getElementById('vincent-chat');if(!host||!svg)return;
 const ns='http://www.w3.org/2000/svg';const mk=(tag,attrs,parent)=>{const e=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);parent.append(e);return e};
-const sparkle=mk('g',{id:'vivi-sparkles',opacity:'0'},svg);for(const [x,y,r] of [[171,185,12],[479,199,9],[492,351,8]])mk('path',{d:`M ${x} ${y-r} Q ${x+2} ${y-2} ${x+r} ${y} Q ${x+2} ${y+2} ${x} ${y+r} Q ${x-2} ${y+2} ${x-r} ${y} Q ${x-2} ${y-2} ${x} ${y-r}`,fill:'#ffb4e1'},sparkle);
-const bow=mk('path',{d:'M 305 538 Q 320 531 335 538',fill:'none',stroke:'#ff9acb','stroke-width':4,opacity:'.85'},svg);
+const sparkle=mk('g',{id:'vivi-sparkles',opacity:'0'},svg);for(const [x,y,r] of [[171,185,12],[479,199,9],[492,351,8]])mk('path',{d:`M ${x} ${y-r} Q ${x+2} ${y-2} ${x+r} ${y} Q ${x+2} ${y+2} ${x} ${y+r} Q ${x-2} ${y+2} ${x-r} ${y} Q ${x-2} ${y-2} ${x} ${y-r}`,fill:'#d9b4ff'},sparkle);
+const bow=mk('path',{d:'M 305 538 Q 320 531 335 538',fill:'none',stroke:'#cba4ff','stroke-width':4,opacity:'.85'},svg);
 let last=performance.now(),mood='neutral',moodEnd=0,chat=false,typingEnd=0,wakeEnd=0,lastSpeech=false,lastSleep=false,gesture='idle',gestureEnd=0;
 const choose=(name,duration=1900)=>{mood=name;moodEnd=performance.now()+duration;window.vincentFeel?.(name,duration)};
 const originalChat=window.vincentController?.chat?.bind(window.vincentController);
@@ -26,14 +26,14 @@ const chatOpen=chat||(!panel?.hidden),active=now<gestureEnd,typing=now<typingEnd
 let at=0,dy=0;
 if(sleeping){at=-2;dy=2}
 else if(waking){const p=Math.max(0,Math.min(1,1-(wakeEnd-now)/2400));at=Math.sin(p*Math.PI*2)*5;dy=-12*Math.sin(p*Math.PI)}
-else if(chatOpen){at=typing?-3:Math.sin(now/1250)*3.8;dy=typing?28:24+Math.sin(now/880)*4}
-else if(speaking){at=Math.sin(now/380)*4.4;dy=Math.sin(now/450)*5}
+else if(chatOpen){at=typing?-9:Math.sin(now/850)*10;dy=typing?66:72+Math.sin(now/700)*13}
+else if(speaking){at=Math.sin(now/290)*8;dy=Math.sin(now/390)*10}
 else if(listening){at=5;dy=-4}
 else if(thinking){at=-5;dy=-2}
 else if(active){at=4;dy=-3}
-else{at=Math.sin(now/2200)*2.2;dy=Math.sin(now/1450)*3.5}
-angle=smooth(angle,at,dt,3.8);shift=smooth(shift,dy,dt,4.5);
-host.classList.toggle('vivi-chat-lean',chatOpen);
+else{at=Math.sin(now/1600)*4.3;dy=Math.sin(now/1100)*7}
+angle=smooth(angle,at,dt,5.8);shift=smooth(shift,dy,dt,5.4);
+host.classList.toggle('vivi-chat-lean',chatOpen);host.classList.toggle('vivi-chat-typing',chatOpen&&typing);host.classList.toggle('vivi-chat-speaking',chatOpen&&speaking);
 host.style.setProperty('--vivi-lean',`${angle.toFixed(2)}deg`);host.style.setProperty('--vivi-lift',`${shift.toFixed(2)}px`);
 sparkle.setAttribute('opacity',String((now<moodEnd&&['happy','delighted','surprised','playful'].includes(mood))?(.45+.4*Math.sin(now/200)**2):0));
 }

@@ -3,8 +3,8 @@
 const host=document.getElementById('vincent'),svg=host?.querySelector('svg');if(!host||!svg)return;
 const NS='http://www.w3.org/2000/svg';function add(tag,attrs,parent=svg){const e=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);parent.append(e);return e}
 svg.querySelectorAll('.eye').forEach(e=>e.style.display='none');const old=svg.querySelector('#mouth');if(old)old.style.display='none';
-const g=add('g',{id:'vincent-companion-face'});const glow='#ff82cb';
-const eyes=[add('path',{fill:glow},g),add('path',{fill:glow},g)];const brows=[add('path',{fill:'none',stroke:glow,'stroke-width':5,'stroke-linecap':'round',opacity:'.68'},g),add('path',{fill:'none',stroke:glow,'stroke-width':5,'stroke-linecap':'round',opacity:'.68'},g)];const mouth=add('path',{stroke:glow,'stroke-width':5,'stroke-linecap':'round','stroke-linejoin':'round',fill:'none'},g);const cheeks=[add('ellipse',{cx:196,cy:366,rx:21,ry:11,fill:'#ff8fc6',opacity:0},g),add('ellipse',{cx:444,cy:366,rx:21,ry:11,fill:'#ff8fc6',opacity:0},g)];
+const g=add('g',{id:'vincent-companion-face'});const glow='#b98aff';
+const eyes=[add('path',{fill:glow},g),add('path',{fill:glow},g)];const brows=[add('path',{fill:'none',stroke:glow,'stroke-width':5,'stroke-linecap':'round',opacity:'.68'},g),add('path',{fill:'none',stroke:glow,'stroke-width':5,'stroke-linecap':'round',opacity:'.68'},g)];const mouth=add('path',{stroke:glow,'stroke-width':5,'stroke-linecap':'round','stroke-linejoin':'round',fill:'none'},g);const cheeks=[add('ellipse',{cx:196,cy:366,rx:21,ry:11,fill:'#c9a0ff',opacity:0},g),add('ellipse',{cx:444,cy:366,rx:21,ry:11,fill:'#c9a0ff',opacity:0},g)];
 // Values are continuous, not jump-cut poses. Eyes stay within the original screen.
 const poses={
  neutral:{eye:1,smile:.32,brow:0,blush:0,gaze:0},
