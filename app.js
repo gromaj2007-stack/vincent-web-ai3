@@ -10,7 +10,7 @@ function memories(){try{const a=JSON.parse(localStorage.getItem(KEY)||'[]');retu
 function save(items){try{localStorage.setItem(KEY,JSON.stringify(items.slice(-150)));refresh();return true}catch{return false}}
 function refresh(){const list=$('memlist');list.replaceChildren();for(const m of memories()){const li=document.createElement('li');li.textContent=m;list.append(li)}}
 function voices(){return 'speechSynthesis' in window?speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith('de')):[]}
-function populate(){const v=voices(),old=localStorage.getItem(VOICE)||select.value;select.replaceChildren();if(!v.length){const o=document.createElement('option');o.textContent='Keine deutsche Stimme gefunden';select.append(o);return}for(const x of v){const o=document.createElement('option');o.value=x.name;o.textContent=x.name+' ('+x.lang+')';select.append(o)}const preferred=v.find(x=>/male|männ|mann|markus|daniel|conrad|stefan|thomas|florian/i.test(x.name));select.value=v.some(x=>x.name===old)?old:preferred?.name||v[0].name}
+function populate(){const v=voices(),old=localStorage.getItem(VOICE)||select.value;select.replaceChildren();if(!v.length){const o=document.createElement('option');o.textContent='Keine deutsche Stimme gefunden';select.append(o);return}for(const x of v){const o=document.createElement('option');o.value=x.name;o.textContent=x.name+' ('+x.lang+')';select.append(o)}const preferred=v.find(x=>/male|männ|mann|markus|daniel|conrad|stefan|thomas|florian|hans/i.test(x.name));select.value=preferred?.name||(v.some(x=>x.name===old)?old:v[0].name)}
 if('speechSynthesis'in window){speechSynthesis.addEventListener('voiceschanged',populate);populate()}select.onchange=()=>localStorage.setItem(VOICE,select.value);
 let speechGeneration=0, speechPending=false, mouthStartTimer=null;
 const SYNC_KEY='vincent_mouth_delay_ms_v112';
@@ -128,12 +128,12 @@ $('loadpiper').addEventListener('click',async()=>{piperStatus.textContent='Prüf
 // Online voice through Puter.js; browser TTS remains an automatic fallback.
 const ONLINE_VOICE_KEY='vincent_online_voice_v1';
 const onlineVoiceToggle=$('onlinevoice'),onlineVoiceStatus=$('onlinevoicestatus');
-onlineVoiceToggle.checked=localStorage.getItem(ONLINE_VOICE_KEY)!=='off';
+onlineVoiceToggle.checked=true;localStorage.setItem(ONLINE_VOICE_KEY,'on');
 onlineVoiceToggle.onchange=()=>{localStorage.setItem(ONLINE_VOICE_KEY,onlineVoiceToggle.checked?'on':'off');onlineVoiceStatus.textContent=onlineVoiceToggle.checked?'Online-Stimme aktiviert.':'Browser-Stimme aktiviert.'};
 // Voice personality: cute by default, classic Hans remains selectable.
 const VOICE_STYLE_KEY='vincent_voice_style_v129';
 const voiceStyle=$('voicestyle');
-if(voiceStyle){voiceStyle.value=localStorage.getItem(VOICE_STYLE_KEY)||'cute';voiceStyle.addEventListener('change',()=>{localStorage.setItem(VOICE_STYLE_KEY,voiceStyle.value);onlineVoiceStatus.textContent='Stimme ausgewählt: '+(voiceStyle.value==='cute'?'Niedlich (Vicki wird beim nächsten Sprechen getestet)':'Klassisch (Hans)')+'. Bitte Stimme testen.';});}
+if(voiceStyle){voiceStyle.value='cute';localStorage.setItem(VOICE_STYLE_KEY,'cute');voiceStyle.addEventListener('change',()=>{localStorage.setItem(VOICE_STYLE_KEY,voiceStyle.value);onlineVoiceStatus.textContent='Stimme ausgewählt: '+(voiceStyle.value==='cute'?'Niedlich (Vicki wird beim nächsten Sprechen getestet)':'Klassisch (Hans)')+'. Bitte Stimme testen.';});}
 const isCuteVoice=()=>!voiceStyle||voiceStyle.value==='cute';
 let onlineVoiceBusy=false;
 async function sayOnline(message,generation){
@@ -177,7 +177,7 @@ async function sayOnline(message,generation){
   }catch(e){
     if(generation!==speechGeneration)return;
     onlineVoiceBusy=false;speechPending=false;speaking=false;
-    onlineVoiceStatus.textContent='Online-Stimme nicht verfügbar: '+(e?.message||String(e))+'. Browser-Stimme als Ersatz.';
+    onlineVoiceStatus.textContent='Online-Stimme fehlgeschlagen: '+(e?.message||String(e))+'. Jetzt spricht die Android-Ersatzstimme.';
     sayBrowser(message,generation);
   }
 }
@@ -205,7 +205,7 @@ function sayBrowser(message,generation){
   status.textContent='VINCENT BEREITET DIE STIMME VOR';
   const u=new SpeechSynthesisUtterance(message);
   u.lang='de-DE';u.rate=isCuteVoice()?1.04:.91;u.pitch=isCuteVoice()?1.48:.93;
-  u.voice=voices().find(v=>v.name===select.value)||null;
+  u.voice=voices().find(v=>v.name===select.value)||null;onlineVoiceStatus.textContent='Aktive Audioquelle: Android-Browserstimme '+(u.voice?.name||'(Systemstandard)');
   u.onstart=()=>{
     if(generation!==speechGeneration)return;
     speechPending=false;speaking=true;
@@ -233,7 +233,7 @@ function sayBrowser(message,generation){
 function offline(input){const s=input.toLocaleLowerCase('de-DE');if(/(?:was weißt du|was hast du dir gemerkt|erinnerst du dich|gedächtnis)/.test(s)){const m=memories();return m.length?'Ich weiß noch: '+m.slice(-6).join('. '):'Mein Gedächtnis ist noch leer. Sag: Vincent, merk dir ...'}if(/(?:wie spät|uhrzeit)/.test(s))return 'Es ist '+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr.';if(/(?:hallo|hey|servus|vincent|guten morgen)/.test(s))return 'Servus! Vincent am Start. Fliege sitzt, Gehirn läuft warm.';if(/(?:wie heißt du|wer bist du)/.test(s))return 'Vincent. Dein frecher Assistent mit erstklassigem Anzug.';return 'Das habe ich gehört: '+input+'. Mein Online-Gehirn ist gerade nicht erreichbar. Halte meinen Kopf gedrückt und prüfe die Einstellungen.'}
 window.addEventListener('vincent-chat-submit',e=>{void respond(e.detail.message)});
 async function respond(input){const t=input.trim();if(!t)return;markActivity();addTopic(t);let m=t.match(/(?:merk dir|merke dir)(?: bitte)?[,:]?\s*(.+)/i);if(m){const fact=m[1].trim().slice(0,400);say(save([...memories(),fact])?'Hab ich mir gemerkt. Mein Kopf ist klein, mein Gedächtnis nicht.':'Speichern hat nicht geklappt.');return}if(/(?:vergiss alles|lösche dein gedächtnis)/i.test(t)){say('Zum Löschen öffne bitte meine Einstellungen. Sicher ist sicher.');return}
-status.textContent='VINCENT DENKT';el.classList.add('thinking');window.vincentFeel?.('thinking',5000);try{const reply=await askAI({message:t,memories:memories().slice(-20),topics:recentTopics(),mode:'chat'});el.classList.remove('thinking');say(reply)}catch{el.classList.remove('thinking');say(offline(t))}}
+status.textContent='VIVI DENKT';el.classList.add('thinking');window.vincentFeel?.('thinking',5000);try{const reply=await askAI({message:t,memories:memories().slice(-20),topics:recentTopics(),mode:'chat'});el.classList.remove('thinking');say(reply)}catch{el.classList.remove('thinking');say(offline(t))}}
 function listen(){markActivity();if(listening||settings.classList.contains('open')||speaking||speechPending)return;if(!Recognition){status.textContent='SPRACHERKENNUNG IN DIESEM BROWSER NICHT VERFÜGBAR';return}recognizer=new Recognition();recognizer.lang='de-DE';recognizer.continuous=false;recognizer.interimResults=true;recognizer.onstart=()=>{listening=true;el.classList.add('listening');status.textContent='ICH HÖRE ZU'};recognizer.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal){respond(e.results[i][0].transcript);break}}};recognizer.onerror=e=>{status.textContent=e.error==='not-allowed'?'MIKROFON ERLAUBEN':'MIKROFON: '+e.error};recognizer.onend=()=>{listening=false;el.classList.remove('listening');if(!speaking&&!el.classList.contains('thinking'))status.textContent='TIPPEN: GEDANKEN · DOPPELTIPPEN: SPRECHEN'};try{recognizer.start()}catch{status.textContent='MIKROFON KONNTE NICHT STARTEN'}}
 function openSettings(){markActivity();held=true;clearTimeout(tapTimer);settings.classList.add('open');populate();refresh();status.textContent='EINSTELLUNGEN'}
 const thoughts=[
@@ -351,7 +351,7 @@ function changeIdle(phase){
 }
 function markActivity(){
  lastActivity=Date.now();idlePrompted=false;
- if(idlePhase!=='awake'){changeIdle('awake');window.vincentFeel?.('curious',1100)}
+ if(idlePhase!=='awake'){const wasSleeping=idlePhase==='sleep';changeIdle('awake');window.vincentFeel?.('curious',1100);if(wasSleeping){window.vincentWake?.();setTimeout(()=>{if(!speaking&&!speechPending){const h=new Date().getHours();say(h<11?'Guuuten Morgen! Ich bin wieder wach!':h<18?'Huhu! Da bist du ja wieder!':'Oh, hallo! Ich bin wieder da!')}},900)}}
 }
 function idleTick(){
  if(document.hidden||settings.classList.contains('open')||listening||el.classList.contains('thinking'))return;
@@ -372,7 +372,7 @@ function idleTick(){
 }
 idleCheckTimer=setInterval(idleTick,750);
 
-function canMuse(){return idlePhase==='awake'&&autoCheck.checked&&!document.hidden&&!speaking&&!speechPending&&!listening&&!autoBusy&&!settings.classList.contains('open')&&!el.classList.contains('thinking')&&Date.now()-lastActivity>120000&&Date.now()-lastAuto>(initiative.value==='quiet'?480000:initiative.value==='lively'?150000:240000)}
+function canMuse(){return (idlePhase==='awake'||idlePhase==='sleep')&&autoCheck.checked&&!document.hidden&&!speaking&&!speechPending&&!listening&&!autoBusy&&!settings.classList.contains('open')&&!el.classList.contains('thinking')&&Date.now()-lastActivity>120000&&Date.now()-lastAuto>(initiative.value==='quiet'?480000:initiative.value==='lively'?150000:240000)}
 const musings=[
  'Moment mal. Wenn man eine Idee lange genug betrachtet, wird sie dann besser oder nur seltsamer?',
  'Ich grüble gerade: Warum kommen einem die besten Einfälle immer dann, wenn man gerade etwas anderes vorhat?',
@@ -385,7 +385,9 @@ const musings=[
 let museIndex=-1;
 function fallbackMuse(){const facts=memories(),topics=recentTopics();if(facts.length&&Math.random()<.45){const fact=facts[Math.floor(Math.random()*facts.length)].slice(0,110);return 'Ich habe noch im Kopf: '+fact+'. Gibt es dazu etwas Neues?'}if(topics.length&&Math.random()<.5)return 'Ich denke noch über unser Thema nach: '+topics[topics.length-1]+'. Wie siehst du das inzwischen?';let n=Math.floor(Math.random()*musings.length);if(n===museIndex)n=(n+1)%musings.length;museIndex=n;return musings[n]}
 async function muse(){if(!canMuse())return;autoBusy=true;lastAuto=Date.now();el.classList.add('thinking');setExpression('look-left',1600);let line='';try{line=await askAI({message:'Formuliere eine einzelne kurze, originelle Frage oder einen spontanen Gedanken auf Deutsch, der sich auf Erinnerungen beziehen darf. Sei frech, freundlich und unaufdringlich. Höchstens 35 Wörter. Behaupte nicht, bewusst zu sein.',memories:memories().slice(-12),topics:recentTopics(),mode:'muse'},90000)}catch{}finally{autoBusy=false;el.classList.remove('thinking')}
- if(idlePhase!=='awake'||document.hidden||settings.classList.contains('open')||speaking||speechPending||listening||Date.now()-lastActivity<120000)return;
+ if(document.hidden||settings.classList.contains('open')||speaking||speechPending||listening||Date.now()-lastActivity<120000)return;
+ if(idlePhase==='sleep'){changeIdle('awake');window.vincentWake?.();}
+ window.vincentFeel?.('curious',1800);
  say(line||fallbackMuse());
 }
 function scheduleMuse(){clearTimeout(autoTimer);autoTimer=setTimeout(async()=>{await muse();scheduleMuse()},18000)}
@@ -405,12 +407,15 @@ el.addEventListener('pointerdown',e=>{if(e.button!==0)return;held=false;pressSta
 for(const event of ['pointerup','pointercancel','pointerleave'])el.addEventListener(event,()=>clearTimeout(holdTimer));
 el.addEventListener('click',()=>{if(held||settings.classList.contains('open'))return;if(tapTimer){clearTimeout(tapTimer);tapTimer=null;listen()}else{tapTimer=setTimeout(()=>{tapTimer=null;shareThought()},300)}});
 el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();shareThought()}if(e.key===' '){e.preventDefault();listen()}});
-$('close').onclick=()=>{settings.classList.remove('open');status.textContent='TIPPEN: GEDANKEN · DOPPELTIPPEN: SPRECHEN'};$('test').onclick=()=>say('Servus, ich bin Vincent. Bereit für große Ideen und schlechte Wortspiele.');$('remember').onclick=()=>{const note=$('note').value.trim();if(!note)return;const ok=save([...memories(),note.slice(0,400)]);if(ok){$('note').value='';say('Ist gespeichert!')}else status.textContent='SPEICHERN FEHLGESCHLAGEN'};
+$('close').onclick=()=>{settings.classList.remove('open');status.textContent='TIPPEN: GEDANKEN · DOPPELTIPPEN: SPRECHEN'};$('test').onclick=()=>say('Servus, ich bin Vivi. Bereit für große Ideen und schlechte Wortspiele.');$('remember').onclick=()=>{const note=$('note').value.trim();if(!note)return;const ok=save([...memories(),note.slice(0,400)]);if(ok){$('note').value='';say('Ist gespeichert!')}else status.textContent='SPEICHERN FEHLGESCHLAGEN'};
 $('clear').onclick=()=>{if(confirm('Wirklich alle lokalen Vincent-Erinnerungen löschen?')){save([]);status.textContent='GEDÄCHTNIS GELÖSCHT'}};
 $('export').onclick=()=>{const blob=new Blob([JSON.stringify({version:3,memories:memories()},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='vincent-gedaechtnis-v3.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000)};
 $('import').onclick=()=>$('importfile').click();$('importfile').onchange=async e=>{const f=e.target.files?.[0];if(!f||f.size>200000)return;try{const data=JSON.parse(await f.text());if(!Array.isArray(data.memories)||!data.memories.every(x=>typeof x==='string'&&x.length<=400))throw Error('Format');if(confirm('Vorhandene Erinnerungen durch die importierten ersetzen?'))save(data.memories)}catch{alert('Ungültige Gedächtnis-Datei')}e.target.value=''};
 brainState(brainMode.value==='cloud'?'Online-Gehirn ausgewählt. Lange auf Vincent drücken → Online-Gehirn verbinden.':'Lokales KI-Gehirn noch nicht gestartet.');
-refresh();if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+refresh();if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=204', {updateViaCache:'none'}).catch(()=>{}));
 
 // Warm up the online brain while Vincent is idle; never opens microphone automatically.
 if(brainMode.value==='cloud'){setTimeout(()=>{loadCloudSDK().catch(()=>{});},300)}
+
+// v204: refresh the service worker when the installed PWA returns to foreground.
+window.addEventListener('pageshow',()=>{navigator.serviceWorker?.getRegistration()?.then(r=>r?.update()).catch(()=>{});});
