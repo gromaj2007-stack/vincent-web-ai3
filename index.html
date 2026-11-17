@@ -6,7 +6,7 @@ let source=await res.text();if(!source.includes('vivi-rig-v28.js')||!source.incl
 // Keep the original AI, chat, voice and memory scripts unchanged.
 // Resolve the relative assets against the existing GitHub Pages deployment.
 source=source.replace(/<head>/i,'<head><base href="https://gromaj2007-stack.github.io/vincent-web-ai3/">');
-source=source.replace(/<\/body>/i,'<script src="./vivi-face-fix.js?v=4" defer></'+'script></body>');
+source=source.replace(/<\/body>/i,'<script src="./vivi-face-fix.js?v=5" defer></'+'script></body>');
 document.open();document.write(source);document.close();
 }catch(e){document.getElementById('status').textContent='Vivi konnte nicht geladen werden: '+e.message;}})();
 </script></body></html>
