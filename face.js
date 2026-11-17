@@ -38,9 +38,9 @@ else if(/(?:oh je|ups|peinlich|verlegen)/.test(t))mood='shy';
 else if(/(?:wow|unglaublich|oha|überraschung)/.test(t))mood='surprised';
 else if(/(?:haha|hehe|hihi|kleiner scherz)/.test(t))mood='playful';
 else if(/(?:freut mich|wunderbar|großartig|super gemacht|klasse gemacht)/.test(t))mood='happy';
-// Emotionen nur bei ausdrücklichem Aufruf; Text-Schlüsselwörter erzeugen keine zufälligen Gesichter.
-// Der Gesprächskontext kann später strukturierte Emotionen liefern.
-
+// Short-lived expression tied to Vincent's actual reply, not idle randomness.
+if(mood)feel(mood,2200);
+else if(t.trim().endsWith('?'))feel('curious',1800);
 };
 const lerp=(a,b,k)=>a+(b-a)*k;
 function eyeD(cx,cy,height){const h=Math.max(2,height)/2,w=30;return `M ${cx-w} ${cy} C ${cx-w} ${cy-h*1.3} ${cx+w} ${cy-h*1.3} ${cx+w} ${cy} C ${cx+w} ${cy+h*1.3} ${cx-w} ${cy+h*1.3} ${cx-w} ${cy} Z`}
