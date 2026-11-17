@@ -1,19 +1,12 @@
-<!doctype html>
-<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vivi – Wiederherstellung</title>
-<style>body{background:#120b20;color:#fff;font:16px system-ui;display:grid;place-items:center;min-height:95vh;text-align:center}p{max-width:420px}</style></head>
-<body><p id="info">Vivi wird mit Gehirn, Chat, Stimme und Animationen geladen …</p>
-<script>
-(async()=>{
- try {
-  const response=await fetch('https://raw.githubusercontent.com/gromaj2007-stack/vincent-web-ai3/a2a53c04ec/index.html',{cache:'no-store'});
-  if(!response.ok)throw new Error('HTTP '+response.status);
-  let html=await response.text();
-  if(!html.includes('vivi-rig-v28.js')||!html.includes('app.js'))throw new Error('Unbekannte Originalversion');
-  const patchTag='<script src="./vivi-face-fix.js?v=3" defer></'+'script>';
-  html=html.replace(/<\/body>/i,patchTag+'</body>');
-  document.open();document.write(html);document.close();
- }catch(e){
-  document.getElementById('info').textContent='Wiederherstellung konnte nicht geladen werden: '+e.message+'. Bitte Internetverbindung und GitHub-Verfügbarkeit prüfen.';
- }
-})();
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vivi Alive</title><style>body{margin:0;background:#130c20;color:#eee;font:16px system-ui;min-height:100dvh;display:grid;place-items:center;text-align:center}#status{padding:20px}</style></head><body><div id="status">Vivi wird geladen …</div><script>
+(async()=>{try{
+const url='https://raw.githubusercontent.com/gromaj2007-stack/vincent-web-ai3/a2a53c04ec/index.html';
+const res=await fetch(url,{cache:'no-store'});if(!res.ok)throw Error('Originalversion HTTP '+res.status);
+let source=await res.text();if(!source.includes('vivi-rig-v28.js')||!source.includes('app.js'))throw Error('Originaldatei unerwartet');
+// Keep the original AI, chat, voice and memory scripts unchanged.
+// Resolve the relative assets against the existing GitHub Pages deployment.
+source=source.replace(/<head>/i,'<head><base href="https://gromaj2007-stack.github.io/vincent-web-ai3/">');
+source=source.replace(/<\/body>/i,'<script src="./vivi-face-fix.js?v=4" defer></'+'script></body>');
+document.open();document.write(source);document.close();
+}catch(e){document.getElementById('status').textContent='Vivi konnte nicht geladen werden: '+e.message;}})();
 </script></body></html>
