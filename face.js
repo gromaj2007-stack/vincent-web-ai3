@@ -3,8 +3,11 @@
 const host=document.getElementById('vincent'),svg=host?.querySelector('svg');if(!host||!svg)return;
 const NS='http://www.w3.org/2000/svg';function add(tag,attrs,parent=svg){const e=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);parent.append(e);return e}
 svg.querySelectorAll('.eye').forEach(e=>e.style.display='none');const old=svg.querySelector('#mouth');if(old)old.style.display='none';
-const g=add('g',{id:'vincent-companion-face'});const glow='#b98aff';
-const eyes=[add('path',{fill:glow},g),add('path',{fill:glow},g)];const brows=[add('path',{fill:'none',stroke:glow,'stroke-width':5,'stroke-linecap':'round',opacity:'.68'},g),add('path',{fill:'none',stroke:glow,'stroke-width':5,'stroke-linecap':'round',opacity:'.68'},g)];const mouth=add('path',{stroke:glow,'stroke-width':5,'stroke-linecap':'round','stroke-linejoin':'round',fill:'none'},g);const cheeks=[add('ellipse',{cx:196,cy:366,rx:21,ry:11,fill:'#c9a0ff',opacity:0},g),add('ellipse',{cx:444,cy:366,rx:21,ry:11,fill:'#c9a0ff',opacity:0},g)];
+const g=add('g',{id:'vincent-companion-face'});const glow='#bb8aff';
+const eyes=[add('path',{fill:glow},g),add('path',{fill:glow},g)];const brows=[add('path',{fill:'none',stroke:glow,'stroke-width':5,'stroke-linecap':'round',opacity:'.68'},g),add('path',{fill:'none',stroke:glow,'stroke-width':5,'stroke-linecap':'round',opacity:'.68'},g)];const pupils=[add('ellipse',{fill:'#2c123d',opacity:'.55'},g),add('ellipse',{fill:'#2c123d',opacity:'.55'},g)];
+const glints=[add('ellipse',{fill:'#ffffff',opacity:'.93'},g),add('ellipse',{fill:'#ffffff',opacity:'.93'},g)];
+const lashes=[add('path',{fill:'none',stroke:glow,'stroke-width':5,'stroke-linecap':'round'},g),add('path',{fill:'none',stroke:glow,'stroke-width':5,'stroke-linecap':'round'},g)];
+const mouth=add('path',{stroke:glow,'stroke-width':5,'stroke-linecap':'round','stroke-linejoin':'round',fill:'none'},g);const cheeks=[add('ellipse',{cx:196,cy:366,rx:21,ry:11,fill:'#c9a0ff',opacity:0},g),add('ellipse',{cx:444,cy:366,rx:21,ry:11,fill:'#c9a0ff',opacity:0},g)];
 // Values are continuous, not jump-cut poses. Eyes stay within the original screen.
 const poses={
  neutral:{eye:1,smile:.32,brow:0,blush:0,gaze:0},
@@ -51,7 +54,7 @@ if(mood)feel(mood,2200);
 else if(t.trim().endsWith('?'))feel('curious',1800);
 };
 const lerp=(a,b,k)=>a+(b-a)*k;
-function eyeD(cx,cy,height){const h=Math.max(2,height)/2,w=30;return `M ${cx-w} ${cy} C ${cx-w} ${cy-h*1.3} ${cx+w} ${cy-h*1.3} ${cx+w} ${cy} C ${cx+w} ${cy+h*1.3} ${cx-w} ${cy+h*1.3} ${cx-w} ${cy} Z`}
+function eyeD(cx,cy,height){const h=Math.max(2,height)/2,w=33;return `M ${cx-w} ${cy} C ${cx-w} ${cy-h*1.3} ${cx+w} ${cy-h*1.3} ${cx+w} ${cy} C ${cx+w} ${cy+h*1.3} ${cx-w} ${cy+h*1.3} ${cx-w} ${cy} Z`}
 function frame(now){requestAnimationFrame(frame);if(document.hidden){last=now;return}const dt=Math.min(.05,Math.max(0,(now-last)/1000));last=now;
 const talking=host.classList.contains('talking')||host.classList.contains('audio-speaking');const thinking=host.classList.contains('thinking');const listening=host.classList.contains('listening');
 let pose=mode==='sleep'?poses.sleepy:mode==='checking'?poses.checking:poses.neutral;if(mode==='awake'&&thinking)pose=poses.thinking;else if(mode==='awake'&&listening)pose=poses.listening;else if(mode==='awake'&&now<emotionUntil)pose=poses[emotion];else if(mode==='awake'&&controller.chatOpen){
@@ -77,6 +80,24 @@ const attention=awake&&!thinking&&!listening&&!talking?Math.sin(now/1150)*(contr
 const talkSmile=awake&&talking?Math.sin(now/320)*.11:0;
 const eyeHeight=112*(cur.eye+breath)*(1-.97*cur.blink)*(wakeT?Math.max(.12,1-wakeT*.86):1);
 if(mode==='sleep'){eyes[0].setAttribute('d',`M 216 292 Q 246 315 276 292`);eyes[1].setAttribute('d',`M 364 292 Q 394 315 424 292`);eyes.forEach(e=>{e.setAttribute('fill','none');e.setAttribute('stroke',glow);e.setAttribute('stroke-width','8');e.setAttribute('stroke-linecap','round')});}else{eyes.forEach(e=>{e.setAttribute('fill',glow);e.setAttribute('stroke','none')});eyes[0].setAttribute('d',eyeD(246+cur.gaze,285,eyeHeight));eyes[1].setAttribute('d',eyeD(394+cur.gaze,285,eyeHeight));}
+// Rounded kawaii eyes: visible dark pupils, soft highlights, tiny lashes and expressive squints.
+const eyeCenters=[246+cur.gaze,394+cur.gaze];
+for(let i=0;i<2;i++){
+ const cx=eyeCenters[i],visible=mode!=='sleep'&&cur.eye>.2;
+ const ey=Math.max(7,eyeHeight*.72);
+ pupils[i].setAttribute('cx',String(cx+(i?2:-2)));
+ pupils[i].setAttribute('cy',String(285+Math.min(8,ey*.1)));
+ pupils[i].setAttribute('rx',String(Math.max(7,Math.min(15,ey*.16))));
+ pupils[i].setAttribute('ry',String(Math.max(5,Math.min(24,ey*.28))));
+ pupils[i].setAttribute('opacity',visible?'.50':'0');
+ glints[i].setAttribute('cx',String(cx-11));
+ glints[i].setAttribute('cy',String(265+Math.max(0,48-ey*.4)));
+ glints[i].setAttribute('rx','8');glints[i].setAttribute('ry','11');
+ glints[i].setAttribute('opacity',visible?'.94':'0');
+ const edge=i?426:213,dir=i?1:-1;
+ lashes[i].setAttribute('d',`M ${edge} 254 q ${dir*12} -7 ${dir*17} -20 M ${edge} 267 q ${dir*13} -1 ${dir*19} -12`);
+ lashes[i].setAttribute('opacity',mode==='sleep'?'0':String(Math.min(.85,.4+cur.eye*.3)));
+}
 // Head tilts and leans smoothly during chat without changing the robot design.
 const chatTilt=awake&&controller.chatOpen?Math.sin(now/1600)*4:0;
 const emotionTilt=awake&&now<emotionUntil?(emotion==='curious'?3:emotion==='shy'?-4:emotion==='surprised'?-2:0):0;

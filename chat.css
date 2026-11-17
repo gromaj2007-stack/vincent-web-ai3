@@ -86,3 +86,30 @@ main.chat-open #vincent-chat{z-index:3!important;overflow:visible;box-shadow:0 -
 .chat-key.pressed{background:#8e5cc4}
 .chat-key-popup,.vincent-key-options{background:#e2d1ff;color:#2a153c}
 .vincent-option.selected{background:#8e5cc4}
+
+/* Vivi 2.0.8: chat is a real stage with overlapping head, not a tiny flex slot. */
+main.chat-open{position:relative!important;display:block!important;overflow:hidden!important;padding:0!important}
+main.chat-open .figure{
+ position:absolute!important;left:50%!important;top:-8dvh!important;
+ height:88dvh!important;width:auto!important;max-height:none!important;max-width:95vw!important;
+ aspect-ratio:640/720!important;z-index:5!important;
+ transform-origin:50% 72%!important;
+ transform:translate3d(calc(-50% + var(--vivi-stage-x,0px)),var(--vivi-stage-y,0px),0) rotate(var(--vivi-stage-angle,0deg)) scale(var(--vivi-stage-scale,1))!important;
+ pointer-events:auto!important;overflow:visible!important;
+ filter:drop-shadow(0 12px 18px #140824aa)!important;
+}
+main.chat-open #vincent-chat{
+ position:absolute!important;left:50%!important;bottom:0!important;
+ transform:translateX(-50%)!important;height:57dvh!important;
+ width:min(98vw,720px)!important;z-index:6!important;
+ background:linear-gradient(160deg,#26183eeb,#090b1af5)!important;
+ border:1px solid #b38bfa!important;
+ box-shadow:0 -8px 35px #ae80ff66!important;
+}
+main.chat-open #vincent-chat::before{height:5px!important;top:-4px!important}
+main.chat-open #chat-toggle{z-index:20}
+main.chat-open .figure.vivi-chat-typing{filter:drop-shadow(0 12px 25px #bb8aff99)!important}
+@media(max-height:420px){
+ main.chat-open .figure{height:92dvh!important;top:-12dvh!important;max-height:none!important}
+ main.chat-open #vincent-chat{height:58dvh!important}
+}
