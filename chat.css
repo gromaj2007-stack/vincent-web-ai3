@@ -27,3 +27,10 @@ main.chat-open .figure svg{width:100%;height:100%;max-height:100%;object-fit:con
 main.chat-open #vincent-chat{flex:0 0 auto;height:min(58dvh,340px)}
 #chat-toggle,.chat-key,#chat-send{-webkit-tap-highlight-color:transparent}
 @media(max-height:420px){main.chat-open .figure{max-height:39dvh}main.chat-open #vincent-chat{height:59dvh}}
+
+/* v130: Gboard-like tactile response, without invoking the Android IME. */
+.chat-key{position:relative;isolation:isolate;transition:background-color 85ms ease,transform 85ms ease,box-shadow 85ms ease;will-change:transform;-webkit-tap-highlight-color:transparent;touch-action:none}
+.chat-key.pressed{background:#288999;transform:scale(.94);box-shadow:0 0 0 1px #76f5f2,inset 0 1px 3px #03131a}
+.chat-key-popup{pointer-events:none;position:absolute;left:50%;bottom:calc(100% + 5px);transform:translateX(-50%);min-width:32px;padding:7px 8px;border-radius:9px;background:#b2f9ff;color:#10212b;font-size:20px;font-weight:600;box-shadow:0 5px 15px #0008;z-index:15;animation:vincentKeyPop 120ms ease-out}
+@keyframes vincentKeyPop{from{opacity:.4;transform:translateX(-50%) translateY(6px) scale(.85)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
+@media(prefers-reduced-motion:reduce){.chat-key,.chat-key-popup{transition:none;animation:none}}

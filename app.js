@@ -133,7 +133,7 @@ onlineVoiceToggle.onchange=()=>{localStorage.setItem(ONLINE_VOICE_KEY,onlineVoic
 // Voice personality: cute by default, classic Hans remains selectable.
 const VOICE_STYLE_KEY='vincent_voice_style_v129';
 const voiceStyle=$('voicestyle');
-if(voiceStyle){voiceStyle.value=localStorage.getItem(VOICE_STYLE_KEY)||'cute';voiceStyle.addEventListener('change',()=>localStorage.setItem(VOICE_STYLE_KEY,voiceStyle.value));}
+if(voiceStyle){voiceStyle.value=localStorage.getItem(VOICE_STYLE_KEY)||'cute';voiceStyle.addEventListener('change',()=>{localStorage.setItem(VOICE_STYLE_KEY,voiceStyle.value);onlineVoiceStatus.textContent='Stimme ausgewählt: '+(voiceStyle.value==='cute'?'Niedlich (Vicki wird beim nächsten Sprechen getestet)':'Klassisch (Hans)')+'. Bitte Stimme testen.';});}
 const isCuteVoice=()=>!voiceStyle||voiceStyle.value==='cute';
 let onlineVoiceBusy=false;
 async function sayOnline(message,generation){
@@ -144,10 +144,20 @@ async function sayOnline(message,generation){
     if(!window.puter?.ai?.txt2speech)throw new Error('Puter.js ist nicht geladen');
     // German male voice from AWS Polly. No API key in the public website.
     let generated;
+    let actualVoice='';
     const chosenVoice=isCuteVoice()?'Vicki':'Hans';
-    try{generated=await window.puter.ai.txt2speech(message.slice(0,2900),{provider:'aws-polly',voice:chosenVoice,language:'de-DE',engine:'neural'});}
-    catch{try{generated=await window.puter.ai.txt2speech(message.slice(0,2900),{provider:'aws-polly',voice:chosenVoice,language:'de-DE',engine:'standard'});}
-    catch{generated=await window.puter.ai.txt2speech(message.slice(0,2900),{provider:'aws-polly',voice:'Hans',language:'de-DE',engine:'standard'});}}
+    // Try the selected voice first; never silently mislabel a Hans fallback as Vicki.
+    let voiceError=null;
+    for(const candidate of (isCuteVoice()?['Vicki','Hans']:['Hans'])){
+      for(const engine of ['neural','standard']){
+        try{
+          generated=await window.puter.ai.txt2speech(message.slice(0,2900),{provider:'aws-polly',voice:candidate,language:'de-DE',engine});
+          if(generated?.src){actualVoice=candidate;break;}
+        }catch(error){voiceError=error;}
+      }
+      if(actualVoice)break;
+    }
+    if(!actualVoice)throw voiceError||new Error('Keine Online-Stimme verfügbar');
     if(generation!==speechGeneration)return;
     const src=generated?.src;
     if(!src)throw new Error('Der Anbieter hat keine Audiodatei geliefert');
@@ -163,7 +173,7 @@ async function sayOnline(message,generation){
     el.classList.remove('thinking','talking');el.classList.add('audio-speaking');
     audioTick(); // The spoken text determines the expression, not the audio start event.
     status.textContent='VINCENT SPRICHT ONLINE';
-    onlineVoiceStatus.textContent=isCuteVoice()?'Niedlicher Modus aktiv · Vicki (wenn verfügbar), sonst Hans.':'Klassische Stimme aktiv · Hans.';
+    onlineVoiceStatus.textContent='Tatsächlich verwendete Online-Stimme: '+actualVoice+(isCuteVoice()&&actualVoice==='Hans'?' · Vicki ist momentan nicht verfügbar.':'');
   }catch(e){
     if(generation!==speechGeneration)return;
     onlineVoiceBusy=false;speechPending=false;speaking=false;
