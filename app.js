@@ -226,6 +226,13 @@ function sayBrowser(message,generation){
     el.classList.remove('talking');
     status.textContent='TIPPEN: GEDANKEN · DOPPELTIPPEN: SPRECHEN';
   };
+  // Browser speech boundary events are approximate and not available on all voices.
+  u.onboundary=(event)=>{
+    if(generation!==speechGeneration)return;
+    const rest=message.slice(event.charIndex);
+    const fragment=(rest.match(/^\S+/u)||[rest.slice(0,Math.max(1,event.charLength||1))])[0];
+    window.dispatchEvent(new CustomEvent('vivi-speech-boundary',{detail:{text:fragment,index:event.charIndex,elapsedTime:event.elapsedTime||0}}));
+  };
   u.onend=done;u.onerror=done;
   try{speechSynthesis.speak(u)}catch{done()}
 }
@@ -412,7 +419,7 @@ $('clear').onclick=()=>{if(confirm('Wirklich alle lokalen Vincent-Erinnerungen l
 $('export').onclick=()=>{const blob=new Blob([JSON.stringify({version:3,memories:memories()},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='vincent-gedaechtnis-v3.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000)};
 $('import').onclick=()=>$('importfile').click();$('importfile').onchange=async e=>{const f=e.target.files?.[0];if(!f||f.size>200000)return;try{const data=JSON.parse(await f.text());if(!Array.isArray(data.memories)||!data.memories.every(x=>typeof x==='string'&&x.length<=400))throw Error('Format');if(confirm('Vorhandene Erinnerungen durch die importierten ersetzen?'))save(data.memories)}catch{alert('Ungültige Gedächtnis-Datei')}e.target.value=''};
 brainState(brainMode.value==='cloud'?'Online-Gehirn ausgewählt. Lange auf Vincent drücken → Online-Gehirn verbinden.':'Lokales KI-Gehirn noch nicht gestartet.');
-refresh();if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=240', {updateViaCache:'none'}).catch(()=>{}));
+refresh();if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=270', {updateViaCache:'none'}).catch(()=>{}));
 
 // Warm up the online brain while Vincent is idle; never opens microphone automatically.
 if(brainMode.value==='cloud'){setTimeout(()=>{loadCloudSDK().catch(()=>{});},300)}

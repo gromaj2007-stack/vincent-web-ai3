@@ -1,6 +1,6 @@
-/* Vivi 2.4.0: check deployed version on launch/return, refresh only on version change. */
+/* Vivi 2.7.0: check deployed version on launch/return, refresh only on version change. */
 (()=>{'use strict';
-const current='2.4.0', key='vivi-last-auto-refresh';
+const current='2.7.0', key='vivi-last-auto-refresh';
 let busy=false;
 async function check(){
  if(busy||!navigator.onLine||document.hidden)return;
