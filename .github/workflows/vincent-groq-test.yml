@@ -1,0 +1,57 @@
+name: Vincent Groq Verbindungstest
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Groq API prüfen
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os, json, urllib.request, urllib.error, sys
+          key = os.environ.get('GROQ_API_KEY', '')
+          if not key:
+              sys.exit('GROQ_API_KEY fehlt in GitHub Secrets')
+          model = 'llama-3.3-70b-versatile'
+          payload = json.dumps({
+              'model': model,
+              'messages': [{'role': 'user', 'content': 'Antworte nur mit OK.'}],
+              'max_tokens': 12,
+              'temperature': 0
+          }).encode('utf-8')
+          request = urllib.request.Request(
+              'https://api.groq.com/openai/v1/chat/completions',
+              data=payload,
+              headers={'Authorization': 'Bearer ' + key,
+                       'Content-Type': 'application/json',
+                       'Accept': 'application/json'},
+              method='POST')
+          try:
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  result = json.load(response)
+              print('Groq API erreichbar; Modell:', model)
+              print('Antwort erhalten:', bool(result.get('choices')))
+          except urllib.error.HTTPError as e:
+              print('Groq HTTP-Status:', e.code)
+              body = e.read(4096).decode('utf-8', 'replace')
+              try:
+                  data = json.loads(body)
+                  err = data.get('error', {})
+                  print('API-Fehlertyp:', str(err.get('type', 'unbekannt'))[:100])
+                  print('API-Fehlercode:', str(err.get('code', 'unbekannt'))[:100])
+              except (ValueError, AttributeError):
+                  print('Keine strukturierte API-Fehlermeldung verfügbar')
+              sys.exit(1)
+          except Exception as e:
+              print('Verbindungsfehler:', type(e).__name__)
+              sys.exit(1)
+          PY
