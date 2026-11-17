@@ -20,3 +20,5 @@ window.viviIdleGaze=gaze;
 }
 requestAnimationFrame(tick);
 })();
+/* Approved character artwork: gentle idle movement without distorting the original image. */
+(()=>{const art=document.getElementById('vivi-character-art');if(!art)return;let i=0;const moves=[[0,0],[2,-1],[-3,1],[0,0],[1,1],[-2,-1]];function change(){if(document.hidden)return;const chat=document.querySelector('main')?.classList.contains('chat-open');if(chat)return;const [y,a]=moves[(i++)%moves.length];art.style.setProperty('--vivi-art-y',y+'px');art.style.setProperty('--vivi-art-angle',a+'deg')}change();setInterval(change,3700)})();
