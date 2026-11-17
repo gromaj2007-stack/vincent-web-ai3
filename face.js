@@ -70,7 +70,7 @@ if(mode==='awake'&&now>=nextLook){look=(thinking||listening||talking)?0:(Math.ra
 // No random emotions. Only calm eye micro-movements and conversation-driven expressions.
 // Smooth exponential easing is frame-rate independent.
 const k=1-Math.exp(-dt*5.2);for(const prop of ['eye','smile','brow','blush'])cur[prop]=lerp(cur[prop],pose[prop],k);
-cur.gaze=lerp(cur.gaze,mode==='awake'?pose.gaze+look:0,1-Math.exp(-dt*1.7));cur.blink=lerp(cur.blink,blink,1-Math.exp(-dt*28));
+cur.gaze=lerp(cur.gaze,mode==='awake'?pose.gaze+look+(window.viviIdleGaze||0):0,1-Math.exp(-dt*1.7));cur.blink=lerp(cur.blink,blink,1-Math.exp(-dt*28));
 let targetOpen=0;if(mode!=='sleep'&&talking){const raw=parseFloat(host.style.getPropertyValue('--audio-mouth-scale'));targetOpen=host.classList.contains('audio-speaking')&&Number.isFinite(raw)?Math.max(.1,Math.min(.95,(raw-.3)/1.8)):.10+.25*(.5+.5*Math.sin(now/190));}else if(now<emotionUntil&&emotion==='surprised')targetOpen=.38;
 cur.open=lerp(cur.open,targetOpen,1-Math.exp(-dt*8));
 const awake=mode==='awake';

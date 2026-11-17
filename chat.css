@@ -165,3 +165,10 @@ main.chat-open #chat-toggle{z-index:20!important}
 @media(prefers-reduced-motion:reduce){
  main.chat-open .figure{transition:none!important}
 }
+
+/* v212: no severed floating head. Body remains connected behind the chat surface. */
+main.chat-open .figure{clip-path:none!important;z-index:9!important;top:-12dvh!important;transform-origin:50% 50%!important}
+main.chat-open #vincent-chat{z-index:10!important}
+main.chat-open[data-vivi-stage="peek-left"] .figure{transform:translate3d(calc(-50% - min(16vw,110px)),1dvh,0) rotate(7deg) scale(.81)!important}
+main.chat-open[data-vivi-stage="peek-right"] .figure{transform:translate3d(calc(-50% + min(16vw,110px)),1dvh,0) rotate(-7deg) scale(.81)!important}
+main.chat-open[data-vivi-stage="duck"] .figure{transform:translate3d(-50%,-58dvh,0) rotate(5deg) scale(.81)!important}

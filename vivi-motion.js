@@ -22,7 +22,11 @@ function frame(now){
  else if(listening){a=-9;y=-6}
  else if(thinking){a=8;y=4}
  else if(now<gestureUntil){a=gesture==='shy'?-10:gesture==='curious'?12:gesture==='playful'?-8:5;y=-7}
- else{a=3*Math.sin(now/1600);y=3*Math.sin(now/1200)}
+ else{
+  const idle=window.viviIdlePose||'rest';
+  a=idle==='look-left'?-9:idle==='look-right'?9:idle==='tilt-left'?-13:idle==='tilt-right'?13:idle==='curious'?7:idle==='shy'?-7:2.2*Math.sin(now/1750);
+  y=idle==='curious'?-7:idle==='shy'?5:2.5*Math.sin(now/1500);
+}
  const k=1-Math.exp(-dt*5.2);angle+=(a-angle)*k;lift+=(y-lift)*k;
  shell.setAttribute('transform',`translate(0 ${lift.toFixed(2)}) rotate(${angle.toFixed(2)} 320 465)`);
 }requestAnimationFrame(frame);
