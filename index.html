@@ -1,4 +1,4 @@
-<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vivi – Originalfunktionen + natürliche Animation</title><style>body{margin:0;background:#130c20;color:#eee;font:16px system-ui;min-height:100dvh;display:grid;place-items:center;text-align:center}#status{padding:20px}</style></head><body><div id="status">Vivi wird geladen …</div><script>
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vivi 3.5 – Android-Standardstimme</title><style>body{margin:0;background:#130c20;color:#eee;font:16px system-ui;min-height:100dvh;display:grid;place-items:center;text-align:center}#status{padding:20px}</style></head><body><div id="status">Vivi wird geladen …</div><script>
 (async()=>{try{
 const url='https://raw.githubusercontent.com/gromaj2007-stack/vincent-web-ai3/a2a53c04ec/index.html';
 const res=await fetch(url,{cache:'no-store'});if(!res.ok)throw Error('Originalversion HTTP '+res.status);
@@ -19,10 +19,15 @@ if(!appCode.includes(onlineDefault))throw Error('Online-Stimmen-Schalter nicht g
 appCode=appCode.replace(onlineDefault,"onlineVoiceToggle.checked=false;localStorage.setItem(ONLINE_VOICE_KEY,'off');");
 const selectedVoice="u.voice=voices().find(v=>v.name===select.value)||null;";
 if(!appCode.includes(selectedVoice))throw Error('Stimmen-Zuweisung nicht gefunden');
-appCode=appCode.replace(selectedVoice,"u.voice=voices().find(v=>v.name===select.value)||null;");
+// Null means: use Android's configured default voice; never force Hans.
+appCode=appCode.replace(selectedVoice,"u.voice=null;");
+// Do not allow the old automatic male preference to change the actual voice.
+// The selector remains visible for diagnostics, but Android's default is used.
+appCode=appCode.replace("u.lang='de-DE';u.rate=isCuteVoice()?1.04:.91;u.pitch=isCuteVoice()?1.48:.93;", "u.lang='de-DE';u.rate=1.0;u.pitch=1.0;");
+appCode=appCode.replace("u.voice=null;onlineVoiceStatus.textContent='Aktive Audioquelle: Android-Browserstimme '+(u.voice?.name||'(Systemstandard)');", "u.voice=null;onlineVoiceStatus.textContent='Aktive Audioquelle: Android-Standardstimme (ohne Hans-Zwang)';");
 const appBlob=URL.createObjectURL(new Blob([appCode],{type:'text/javascript'}));
 source=source.replace(/src="\.\/app\.js\?v=290"/,'src="'+appBlob+'"');
-source=source.replace(/<\/body>/i,'<script src="./vivi-classic-animation.js?v=340" defer></'+'script></body>');
+source=source.replace(/<\/body>/i,'<script src="./vivi-classic-animation.js?v=350" defer></'+'script></body>');
 document.open();document.write(source);document.close();
 }catch(e){document.getElementById('status').textContent='Vivi konnte nicht geladen werden: '+e.message;}})();
 </script></body></html>
