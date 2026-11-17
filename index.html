@@ -1,4 +1,4 @@
-<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vivi 4.4 – Weibliche lokale Piper-Stimme</title><style>body{margin:0;background:#130c20;color:#eee;font:16px system-ui;min-height:100dvh;display:grid;place-items:center;text-align:center}#status{padding:20px}</style></head><body><div id="status">Vivi wird geladen …</div><script>
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vivi 5.0 – Emotionsanimation und lokale KI</title><style>body{margin:0;background:#130c20;color:#eee;font:16px system-ui;min-height:100dvh;display:grid;place-items:center;text-align:center}#status{padding:20px}</style></head><body><div id="status">Vivi wird geladen …</div><script>
 (async()=>{try{
 const url='https://raw.githubusercontent.com/gromaj2007-stack/vincent-web-ai3/a2a53c04ec/index.html';
 const res=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(20000)});if(!res.ok)throw Error('Originalversion HTTP '+res.status);
@@ -87,6 +87,7 @@ const appBlob=URL.createObjectURL(new Blob([appCode],{type:'text/javascript'}));
 source=source.replace(/src="\.\/app\.js\?v=290"/,'src="'+appBlob+'"');
 source=source.replace(/<\/body>/i,'<script src="./vivi-piper-voice-ui.js?v=440" defer></'+'script></body>');
 source=source.replace(/<\/body>/i,'<script src="./vivi-classic-animation.js?v=440" defer></'+'script><script src="./vivi-alive.js?v=440" defer></'+'script><script src="./vivi-mesh-mimik.js?v=440" defer></'+'script></body>');
-source=source.replace(/Vivi 2\.9\.0/g,'Vivi 4.4');document.open();document.write(source);document.close();
+source=source.replace(/<\/body>/i,'<script src="./vivi-video-emotions.js?v=500" defer></'+'script></body>');
+source=source.replace(/Vivi 2\.9\.0/g,'Vivi 5.0');document.open();document.write(source);document.close();
 }catch(e){document.getElementById('status').innerHTML='Vivi konnte nicht geladen werden: '+String(e.message).replace(/[<>&]/g,'')+'<p><button onclick="location.reload()" style="font:inherit;padding:12px 22px;border-radius:12px">Erneut versuchen</button></p>';}})();
 </script></body></html>
