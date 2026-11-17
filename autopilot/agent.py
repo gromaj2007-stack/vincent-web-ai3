@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Constrained autonomous code maintenance. Requires GROQ_API_KEY and a GitHub Actions runner."""
-import json, os, pathlib, subprocess, sys, urllib.request, urllib.error, re
+import json, os, pathlib, subprocess, sys, urllib.request
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ALLOWED = {'app.js', 'brain-worker.js'}
 MAX_BYTES = 45000
@@ -23,37 +23,8 @@ def ask_model(problem, sources):
         'response_format':{'type':'json_object'},'temperature':0.1},ensure_ascii=False).encode()
     req = urllib.request.Request('https://api.groq.com/openai/v1/chat/completions',data=body,
         headers={'Authorization':'Bearer '+key,'Content-Type':'application/json'},method='POST')
-    try:
-        with urllib.request.urlopen(req, timeout=120) as resp:
-            data=json.load(resp)
-    except urllib.error.HTTPError as exc:
-        # Never print the request, authorization header, or unfiltered API response.
-        raw = exc.read(4096).decode('utf-8', errors='replace')
-        try:
-            parsed = json.loads(raw)
-            error = parsed.get('error', {})
-            message = error.get('message', '') if isinstance(error, dict) else ''
-            kind = error.get('type', '') if isinstance(error, dict) else ''
-            code = error.get('code', '') if isinstance(error, dict) else ''
-        except (ValueError, TypeError):
-            message, kind, code = '', '', ''
-        def safe(value):
-            value = str(value)[:350]
-            value = value.replace(key, '[REDACTED]')
-            value = re.sub(r'gsk_[A-Za-z0-9_-]+', '[REDACTED]', value)
-            value = re.sub(r'(?i)bearer\s+\S+', 'Bearer [REDACTED]', value)
-            return value
-        print(f'Groq API HTTP {exc.code}', file=sys.stderr)
-        if kind or code:
-            print(f'Typ: {safe(kind)}; Code: {safe(code)}', file=sys.stderr)
-        if message:
-            print(f'API-Meldung: {safe(message)}', file=sys.stderr)
-        else:
-            print('Keine auswertbare API-Fehlermeldung empfangen.', file=sys.stderr)
-        sys.exit(1)
-    except urllib.error.URLError as exc:
-        print('Groq-Verbindung fehlgeschlagen (Netzwerk/DNS/TLS).', file=sys.stderr)
-        sys.exit(1)
+    with urllib.request.urlopen(req, timeout=120) as resp:
+        data=json.load(resp)
     return json.loads(data['choices'][0]['message']['content'])
 
 def main():
@@ -77,4 +48,3 @@ def main():
     print('Proposed:',path,'\nReason:',str(result.get('explanation',''))[:500])
     print(git('diff','--stat'))
 if __name__=='__main__': main()
-            
