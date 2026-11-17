@@ -163,9 +163,10 @@ async function sayOnline(message,generation){
 }
 let lastSpoken='';
 function say(message){
+  if(idlePhase==='sleep')return;
   stopAudio();
   lastSpoken=message;
-  window.vincentReactToText?.(message);
+  // Kein automatisches Raten von Emotionen anhand einzelner Wörter.
   const generation=++speechGeneration;
   if(onlineVoiceToggle.checked){clearTimeout(mouthStartTimer);if('speechSynthesis' in window)speechSynthesis.cancel();el.classList.remove('talking');void sayOnline(message,generation);return;}
   sayBrowser(message,generation);
@@ -318,8 +319,26 @@ async function askAI(payload,timeoutMs=90000){
 
 const autoCheck=$('autothought');
 autoCheck.checked=localStorage.getItem(AUTO)!=='off';
-function markActivity(){lastActivity=Date.now()}
-function canMuse(){return autoCheck.checked&&!document.hidden&&!speaking&&!speechPending&&!listening&&!autoBusy&&!settings.classList.contains('open')&&!el.classList.contains('thinking')&&Date.now()-lastActivity>120000&&Date.now()-lastAuto>(initiative.value==='quiet'?480000:initiative.value==='lively'?150000:240000)}
+let idlePhase='awake',idlePrompted=false,idleCheckTimer=null;
+function changeIdle(phase){
+ if(idlePhase===phase)return;idlePhase=phase;
+ window.vincentSetMode?.(phase==='sleep'?'sleep':phase==='checking'?'checking':'awake');
+ el.classList.toggle('vincent-sleeping',phase==='sleep');
+ el.classList.toggle('vincent-checking',phase==='checking');
+}
+function markActivity(){
+ lastActivity=Date.now();idlePrompted=false;
+ if(idlePhase!=='awake'){changeIdle('awake');window.vincentFeel?.('curious',1100)}
+}
+function idleTick(){
+ if(document.hidden||settings.classList.contains('open')||speaking||speechPending||listening||el.classList.contains('thinking'))return;
+ const seconds=(Date.now()-lastActivity)/1000;
+ if(seconds>=60){changeIdle('sleep');return;}
+ if(seconds>=30&&!idlePrompted){idlePrompted=true;changeIdle('checking');say('Hallooo? Bist du noch da?');}
+}
+idleCheckTimer=setInterval(idleTick,750);
+
+function canMuse(){return idlePhase==='awake'&&autoCheck.checked&&!document.hidden&&!speaking&&!speechPending&&!listening&&!autoBusy&&!settings.classList.contains('open')&&!el.classList.contains('thinking')&&Date.now()-lastActivity>120000&&Date.now()-lastAuto>(initiative.value==='quiet'?480000:initiative.value==='lively'?150000:240000)}
 const musings=[
  'Moment mal. Wenn man eine Idee lange genug betrachtet, wird sie dann besser oder nur seltsamer?',
  'Ich grüble gerade: Warum kommen einem die besten Einfälle immer dann, wenn man gerade etwas anderes vorhat?',
@@ -332,7 +351,7 @@ const musings=[
 let museIndex=-1;
 function fallbackMuse(){const facts=memories(),topics=recentTopics();if(facts.length&&Math.random()<.45){const fact=facts[Math.floor(Math.random()*facts.length)].slice(0,110);return 'Ich habe noch im Kopf: '+fact+'. Gibt es dazu etwas Neues?'}if(topics.length&&Math.random()<.5)return 'Ich denke noch über unser Thema nach: '+topics[topics.length-1]+'. Wie siehst du das inzwischen?';let n=Math.floor(Math.random()*musings.length);if(n===museIndex)n=(n+1)%musings.length;museIndex=n;return musings[n]}
 async function muse(){if(!canMuse())return;autoBusy=true;lastAuto=Date.now();el.classList.add('thinking');setExpression('look-left',1600);let line='';try{line=await askAI({message:'Formuliere eine einzelne kurze, originelle Frage oder einen spontanen Gedanken auf Deutsch, der sich auf Erinnerungen beziehen darf. Sei frech, freundlich und unaufdringlich. Höchstens 35 Wörter. Behaupte nicht, bewusst zu sein.',memories:memories().slice(-12),topics:recentTopics(),mode:'muse'},90000)}catch{}finally{autoBusy=false;el.classList.remove('thinking')}
- if(document.hidden||settings.classList.contains('open')||speaking||speechPending||listening||Date.now()-lastActivity<120000)return;
+ if(idlePhase!=='awake'||document.hidden||settings.classList.contains('open')||speaking||speechPending||listening||Date.now()-lastActivity<120000)return;
  say(line||fallbackMuse());
 }
 function scheduleMuse(){clearTimeout(autoTimer);autoTimer=setTimeout(async()=>{await muse();scheduleMuse()},18000)}
