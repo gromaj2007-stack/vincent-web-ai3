@@ -351,7 +351,7 @@ function changeIdle(phase){
 }
 function markActivity(){
  lastActivity=Date.now();idlePrompted=false;
- if(idlePhase!=='awake'){changeIdle('awake');window.vincentFeel?.('curious',1100)}
+ if(idlePhase!=='awake'){const wasSleeping=idlePhase==='sleep';changeIdle('awake');window.vincentFeel?.('curious',1100);if(wasSleeping){window.vincentWake?.();setTimeout(()=>{if(!speaking&&!speechPending){const h=new Date().getHours();say(h<11?'Guuuten Morgen! Ich bin wieder wach!':h<18?'Huhu! Da bist du ja wieder!':'Oh, hallo! Ich bin wieder da!')}},900)}}
 }
 function idleTick(){
  if(document.hidden||settings.classList.contains('open')||listening||el.classList.contains('thinking'))return;
