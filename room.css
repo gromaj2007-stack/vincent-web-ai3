@@ -281,3 +281,38 @@
 .suite-controls{display:none!important}
 .ceiling-ring{box-shadow:0 0 12px #ffcda6a8,inset 0 0 8px #fff2df77;transform:perspective(300px) rotateX(22deg)}
 @media(prefers-reduced-motion:reduce){.curtain{animation:none!important}.figure-slot{transition:none}}
+
+/* Vivi Suite 9: cleaner room, coherent furniture grouping, illuminated waterfront */
+.hud{display:none!important}
+.left-sconce{position:absolute;left:3.5%;top:18%;width:2%;height:18%;z-index:7;border-radius:12px;background:linear-gradient(90deg,#886c87,#ffefd5,#aa8099);box-shadow:0 0 16px 6px #ffe3c080,0 0 48px 17px #d89cbd35}
+.room.lights-off .left-sconce{background:#6b5a70;box-shadow:none}
+.city-lights{opacity:0!important}
+.tower-windows{position:absolute;bottom:27%;height:42%;width:100%;z-index:2;background-image:repeating-linear-gradient(90deg,transparent 0 5px,#ffe6ae 5px 7px,transparent 7px 12px),repeating-linear-gradient(0deg,transparent 0 7px,#f8e4c4 7px 9px,transparent 9px 15px);background-blend-mode:multiply;opacity:.65;mask-image:linear-gradient(to top,#000 0%,#000 72%,transparent 100%);clip-path:polygon(0 90%,4% 90%,4% 62%,8% 62%,8% 81%,12% 81%,12% 48%,17% 48%,17% 87%,22% 87%,22% 35%,27% 35%,27% 75%,33% 75%,33% 52%,38% 52%,38% 87%,43% 87%,43% 22%,48% 22%,48% 70%,53% 70%,53% 9%,57% 9%,57% 69%,62% 69%,62% 43%,68% 43%,68% 80%,73% 80%,73% 28%,78% 28%,78% 68%,83% 68%,83% 51%,89% 51%,89% 82%,94% 82%,94% 42%,100% 42%,100% 100%,0 100%)}
+.room[data-period=day] .tower-windows{opacity:.14}
+.neon-buildings{opacity:.75;filter:drop-shadow(0 0 5px #bb84ff)}
+.lake{z-index:3;background:repeating-linear-gradient(178deg,transparent 0 8px,#cba6e522 9px 10px),linear-gradient(#273e6d,#11284e 50%,#091a38)!important}
+.reflections{z-index:4;opacity:.18!important;mask-image:linear-gradient(to bottom,#000,transparent)!important}
+.light-reflections{position:absolute;z-index:4;bottom:0;left:0;width:100%;height:27%;pointer-events:none;background:repeating-linear-gradient(178deg,transparent 0 5px,#ffe2a75a 6px 7px,transparent 8px 13px),linear-gradient(90deg,transparent 3%,#f9a6ff55 15%,transparent 21%,#ffd4a35c 31%,transparent 40%,#b7b4ff55 54%,transparent 65%,#ffcaab66 79%,transparent 91%);mask-image:linear-gradient(to bottom,#000 0%,#0007 45%,transparent 100%);opacity:.7;animation:waterShimmer 9s ease-in-out infinite alternate}
+@keyframes waterShimmer{from{transform:translateX(-1%) scaleX(1.02);opacity:.48}to{transform:translateX(1%) scaleX(.98);opacity:.8}}
+.room[data-period=day] .light-reflections{opacity:.15}
+.window{overflow:hidden}
+.curtain{height:110%!important;top:-2%!important;z-index:15!important}
+.curtains-closed .curtain{width:53%!important;animation:none!important;transform:none!important}
+.curtains-closed .curtain.left{left:-1%!important}
+.curtains-closed .curtain.right{right:-1%!important}
+.window-frame{z-index:16!important}
+.bed{right:17%!important;bottom:13%!important;width:29%!important;height:34%!important;transform:skewY(-1deg) perspective(500px) rotateY(-9deg)!important;z-index:10}
+.bed-head{top:0!important;left:0!important;width:31%!important;height:98%!important;border-radius:18px 5px 5px 18px!important;background:linear-gradient(90deg,#5e3c61,#b58fa7 55%,#70516f)!important}
+.blanket{left:20%!important;bottom:8%!important;width:78%!important;height:75%!important;border-radius:15px 22px 16px 9px!important;background:linear-gradient(160deg,#fce5eb,#c99fbe 55%,#7c547d)!important}
+.pillow{left:19%!important;top:13%!important;width:21%!important;height:64%!important;border-radius:14px!important}
+.bed-foot{left:90%!important;bottom:7%!important;width:9%!important;height:80%!important;border-radius:5px!important}
+.heart-pillow{display:none!important}
+.nightstand{right:4.5%!important;bottom:14%!important;width:11%!important;height:22%!important;z-index:12!important;pointer-events:auto!important}
+.alarm-clock{right:5.2%!important;bottom:36%!important;width:9.5%!important;height:7%!important;z-index:13!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:0!important;font-size:clamp(9px,1.65vw,23px)!important;line-height:1!important;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden}
+.lamp{right:5.4%!important;bottom:42%!important;width:9%!important;height:25%!important;z-index:12!important;filter:drop-shadow(0 0 12px #ffe1bd88)}
+.lampshade{height:32%!important}
+.lampstem{top:31%!important;height:64%!important}
+.rug{left:37%!important;bottom:-8%!important;width:27%!important;height:30%!important;border-radius:45%!important;transform:perspective(350px) rotateX(60deg)!important;background:radial-gradient(ellipse,#d7b0ce 0%,#b887af 58%,#6b486e 90%)!important;box-shadow:0 8px 16px #130d1d77!important}
+.rug:after{content:"";position:absolute;inset:8%;border:2px solid #f4d5e566;border-radius:inherit}
+.shelf{right:2%;top:19%;width:13%}
+@media(prefers-reduced-motion:reduce){.light-reflections{animation:none}}
