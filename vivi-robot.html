@@ -5,12 +5,12 @@
 :root{color-scheme:dark;--violet:#c05cff;--light:#f2c5ff}
 *{box-sizing:border-box}html,body{height:100%;margin:0}body{font-family:system-ui,sans-serif;background:radial-gradient(ellipse at 50% 48%,#3c1757 0%,#1a0b28 45%,#08050f 100%);color:white;overflow:hidden}
 body:before{content:"";position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent 0 75px,#d367ff08 76px 77px);pointer-events:none}
-main{min-height:100dvh;display:grid;place-items:center;padding:18px}.stage{width:min(92vw,500px);position:relative;filter:drop-shadow(0 0 35px #9c33f955);animation:breathe 4s ease-in-out infinite}
-svg{width:100%;height:auto;display:block}.eyes{transform-origin:50% 42%;animation:blink 6s infinite}.mouth{transform-origin:50% 44%;animation:talk 2.7s infinite}.ring{animation:glow 3s ease-in-out infinite}
+main{min-height:100dvh;display:grid;place-items:center;padding:18px}.stage{width:min(92vw,500px);position:relative;filter:drop-shadow(0 0 35px #9c33f955);animation:breathe 6s ease-in-out infinite}
+svg{width:100%;height:auto;display:block}.eyes{transform-box:fill-box;transform-origin:center;animation:blink 8s ease-in-out infinite}.mouth{transition:opacity .3s}.ring{filter:drop-shadow(0 0 3px #ae6fdd)}
 h1{position:fixed;top:16px;left:20px;font-size:19px;margin:0;font-weight:650;letter-spacing:.05em;text-shadow:0 0 15px #c05cff}
 .tag{position:fixed;bottom:18px;left:0;right:0;text-align:center;color:#ddbaed;font-size:13px}
 a{position:fixed;top:14px;right:14px;color:white;text-decoration:none;border:1px solid #a864df;border-radius:25px;padding:10px 14px;background:#311342bb}
-@keyframes breathe{50%{transform:translateY(-8px)}}@keyframes blink{0%,43%,46%,100%{transform:scaleY(1)}44.5%{transform:scaleY(.08)}}@keyframes talk{0%,65%,100%{transform:scaleY(1)}70%{transform:scaleY(1.4)}75%{transform:scaleY(.7)}}@keyframes glow{50%{opacity:.6;filter:drop-shadow(0 0 10px #d68cff)}}
+@keyframes breathe{50%{transform:translateY(-3px)}}@keyframes blink{0%,46%,49%,100%{transform:scaleY(1)}47.5%{transform:scaleY(.13)}}@keyframes glow{50%{opacity:.6;filter:drop-shadow(0 0 10px #d68cff)}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important}}
 </style></head><body><h1>Vivi <span style="color:#c05cff">✦</span></h1><a href="./">Zum Zimmer</a><main><div class="stage" role="img" aria-label="Vivi: haarloser 3D-artiger Roboter mit originalen leuchtenden Roboteraugen, lila Kopfhörern und femininer Jacke">
 <svg viewBox="0 0 500 640" xmlns="http://www.w3.org/2000/svg">
@@ -32,7 +32,7 @@ a{position:fixed;top:14px;right:14px;color:white;text-decoration:none;border:1px
 <path d="M210 591 Q250 578 290 591 L290 624 H210Z" fill="#1a1423"/><circle cx="251" cy="581" r="4" fill="#b989d1"/><circle cx="251" cy="606" r="4" fill="#b989d1"/>
 <path d="M240 492 L250 505 L260 492 L267 508 L250 526 L233 508Z" fill="#a75bd3" stroke="#e5b6ff" stroke-width="2"/>
 <!-- head and reflective glass -->
-<rect x="224" y="409" width="52" height="54" rx="18" fill="#262031" stroke="#b58cc8" stroke-width="3"/>
+<path d="M211 421 Q250 439 289 421 L290 458 Q269 473 250 470 Q231 473 210 458Z" fill="#2c2038" stroke="#b58cc8" stroke-width="3"/><path d="M222 452 Q250 466 278 452" fill="none" stroke="#d1a4df" opacity=".6" stroke-width="3"/>
 <rect x="92" y="133" width="316" height="308" rx="105" fill="url(#shell)" stroke="#cda6db" stroke-width="5"/>
 <rect x="113" y="152" width="274" height="265" rx="89" fill="url(#glass)" stroke="#5c3a78" stroke-width="3"/>
 <path d="M135 180 Q179 153 249 155 Q320 154 363 181" fill="none" stroke="#d4bbdf" stroke-width="5" opacity=".24"/>
@@ -46,6 +46,6 @@ a{position:fixed;top:14px;right:14px;color:white;text-decoration:none;border:1px
 <g class="eyes"><rect x="149" y="262" width="83" height="43" rx="21" fill="#c16dff" opacity=".48" filter="url(#light)"/><rect x="268" y="262" width="83" height="43" rx="21" fill="#c16dff" opacity=".48" filter="url(#light)"/>
 <rect x="149" y="262" width="83" height="43" rx="21" fill="#c875ff" stroke="#f3caff" stroke-width="2"/><rect x="268" y="262" width="83" height="43" rx="21" fill="#c875ff" stroke="#f3caff" stroke-width="2"/>
 <path d="M165 271 Q189 265 217 271 M284 271 Q311 265 336 271" stroke="#fff1ff" stroke-width="4" opacity=".75" fill="none"/></g>
-<path class="mouth" d="M207 346 Q250 376 293 346" fill="none" stroke="#d98aff" stroke-width="8" stroke-linecap="round"/>
+<path class="mouth" d="M219 348 Q250 367 281 348" fill="none" stroke="#d98aff" stroke-width="6" stroke-linecap="round"/><path d="M173 237 Q192 228 219 240 M281 240 Q308 228 327 237" fill="none" stroke="#b86cda" stroke-width="4" opacity=".45" stroke-linecap="round"/>
 <path d="M415 330 Q442 335 434 361 L402 380" fill="none" stroke="#a578bb" stroke-width="8"/><rect x="386" y="369" width="30" height="17" rx="8" fill="url(#cups)" stroke="#d4a6ec" stroke-width="2"/>
-</svg></div></main><div class="tag">Designvorschau · 3D-inspirierter Roboter mit eleganter Jacke · Gehirn und Sprache nicht gestartet</div></body></html>
+</svg></div></main><div class="tag">Designvorschau · Ruhigere Gesichtsanimationen · Sprache nicht gestartet</div></body></html>
