@@ -16,3 +16,37 @@
 .wardrobe-panel{position:absolute;left:23%;top:22%;z-index:12;background:#1d1233f2;border:1px solid #bd83ff;border-radius:12px;padding:12px;max-width:45%;font-size:clamp(10px,1.5vw,16px);box-shadow:0 5px 30px #000b}.wardrobe-panel[hidden]{display:none}.wardrobe-panel p{margin:6px 0}.wardrobe-panel button{background:#50316d;color:white;border:1px solid #9f70d7;border-radius:7px;margin:3px;padding:5px;cursor:pointer}
 .room[data-wardrobe-color=blue] .wardrobe{box-shadow:0 0 22px #5abfff}.room[data-wardrobe-color=pink] .wardrobe{box-shadow:0 0 22px #ff79d3}.room[data-wardrobe-color=violet] .wardrobe{box-shadow:0 0 22px #bc65ff}
 @media(max-width:650px){.wardrobe-panel{max-width:65%;left:20%}.hud{top:6%}}
+
+/* v3: clear layout, realistic material depth and coherent lakeside view */
+.sofa,.sofa-back,.sofa-seat,.cushion,.sofa-leg{display:none!important}
+.room{background:linear-gradient(115deg,#171025,#261937 55%,#100d1e)}
+.wall{background:linear-gradient(110deg,#171323,#28203a 45%,#151122);box-shadow:inset 0 0 100px #080510aa}
+.wall-glow{background:radial-gradient(ellipse at 51% 52%,#a14cbb23,transparent 65%)}
+.floor{inset:75% 0 0;background:repeating-linear-gradient(103deg,transparent 0 15%,#ead7ff10 15.1% 15.4%),linear-gradient(160deg,#383046,#141120);border-top:3px solid #9674ad;box-shadow:inset 0 15px 25px #0008}
+.rug{left:28%;width:42%;bottom:-15%;background:radial-gradient(ellipse,#6d4b8566,#231a35aa 55%,transparent 72%)}
+.window{left:30%;width:42%;top:10%;height:60%;border:8px solid #292235;box-shadow:0 0 0 3px #aa8ac277,0 15px 22px #0009,inset 0 0 20px #0006}
+.window-frame{z-index:8;box-shadow:inset 0 0 15px #0a0614aa}
+.distant-hills{bottom:27%;height:22%;background:linear-gradient(#56506c,#2b3551);opacity:.8;clip-path:polygon(0 88%,8% 75%,17% 82%,28% 46%,35% 62%,45% 28%,55% 61%,66% 36%,77% 65%,88% 37%,100% 69%,100% 100%,0 100%)}
+.city{bottom:27%;height:43%;background:linear-gradient(100deg,#1c2945,#364060 52%,#151d38);filter:drop-shadow(0 3px 2px #060d20);clip-path:polygon(0 90%,4% 90%,4% 62%,8% 62%,8% 81%,12% 81%,12% 48%,17% 48%,17% 87%,22% 87%,22% 35%,27% 35%,27% 75%,33% 75%,33% 52%,38% 52%,38% 87%,43% 87%,43% 22%,48% 22%,48% 70%,53% 70%,53% 9%,57% 9%,57% 69%,62% 69%,62% 43%,68% 43%,68% 80%,73% 80%,73% 28%,78% 28%,78% 68%,83% 68%,83% 51%,89% 51%,89% 82%,94% 82%,94% 42%,100% 42%,100% 100%,0 100%)}
+.city-lights{bottom:27%;height:35%;opacity:.52;background-size:9px 13px,17px 21px;mask-image:linear-gradient(to top,#000 25%,transparent)}
+.shoreline{position:absolute;bottom:25%;left:0;width:100%;height:4%;background:linear-gradient(#283853,#a29ab255,#1d3455);z-index:2;clip-path:polygon(0 42%,12% 65%,22% 35%,35% 57%,49% 33%,62% 63%,79% 32%,100% 54%,100% 100%,0 100%)}
+.lake{bottom:0;height:27%;background:repeating-linear-gradient(177deg,transparent 0 7px,#9d9bca26 8px 9px),linear-gradient(#55658a,#293c64 30%,#101e40 75%,#08152c);box-shadow:inset 0 7px 15px #d4b6ff33}
+.reflections{position:absolute;bottom:0;width:100%;height:25%;background:repeating-linear-gradient(178deg,transparent 0 11px,#fff4 12px 13px);opacity:.3;mask-image:linear-gradient(90deg,transparent 7%,#000 38%,transparent 65%,#000 85%,transparent);filter:blur(1.5px)}
+.room[data-period=day] .lake{background:repeating-linear-gradient(178deg,transparent 0 9px,#e9f7ff44 10px 11px),linear-gradient(#7fb1c6,#396b90,#143b65)}
+.room[data-period=evening] .lake{background:repeating-linear-gradient(178deg,transparent 0 9px,#ffd9b844 10px 11px),linear-gradient(#ba779a,#4b4778,#1a2853)}
+.wardrobe{left:4%;top:24%;width:21%;height:51%;z-index:3;border:3px solid #8c729f;border-radius:8px 8px 3px 3px;background:linear-gradient(100deg,#130f1e,#49364d 40%,#1d1729);box-shadow:10px 14px 24px #000b,inset 6px 0 8px #a985b52b}
+.wardrobe-door{border:1px solid #957da0;background:linear-gradient(100deg,#2a2236,#51405b 44%,#211a2d);box-shadow:inset 3px 0 7px #d9b6ed1a,inset -4px 0 9px #0008}
+.wardrobe-door:after{content:"";position:absolute;inset:7%;border:1px solid #b39abc55;border-radius:2px}
+.wardrobe-knob{width:5%;height:3%;left:47.5%;background:#e5c4e8}
+.bed{right:18%;bottom:8%;width:34%;height:29%;z-index:4;filter:drop-shadow(6px 13px 8px #0009)}
+.bed-head{background:linear-gradient(135deg,#665075,#32283e 65%,#1c1728);border:2px solid #8d6c9f;box-shadow:inset 0 6px 15px #e9b8ff22}
+.blanket{background:linear-gradient(155deg,#a88aba,#72568c 48%,#3c305a);box-shadow:inset 0 10px 15px #ffffff24,5px 7px 10px #0006}
+.pillow{background:linear-gradient(135deg,#f1dff6,#bda6d2);box-shadow:inset -4px -4px 9px #745a8a}
+.nightstand{right:3%;bottom:11%;width:13%;height:17%;background:linear-gradient(135deg,#665073,#32283d 65%,#1e182a);border:2px solid #9473a5;box-shadow:5px 9px 12px #0009,inset 2px 2px 8px #ffffff18}
+.alarm-clock{right:4%;bottom:28%;width:11%;height:8%;border:2px solid #ab8ab8;border-radius:9px;background:linear-gradient(145deg,#403048,#10101a);box-shadow:0 6px 10px #0008,inset 0 2px 4px #d6b2e522}
+.lamp{right:2%;bottom:33%;height:30%;width:7%;z-index:2;filter:drop-shadow(3px 5px 5px #0007)}
+.shelf{right:3%;top:22%;width:15%;opacity:.7}
+.hud{left:3%;top:8%;max-width:23%;z-index:5;background:#120d2099;padding:8px;border-radius:8px;backdrop-filter:blur(3px)}
+.hud .date{font-size:clamp(9px,1.1vw,15px)}
+.calendar-toggle{right:3%;top:8%;z-index:6}
+@media(max-width:650px){.hud{padding:4px}.wardrobe{left:3%;width:23%}.bed{right:17%}.nightstand{right:2%}.alarm-clock{right:3%}}
