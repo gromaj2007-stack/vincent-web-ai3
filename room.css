@@ -361,3 +361,37 @@
 .room.lights-off .suite-cove,.room.lights-off .suite-ring{opacity:.12;box-shadow:none}
 .room.lights-off .suite-floor-reflection{opacity:.12}
 @media(prefers-reduced-motion:reduce){.suite-sheer{animation:none}}
+
+/* Vivi Suite 11: outlined 2.5D cartoon room */
+.room{background:#33213f!important;filter:saturate(1.16)}
+.wall{background:linear-gradient(110deg,#674160 0 22%,#8b5a7e 22% 78%,#64405d 78%)!important}
+.suite-left-wall{background:linear-gradient(115deg,#58334e,#9c5d7e)!important;box-shadow:inset -9px 0 0 #37243b!important}
+.suite-right-wall{background:linear-gradient(90deg,#8b557b,#56304c)!important;box-shadow:inset 9px 0 0 #36223a!important}
+.suite-ceiling{background:linear-gradient(#69405d,#ac6b89)!important;box-shadow:none!important;border-bottom:3px solid #302039}
+.suite-cove,.ceiling-strip{height:3px!important;background:#f6a6da!important;box-shadow:0 0 8px #ed6fddaa!important}
+.floor{background:repeating-linear-gradient(105deg,transparent 0 13%,#342038 13.2% 13.6%,transparent 13.8% 27%),linear-gradient(#b17d86,#754e67)!important;border-top:5px solid #3e2b42!important}
+.suite-floor-reflection{opacity:.22}
+.window{border:6px solid #37223f!important;border-radius:8px!important;box-shadow:0 0 0 3px #bd86a9!important}
+.sky{filter:saturate(1.25)}
+.city{background:linear-gradient(#51345d,#241b3f)!important;filter:drop-shadow(0 0 3px #f065d8)}
+.city-lights,.tower-windows{opacity:1!important}
+.lake{background:repeating-linear-gradient(176deg,transparent 0 8px,#ffa3ee6e 9px 11px,transparent 12px 18px),linear-gradient(#65478b,#19244f)!important}
+.curtain{background:repeating-linear-gradient(90deg,#b36eae 0 13%,#e7a6d1 14% 24%,#a7659f 25% 35%)!important;border:2px solid #513052!important;border-top:0!important;box-shadow:inset 6px 0 0 #fff4!important;animation:cartoonCurtain 8s ease-in-out infinite alternate}
+@keyframes cartoonCurtain{0%{filter:brightness(.97);transform:skewX(-.7deg)}100%{filter:brightness(1.04);transform:skewX(.7deg)}}
+.wardrobe{background:linear-gradient(110deg,#ab6f8e,#d89cae 45%,#966381)!important;border:4px solid #4b3048!important;border-radius:8px!important;box-shadow:8px 9px 0 #34243e88!important}
+.wardrobe-door{background:linear-gradient(100deg,#bc819c,#8d587f)!important;border:2px solid #513650!important}
+.bed{filter:drop-shadow(8px 9px 0 #37233d77)!important}
+.bed-head{background:linear-gradient(#c88daa,#80536e)!important;border:4px solid #51304e!important}
+.blanket{background:linear-gradient(155deg,#e8b0d0,#aa70ac)!important;border:3px solid #593554!important;border-radius:18px!important;box-shadow:inset 0 7px 0 #f7d5ea99!important}
+.pillow{background:#ffe0e9!important;border:2px solid #825477!important}
+.nightstand{background:linear-gradient(120deg,#c48ca5,#80536e)!important;border:3px solid #493149!important;border-radius:6px!important}
+.alarm-clock{border:3px solid #51334d!important;background:#49324e!important;color:#ffd5f6!important;box-shadow:0 0 9px #f58ce8!important}
+.rug{background:radial-gradient(ellipse,#e9b9df 0 55%,#c58ac4 65%,#8a578e 82%)!important;border:4px solid #603d68!important;box-shadow:5px 6px 0 #3d274c55!important}
+.lampshade{background:linear-gradient(#ffe3b9,#dba4ae)!important;border:3px solid #614359!important;clip-path:none!important;border-radius:50% 50% 14% 14%!important}
+.shelf{background:#b17a83!important;border-bottom:4px solid #50354e!important}
+.plant i{background:#618d6b!important;border:1px solid #375542}
+.wall-calendar{border:3px solid #ef9de7!important;background:#5d345e!important;box-shadow:0 0 12px #f0a0d5aa!important}
+.ceiling-ring,.suite-ring{border-color:#ffd5a6!important;box-shadow:0 0 10px #ffcfb4!important}
+.room:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:90;box-shadow:inset 0 0 30px #3d213b33}
+.room[data-period=day]{filter:saturate(1.05) brightness(1.12)}
+@media(prefers-reduced-motion:reduce){.curtain{animation:none}}
