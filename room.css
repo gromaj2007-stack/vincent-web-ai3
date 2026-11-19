@@ -422,3 +422,35 @@
 .figure-slot{z-index:7!important;transition:left .7s ease,bottom .7s ease,transform .7s ease!important}
 .foreground-depth{pointer-events:none!important}
 @media(max-width:650px){.room{perspective:600px}.wardrobe{left:4%!important}.window{left:27%!important;width:51%!important}}
+
+/* Suite 13: new cartoon stage, coherent perspective and mobile framing */
+#room-root{display:flex!important;align-items:center!important;justify-content:center!important;min-height:100dvh!important;background:radial-gradient(ellipse at 50% 48%,#34233e,#0c0b19 75%)!important}
+.room{width:min(100vw,115dvh)!important;height:min(88dvh,88vw)!important;aspect-ratio:auto!important;perspective:900px!important;overflow:hidden!important;background:#b68a9a!important;border:5px solid #4b334b!important;border-radius:10px!important;box-shadow:0 18px 65px #0008!important}
+.wall{inset:0!important;background:linear-gradient(100deg,#805b73 0 22%,#d9a8b2 22% 77%,#976b80 77% 100%)!important}
+.suite-left-wall{inset:8% auto 22% 0!important;width:24%!important;clip-path:polygon(0 0,100% 12%,100% 100%,0 100%)!important;background:linear-gradient(100deg,#75506d,#b98798)!important;border-right:4px solid #57384d!important;z-index:1!important}
+.suite-right-wall{inset:8% 0 22% auto!important;width:23%!important;clip-path:polygon(0 12%,100% 0,100% 100%,0 100%)!important;background:linear-gradient(95deg,#ba8b9b,#78546e)!important;border-left:4px solid #57384d!important;z-index:1!important}
+.suite-ceiling{inset:0 0 auto!important;height:18%!important;clip-path:polygon(0 0,100% 0,77% 100%,23% 100%)!important;background:linear-gradient(#f4c9c0,#c89caa)!important;z-index:2!important}
+.suite-cove,.ceiling-strip,.ambient-led{top:15%!important;height:3px!important;opacity:.5!important}
+.floor{inset:72% 0 0!important;clip-path:polygon(22% 0,78% 0,100% 100%,0 100%)!important;background:repeating-linear-gradient(0deg,transparent 0 23%,#74556a99 23.5% 24.5%,transparent 25% 49%),linear-gradient(110deg,#8b6179,#e4b4b4 45%,#9d7086)!important;border-top:5px solid #67455c!important;z-index:2!important}
+.floor:after{content:none!important}
+.window{left:30%!important;top:22%!important;width:47%!important;height:49%!important;border:7px solid #594052!important;border-radius:5px!important;transform:perspective(850px) rotateY(-5deg)!important;box-shadow:10px 12px 0 #63485a99,0 0 0 3px #f1d1cc!important;z-index:3!important}
+.window .curtain{background:repeating-linear-gradient(90deg,#926d8e 0 16%,#f0c8ce 20% 36%,#c092a6 45% 65%,#684b76 76% 100%)!important;filter:drop-shadow(3px 2px 2px #0003)}
+.window .sky{background:linear-gradient(var(--sky1),var(--sky2))!important}
+.suite-sheer{opacity:.3!important}
+.wardrobe{left:6%!important;top:28%!important;width:19%!important;height:43%!important;transform:perspective(600px) rotateY(18deg)!important;background:linear-gradient(95deg,#77556e,#c69baa 40%,#a27891)!important;border:5px solid #5a4056!important;border-radius:7px!important;box-shadow:12px 13px 0 #593c4e!important;z-index:5!important}
+.wardrobe:after{width:10%!important;background:#64465a!important}
+.bed{right:8%!important;bottom:12%!important;width:35%!important;height:29%!important;transform:perspective(700px) rotateY(-20deg) rotateX(4deg)!important;z-index:7!important;filter:drop-shadow(10px 12px 0 #5b405799)!important}
+.bed-head{background:linear-gradient(120deg,#a77790,#714e6b)!important;border:4px solid #62465a!important}
+.blanket{background:linear-gradient(145deg,#fff1e3,#e7aebf 60%,#bc849d)!important;border:3px solid #79566d!important}
+.rug{left:28%!important;bottom:0%!important;width:38%!important;height:17%!important;transform:perspective(300px) rotateX(36deg)!important;background:radial-gradient(ellipse,#f5dfd6 0 47%,#d6a6c3 48% 74%,#815a7c 75%)!important;border:3px solid #71516d!important;z-index:3!important}
+.nightstand{right:1%!important;bottom:12%!important;width:10%!important;z-index:7!important}
+.alarm-clock{right:1.5%!important;bottom:29%!important;width:9%!important;z-index:9!important}
+.lamp{right:1%!important;bottom:34%!important;height:22%!important;z-index:6!important}
+.wall-calendar{left:2%!important;top:39%!important;z-index:6!important}
+.shelf{right:2%!important;top:28%!important;width:14%!important;z-index:5!important}
+.plant{left:23%!important;bottom:22%!important;z-index:5!important}
+.ceiling-ring,.suite-ring{top:8%!important;z-index:5!important}
+.figure-slot{z-index:8!important}
+.foreground-depth{pointer-events:none!important;z-index:10!important}
+@media(orientation:portrait){.room{width:100vw!important;height:74dvh!important;max-height:780px!important;min-height:430px!important}.window{top:23%!important;height:45%!important}.floor{top:69%!important}.bed{bottom:18%!important}.rug{bottom:8%!important}.nightstand{bottom:18%!important}.alarm-clock{bottom:35%!important}.lamp{bottom:40%!important}.wall-calendar{top:41%!important}}
+@media(prefers-reduced-motion:reduce){.room *, .room *:before,.room *:after{animation-duration:.001ms!important;transition-duration:.001ms!important}}
