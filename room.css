@@ -70,3 +70,45 @@
 .wall-month{font-size:clamp(11px,2.5vw,27px);font-weight:700;letter-spacing:.08em}.wall-day{font-size:clamp(21px,5vw,60px);line-height:1.1;text-shadow:0 0 9px #d47cff}
 .calendar,.calendar-toggle{display:none!important}
 @media(max-width:650px){.room-art{top:14%;}.wall-calendar{left:5%;top:37%;height:20%}.hud{top:7%}}
+
+
+/* Miami 90s animated beach skyline: lightweight CSS only */
+.window .sky{--sky1:#24113e;--sky2:#b53c91;background:linear-gradient(180deg,var(--sky1) 0%,#7d2c83 47%,var(--sky2) 77%,#ed9b92 100%);animation:miamiSky 34s ease-in-out infinite alternate}
+.room[data-period=morning] .window .sky{--sky1:#4266aa;--sky2:#f8b88c}
+.room[data-period=day] .window .sky{--sky1:#2c8fc0;--sky2:#f8c6a1}
+.room[data-period=evening] .window .sky{--sky1:#33235f;--sky2:#f8879b}
+.room[data-period=night] .window .sky{--sky1:#140e3e;--sky2:#a83b8d}
+.window .sunmoon{z-index:1;animation:miamiSun 11s ease-in-out infinite alternate}
+.sun-glow{position:absolute;left:48%;top:9%;width:55%;height:70%;background:radial-gradient(ellipse,#ffb38b55,transparent 65%);animation:miamiGlow 9s ease-in-out infinite alternate;pointer-events:none}
+.window .cloud{z-index:2;opacity:.6;animation-duration:38s}
+.window .c2{animation-duration:54s}
+.window .distant-hills{bottom:30%;height:17%;background:linear-gradient(#68618e,#2d3e6c);opacity:.72}
+.window .city{z-index:3;bottom:29%;height:37%;background:linear-gradient(90deg,#1b254b,#3d3766 47%,#182547);clip-path:polygon(0 88%,4% 88%,4% 64%,9% 64%,9% 82%,14% 82%,14% 44%,19% 44%,19% 82%,23% 82%,23% 20%,27% 20%,27% 12%,29% 12%,29% 20%,32% 20%,32% 76%,37% 76%,37% 55%,42% 55%,42% 84%,46% 84%,46% 32%,50% 32%,50% 18%,54% 18%,54% 32%,57% 32%,57% 78%,62% 78%,62% 48%,68% 48%,68% 80%,72% 80%,72% 25%,75% 25%,75% 8%,77% 8%,77% 25%,81% 25%,81% 73%,86% 73%,86% 46%,91% 46%,91% 84%,96% 84%,96% 60%,100% 60%,100% 100%,0 100%)}
+.window .city-lights{z-index:4;bottom:29%;height:31%;background-image:radial-gradient(#ffe9b7 1px,transparent 1.6px),radial-gradient(#ff77d3 1px,transparent 1.6px);background-size:11px 13px,17px 19px;opacity:.7;animation:miamiLights 5s ease-in-out infinite alternate}
+.neon-buildings{position:absolute;z-index:4;bottom:29%;left:0;width:100%;height:26%;background:repeating-linear-gradient(90deg,transparent 0 12%,#ff7ac966 12.3% 12.7%,transparent 13% 24%),repeating-linear-gradient(0deg,transparent 0 20%,#60dcf766 21% 22%,transparent 23% 36%);opacity:.25;mix-blend-mode:screen;animation:miamiLights 7s ease-in-out infinite alternate}
+.window .shoreline{z-index:5;bottom:26%;height:5%;background:linear-gradient(#8d7498,#d2a6a0,#3c5279)}
+.beach{position:absolute;z-index:5;bottom:24%;width:100%;height:4%;background:linear-gradient(170deg,#e6b1aa,#af8f9c 58%,#6c7a91);clip-path:polygon(0 45%,16% 65%,32% 36%,52% 57%,75% 30%,100% 56%,100% 100%,0 100%);opacity:.75}
+.window .lake{z-index:5;bottom:0;height:26%;background:linear-gradient(180deg,#398aa7 0%,#1c6e96 35%,#183d72 76%,#0b244d 100%)}
+.room[data-period=day] .window .lake{background:linear-gradient(#5cd1d0,#219ab6 48%,#206a9e)}
+.room[data-period=evening] .window .lake{background:linear-gradient(#d17da8,#5867a0 43%,#1d4376)}
+.room[data-period=night] .window .lake{background:linear-gradient(#68538e,#284c8b 40%,#0a2a53)}
+.waves{position:absolute;z-index:6;left:-35%;width:170%;bottom:0;height:24%;background:repeating-linear-gradient(177deg,transparent 0 9px,#b4f7ff33 10px 11px,transparent 12px 21px);opacity:.62;animation:miamiWaves 7s linear infinite;pointer-events:none}
+.wave-b{opacity:.33;bottom:1%;transform:scaleY(.8);animation-duration:11s;animation-direction:reverse}
+.window .reflections{z-index:7;bottom:0;height:25%;opacity:.35;animation:miamiReflections 6s ease-in-out infinite alternate}
+.palm{position:absolute;z-index:8;bottom:15%;width:26%;height:61%;pointer-events:none;transform-origin:bottom center;animation:miamiPalm 7s ease-in-out infinite alternate}
+.palm-left{left:-10%;transform:rotate(-8deg)}
+.palm-right{right:-13%;transform:scaleX(-1) rotate(-8deg);animation-delay:-3s}
+.palm:before{content:'';position:absolute;bottom:0;left:46%;height:84%;width:12%;border-radius:90% 15% 30% 30%;background:linear-gradient(90deg,#11182e,#302548,#10172a);transform:skewX(-13deg)}
+.palm i,.palm b{position:absolute;left:38%;top:10%;width:90%;height:16%;background:#15213a;clip-path:polygon(0 45%,30% 0,72% 15%,100% 80%,62% 47%,28% 70%);transform-origin:8% 50%;filter:drop-shadow(0 0 2px #081428)}
+.palm i{transform:rotate(-34deg)}
+.palm b{transform:scaleX(-1) rotate(-18deg);left:-34%}
+.birds{position:absolute;z-index:4;top:25%;left:18%;width:8px;height:4px;border-top:1px solid #252247;border-radius:50%;box-shadow:15px -6px 0 -1px #29254b,31px 4px 0 -1px #29254b;animation:miamiBirds 19s linear infinite}
+@keyframes miamiSky{from{filter:saturate(1)}to{filter:saturate(1.12)}}
+@keyframes miamiSun{from{transform:translateY(0)}to{transform:translateY(4px)}}
+@keyframes miamiGlow{from{opacity:.6}to{opacity:1}}
+@keyframes miamiLights{from{opacity:.3}to{opacity:.78}}
+@keyframes miamiWaves{from{background-position:0 0;transform:translateX(0)}to{background-position:35px 19px;transform:translateX(8%)}}
+@keyframes miamiReflections{from{opacity:.2;filter:blur(1px)}to{opacity:.52;filter:blur(2px)}}
+@keyframes miamiPalm{from{rotate:-1.3deg}to{rotate:1.3deg}}
+@keyframes miamiBirds{from{translate:-35px 4px;opacity:0}15%{opacity:.5}85%{opacity:.5}to{translate:190px -18px;opacity:0}}
+@media(prefers-reduced-motion:reduce){.window .sky,.window .sunmoon,.sun-glow,.window .cloud,.window .city-lights,.neon-buildings,.waves,.window .reflections,.palm,.birds{animation:none!important}}
