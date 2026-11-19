@@ -225,3 +225,35 @@
 .window .cloud.c1{animation-duration:81s}
 .window .cloud.c2{animation-duration:113s}
 @media(prefers-reduced-motion:reduce){.stars{transition:none}.window .sunmoon{transition:none}}
+
+/* V7 dimensional night suite: stronger ambient light, corner geometry, furniture materials */
+.room{background:#33233c;box-shadow:0 0 60px #7b428055}
+.wall{background:radial-gradient(ellipse at 62% 45%,#8c547a66,transparent 58%),linear-gradient(105deg,#433047 0%,#62425c 32%,#49334e 69%,#30243b 100%)!important;box-shadow:inset 0 0 45px #140d1c66}
+.wall:before{content:"";position:absolute;left:0;top:0;width:26%;height:74%;background:linear-gradient(105deg,#3b2a42,#71516a 85%,#92708a);clip-path:polygon(0 0,100% 14%,100% 100%,0 100%);box-shadow:inset -12px 0 23px #150b2055}
+.wall:after{content:"";position:absolute;right:0;top:0;width:24%;height:74%;background:linear-gradient(95deg,#a07891,#684760 18%,#372b45);clip-path:polygon(0 14%,100% 0,100% 100%,0 100%);box-shadow:inset 12px 0 22px #160d2355}
+.wall-glow{background:radial-gradient(ellipse at 56% 38%,#ffc8a329,transparent 70%),linear-gradient(90deg,#f5b8e008,transparent 40%,#e8c2c518)!important}
+.wall-arch{inset:0 0 26%;border:0!important;border-radius:0!important;background:linear-gradient(164deg,#e1adbd44 0 1%,transparent 1.5% 100%);clip-path:polygon(0 0,100% 0,78% 14%,24% 14%)}
+.ambient-led{height:2px;top:11%;background:#ffddc7;box-shadow:0 0 9px 3px #ffc6a477,0 0 25px 8px #e8a7f744}
+.ceiling-strip{top:13%;height:2px;background:#d6a3c1;box-shadow:0 0 9px #ffb2ce77}
+.floor{inset:73% 0 0!important;background:linear-gradient(90deg,#17101c66,transparent 24% 73%,#130e1d77),repeating-linear-gradient(97deg,transparent 0 15%,#f6c7df13 15.1% 15.3%),linear-gradient(180deg,#72526e,#3d304a 65%,#231c30)!important;border-top:4px solid #b08a9b;box-shadow:inset 0 12px 18px #180c2255!important}
+.floor:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 24%,#d9b1bf20 24.5%,transparent 25% 50%);opacity:.6}
+.window{box-shadow:0 0 0 5px #c39bb355,0 15px 24px #130a1caa,inset 0 0 15px #09071c!important;border:9px solid #34253e!important}
+.wardrobe{left:12%!important;top:23%!important;width:15%!important;height:48%!important;border:0!important;border-radius:2px!important;background:linear-gradient(90deg,#211b28 0%,#5b455b 9%,#8d6d7f 50%,#433247 92%,#1c1723)!important;box-shadow:10px 13px 20px #0b061599,inset 0 0 0 2px #aa899a55!important}
+.wardrobe:before{content:"";position:absolute;inset:0 auto 0 -8%;width:8%;background:linear-gradient(90deg,#1c1624,#564155);transform:skewY(-7deg);transform-origin:right bottom}
+.wardrobe:after{content:"";position:absolute;left:4%;right:4%;top:2%;height:3%;background:linear-gradient(#c4a4ae,#66536a);opacity:.7}
+.wardrobe-door{top:5%;bottom:3%;width:47%;border:0!important;background:linear-gradient(95deg,#433244,#80617a 55%,#4a354e)!important;box-shadow:inset 0 0 0 1px #d1adbb33,inset -8px 0 14px #1b122644!important}
+.wardrobe-door:after{inset:7% 10%;border:1px solid #d6b4c022}
+.wardrobe-knob{background:#d7b4a8;box-shadow:0 0 3px #f7e2cf}
+.bed{filter:drop-shadow(12px 15px 8px #140d1eaa)!important}
+.bed-head{background:linear-gradient(145deg,#b18ba6,#78546f 43%,#3f2c48 100%)!important;border:2px solid #c39eb5!important;box-shadow:inset 0 8px 15px #f6d5e544,inset -14px -10px 17px #27182d66!important}
+.blanket{background:linear-gradient(155deg,#fff0e5 0%,#f4d6d9 26%,#bb85ac 60%,#694568 100%)!important;box-shadow:inset 0 13px 15px #fff9,inset -15px -12px 25px #4e2b5677,6px 7px 10px #180d2466!important}
+.blanket:after{content:"";position:absolute;inset:15% 8% 15% 10%;border-radius:30%;background:linear-gradient(170deg,#fff7 0%,transparent 43%);opacity:.35}
+.pillow{background:linear-gradient(145deg,#fff8f2,#e5c5d8 62%,#ad88a8)!important;box-shadow:inset -7px -6px 10px #89648377,0 2px 6px #3d254a44!important}
+.bed-foot{background:linear-gradient(#9a678d,#583853)!important;box-shadow:0 0 8px #c17cac66!important}
+.nightstand{background:linear-gradient(105deg,#8d6682,#d1a6b3 35%,#a47794 75%,#59405d)!important;border:1px solid #d5b0b9!important;box-shadow:8px 9px 12px #1b0c25aa,inset 0 3px 7px #fff5!important}
+.nightstand span{border-top:2px solid #e6c9ce!important;box-shadow:0 3px 5px #3b244e66}
+.lamp{filter:drop-shadow(0 0 15px #ffdbad77)}
+.lampshade{background:linear-gradient(125deg,#fff5de,#e9bdc3 70%,#a77898)!important;box-shadow:inset -6px -4px 9px #8b5b8466,0 0 25px #ffdbb688!important}
+.shelf{background:linear-gradient(#d7a5b8,#72516e)!important;box-shadow:0 6px 7px #120b2099,0 0 10px #ffd2c744!important}
+.room.lights-off .wall-glow{opacity:.1}
+@media(prefers-reduced-motion:reduce){.wall-glow{transition:none}}
