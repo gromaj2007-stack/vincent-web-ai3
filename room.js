@@ -12,8 +12,8 @@ root.innerHTML=`<div class="room" id="vr-room" data-period="night" data-season="
  <button class="wardrobe" id="vr-wardrobe" aria-label="Kleiderschrank öffnen"><span class="wardrobe-door left-door"></span><span class="wardrobe-door right-door"></span><span class="wardrobe-knob"></span></button><section class="wardrobe-panel" id="vr-wardrobe-panel" hidden><strong>Vivis Kleiderschrank</strong><p>Dein Kleiderschrank</p><button id="vr-wardrobe-close">Schließen</button></section><button class="nightstand" aria-label="Nachttisch"><span></span></button><button class="alarm-clock" id="vr-alarm" aria-label="Wecker neben dem Bett"><span id="vr-alarm-time">--:--</span></button><button class="bed" id="vr-bed" aria-label="Bett auswählen"><span class="bed-head"></span><span class="pillow"></span><span class="blanket"></span><span class="heart-pillow">♡</span><span class="bed-foot"></span></button>
  <div class="hud"><div class="eyebrow">VIVI · PRIVATE SUITE</div><div class="season-label" id="vr-season"></div></div>
  <div class="wall-calendar" aria-label="Heutiges Datum"><span class="wall-month" id="vr-month-letter">--</span><strong class="wall-day" id="vr-day">--</strong></div>
- <nav class="suite-controls" aria-label="Zimmersteuerung"><button id="vr-nav-home" title="Zu Vivi" aria-label="Zu Vivi">⌂</button><button id="vr-nav-closet" title="Kleiderschrank" aria-label="Kleiderschrank">♧</button><button id="vr-nav-curtain" title="Vorhänge" aria-label="Vorhänge">◫</button><button id="vr-nav-light" title="Licht" aria-label="Licht">☼</button></nav><div class="toast" id="vr-toast" role="status" aria-live="polite"></div>
- <div class="figure-slot" id="vr-figure-slot" aria-label="Freier Platz für Vivis getrennte Figur"></div>
+<div class="toast" id="vr-toast" role="status" aria-live="polite"></div>
+ <div class="figure-slot" id="vr-figure-slot" aria-label="Bewegungsebene für Vivis Figur"></div><div class="foreground-depth" aria-hidden="true"></div>
  </div>`;
 const $=id=>root.querySelector('#'+id),room=$('vr-room'),fmt=(d,o)=>new Intl.DateTimeFormat('de-DE',o).format(d);
 let dateKey='',timer,toastTimer;
@@ -53,6 +53,8 @@ $('vr-alarm').onclick=()=>notify('Wecker · '+$('vr-alarm-time').textContent);
 $('vr-wardrobe').onclick=()=>{$('vr-wardrobe-panel').hidden=!$('vr-wardrobe-panel').hidden;room.classList.toggle('wardrobe-open',!$('vr-wardrobe-panel').hidden)};
 $('vr-wardrobe-close').onclick=()=>{$('vr-wardrobe-panel').hidden=true;room.classList.remove('wardrobe-open')};
 $('vr-bed').onclick=()=>notify('Bett ausgewählt · Platz für spätere Vincent-Interaktion');
-$('vr-nav-home').onclick=()=>location.assign('./vivi-robot.html');$('vr-nav-closet').onclick=()=>$('vr-wardrobe').click();$('vr-nav-curtain').onclick=curtains;$('vr-nav-light').onclick=()=>$('vr-lamp').click();update();timer=setInterval(update,30000);
-window.VincentRoom={mountFigure(node){if(node instanceof HTMLElement)$('vr-figure-slot').append(node)},getState(){return {period:room.dataset.period,season:room.dataset.season,lights:S.lights,curtainsOpen:S.curtains}},destroy(){clearInterval(timer);clearTimeout(toastTimer);root.replaceChildren();delete window.VincentRoom}};
+update();timer=setInterval(update,30000);
+const figureSlot=$('vr-figure-slot');let figureNode=null;function placeFigure(x=50,depth=.5){const px=Math.max(12,Math.min(88,Number(x)||50)),z=Math.max(0,Math.min(1,Number(depth)||0));figureSlot.style.left=px+'%';figureSlot.style.bottom=(7+z*13)+'%';figureSlot.style.transform='translateX(-50%) scale('+(1.1-z*.36)+')';figureSlot.dataset.depth=z<.45?'front':'back'}
+placeFigure();
+window.VincentRoom={mountFigure(node){if(!(node instanceof HTMLElement))return false;figureSlot.replaceChildren(node);figureNode=node;placeFigure();return true},moveFigure(x,depth){if(!figureNode)return false;placeFigure(x,depth);return true},getState(){return {period:room.dataset.period,season:room.dataset.season,lights:S.lights,curtainsOpen:S.curtains}},destroy(){clearInterval(timer);clearTimeout(toastTimer);root.replaceChildren();delete window.VincentRoom}};
 })();

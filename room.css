@@ -257,3 +257,27 @@
 .shelf{background:linear-gradient(#d7a5b8,#72516e)!important;box-shadow:0 6px 7px #120b2099,0 0 10px #ffd2c744!important}
 .room.lights-off .wall-glow{opacity:.1}
 @media(prefers-reduced-motion:reduce){.wall-glow{transition:none}}
+
+/* Vivi Suite 8: layered 2.5D stage, complete curtains, glossy stone floor */
+.room{perspective:1100px;--depth-light:#efb9df}
+.floor{inset:72% -12% -20%!important;transform-origin:50% 0;transform:rotateX(56deg) scale(1.2);background:repeating-linear-gradient(90deg,transparent 0 16.4%,#f9d9ef45 16.5%,#f9d9ef45 16.65%,transparent 16.8% 33%),repeating-linear-gradient(0deg,transparent 0 23%,#f7d7ec3b 23.3%,transparent 23.8% 46%),linear-gradient(135deg,#23172e,#624468 44%,#271c39 80%,#140e21)!important;border-top:6px solid #b998b3!important;box-shadow:inset 0 18px 32px #120d22a8,0 -4px 14px #ffc7f444!important}
+.floor:before{content:"";inset:0;position:absolute;background:radial-gradient(ellipse at 58% 5%,#ffc8e050,transparent 48%),linear-gradient(110deg,transparent 20%,#ffe3f011 40%,transparent 65%);opacity:1}
+.rug{z-index:7;left:34%!important;bottom:-9%!important;width:38%!important;height:25%!important;border-radius:46% 44% 10% 10%;filter:none!important;transform:perspective(360px) rotateX(55deg);background:repeating-radial-gradient(ellipse at 50% 50%,#d4a0d5 0 2px,#ac7eae 3px 5px,#805986 6px 8px)!important;box-shadow:0 10px 25px #11081b88}
+.window{left:28%!important;width:47%!important;height:59%!important;top:13%!important;z-index:4}
+.curtain{z-index:5;top:-1%!important;height:105%!important;width:19%!important;transform-origin:top center;background:repeating-linear-gradient(90deg,#32233f 0%,#b088b3 10%,#e7b8d0 16%,#6d507e 26%,#362445 35%,#ba93b9 45%,#5a3b6e 54%)!important;box-shadow:inset -7px 0 14px #1a0d2a88,5px 0 12px #0a071766;animation:curtainSway 12s ease-in-out infinite alternate!important;transition:width .85s ease}
+.curtain.right{animation-duration:15s!important;animation-delay:-4s!important;transform-origin:top right}
+.curtain.left{transform-origin:top left}
+.curtains-closed .curtain{width:51%!important;animation-play-state:paused!important}
+.curtain:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#fff5 0%,transparent 26%,#120a2430 100%);pointer-events:none}
+@keyframes curtainSway{0%{transform:skewX(-.6deg) scaleX(1)}50%{transform:skewX(.8deg) scaleX(1.025)}100%{transform:skewX(-.3deg) scaleX(.985)}}
+.wall{transform:translateZ(-30px);transform-origin:center}
+.wardrobe{z-index:9;filter:drop-shadow(10px 12px 8px #12091e99)}
+.bed{z-index:10;transform:skewY(-1deg);transform-origin:bottom center}
+.nightstand,.lamp,.alarm-clock{z-index:11}
+.figure-slot{position:absolute!important;z-index:9;left:50%;bottom:14%;height:52%;width:19%;pointer-events:none;transform-origin:bottom center;transition:left 1.5s ease-in-out,bottom 1.5s ease-in-out,transform 1.5s ease-in-out;display:flex;align-items:flex-end;justify-content:center}
+.figure-slot>*{max-width:100%;max-height:100%;object-fit:contain;pointer-events:auto}
+.figure-slot[data-depth=back]{z-index:6}
+.foreground-depth{position:absolute;z-index:12;bottom:0;left:0;right:0;height:5%;pointer-events:none;background:linear-gradient(transparent,#120d1f44)}
+.suite-controls{display:none!important}
+.ceiling-ring{box-shadow:0 0 12px #ffcda6a8,inset 0 0 8px #fff2df77;transform:perspective(300px) rotateX(22deg)}
+@media(prefers-reduced-motion:reduce){.curtain{animation:none!important}.figure-slot{transition:none}}
