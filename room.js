@@ -25,8 +25,8 @@ function season(m){return m===11||m<=1?'winter':m<=4?'spring':m<=7?'summer':'aut
 const SOLAR_LAT=48.1372,SOLAR_LON=11.5756;
 function solarEvents(date){
  const rad=Math.PI/180,day=Date.UTC(date.getFullYear(),date.getMonth(),date.getDate());
- const jd=day/86400000+2440587.5,n=Math.round(jd-2451545.0009-SOLAR_LON/360);
- const Jstar=2451545.0009+SOLAR_LON/360+n,M=(357.5291+.98560028*(Jstar-2451545))*rad;
+ const jd=day/86400000+2440587.5,n=Math.round(jd-2451545.0009+SOLAR_LON/360);
+ const Jstar=2451545.0009-SOLAR_LON/360+n,M=(357.5291+.98560028*(Jstar-2451545))*rad;
  const C=1.9148*Math.sin(M)+.0200*Math.sin(2*M)+.0003*Math.sin(3*M);
  const lambda=((M/rad)+C+180+102.9372)*rad;
  const transit=Jstar+.0053*Math.sin(M)-.0069*Math.sin(2*lambda);
