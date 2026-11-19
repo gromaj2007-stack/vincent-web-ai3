@@ -316,3 +316,48 @@
 .rug:after{content:"";position:absolute;inset:8%;border:2px solid #f4d5e566;border-radius:inherit}
 .shelf{right:2%;top:19%;width:13%}
 @media(prefers-reduced-motion:reduce){.light-reflections{animation:none}}
+
+/* Suite 10: replace flat room composition with anime 2.5D architectural depth. */
+.room{background:#1a1028;--wall-light:#b64bdf}
+.wall{background:linear-gradient(90deg,#21152b 0 18%,#392440 18% 78%,#20182c 78% 100%)!important}
+.suite-ceiling{position:absolute;inset:0 0 76%;z-index:2;clip-path:polygon(0 0,100% 0,84% 100%,17% 100%);background:linear-gradient(180deg,#301934,#5a3155 74%,#ad5b9c);box-shadow:0 10px 30px #e88bc7}
+.suite-left-wall{position:absolute;inset:13% 79% 26% 0;z-index:2;clip-path:polygon(0 0,100% 13%,100% 100%,0 100%);background:linear-gradient(110deg,#342038,#4d2b4c 65%,#1d152d);box-shadow:inset -15px 0 30px #140d24}
+.suite-right-wall{position:absolute;inset:13% 0 26% 78%;z-index:2;clip-path:polygon(0 13%,100% 0,100% 100%,0 100%);background:linear-gradient(110deg,#291a34,#4b294d 75%,#23182f)}
+.suite-cove{position:absolute;z-index:9;left:0;right:0;top:23%;height:1.2%;background:linear-gradient(90deg,#f5a7b9,#ffb6cb,#d37dff);box-shadow:0 0 13px 3px #ff92c4aa,0 0 32px #d46cffa0;pointer-events:none}
+.ceiling-strip{z-index:9!important;top:3%!important;height:3px!important;background:#fcb1d7!important;box-shadow:0 0 14px 4px #d960ff!important}
+.window{z-index:4!important;left:28%!important;top:25%!important;width:49%!important;height:48%!important;border:8px solid #25192c!important;box-shadow:0 0 0 4px #7d4a84,0 0 22px #d87cff55!important}
+.sky{background:linear-gradient(180deg,var(--sky1),var(--sky2))!important}
+.room[data-period=night] .sky{background:linear-gradient(#080f33,#34215d 58%,#5a2770)!important}
+.room[data-period=day] .sky{background:linear-gradient(#3c83bf,#9ecae8)!important}
+.tower-windows{opacity:.95!important;filter:drop-shadow(0 0 5px #ff8ee8)}
+.neon-buildings{filter:drop-shadow(0 0 7px #f65cff)!important}
+.lake{height:28%!important;background:repeating-linear-gradient(176deg,transparent 0 7px,#f7b0fc40 8px 9px,transparent 10px 15px),linear-gradient(#172e5a,#080f30)!important}
+.light-reflections{height:28%!important;opacity:.88!important}
+.curtain{background:repeating-linear-gradient(90deg,#332040 0 8%,#98658e 14%,#4c315a 25%,#c08ba9 35%,#4e315c 44%)!important;box-shadow:inset 4px 0 7px #fff2,6px 2px 10px #0006!important;z-index:19!important;transition:width 1.4s cubic-bezier(.2,.7,.2,1)!important}
+.curtains-closed .curtain{width:54%!important}
+.suite-sheer{position:absolute;top:26%;height:46%;width:5%;z-index:6;pointer-events:none;background:repeating-linear-gradient(90deg,#f4d9f222 0 6px,#e6b2ec55 7px 9px,transparent 10px 15px);filter:drop-shadow(0 0 3px #f9e3fa88);animation:sheerSway 13s ease-in-out infinite alternate}
+.sheer-left{left:29%;transform-origin:top left}.sheer-right{right:24%;transform-origin:top right;animation-delay:-6s}
+@keyframes sheerSway{from{transform:skewX(-1deg)}to{transform:skewX(2deg)}}
+.floor{z-index:3!important;inset:73% 0 0!important;background:repeating-linear-gradient(102deg,transparent 0 17%,#e0b6fa22 17.1% 17.3%,transparent 17.5% 35%),linear-gradient(#4c314c,#1b142c)!important;box-shadow:inset 0 22px 22px #0008!important;transform-origin:top}
+.suite-floor-reflection{position:absolute;inset:74% 0 0;z-index:3;pointer-events:none;background:linear-gradient(90deg,transparent 10%,#df77d718 25%,transparent 50%,#d2b1f52b 76%,transparent 90%);filter:blur(6px)}
+.wardrobe{z-index:10!important;left:10%!important;top:27%!important;width:18%!important;height:48%!important;box-shadow:8px 7px 16px #090714aa, inset 0 0 22px #e5a0d522!important;transform:perspective(650px) rotateY(-10deg)!important;background:linear-gradient(100deg,#2d2038,#69406b 45%,#301d3e)!important;border:2px solid #b982a177!important}
+.suite-wardrobe-glow{position:absolute;left:10%;top:27%;width:18%;height:48%;z-index:9;pointer-events:none;box-shadow:0 0 20px #e78bf33a}
+.bed{z-index:11!important;right:12%!important;bottom:11%!important;width:40%!important;height:33%!important;transform:perspective(600px) rotateY(-7deg) skewY(-2deg)!important;filter:drop-shadow(8px 12px 10px #0c0915aa)!important}
+.bed-head{background:linear-gradient(90deg,#53304c,#a76b98 40%,#553653)!important;border:2px solid #d4a1c2!important}
+.blanket{background:repeating-linear-gradient(160deg,transparent 0 14px,#ffffff12 15px 17px,transparent 18px 40px),linear-gradient(160deg,#efd5e9,#bc8ebf 53%,#714779)!important;box-shadow:inset 0 9px 14px #fff4,0 7px 14px #160b22aa!important}
+.pillow{background:linear-gradient(120deg,#fff5fc,#d9b9d8)!important;box-shadow:inset -4px -4px 10px #9d78a088}
+.nightstand{z-index:12!important;right:1%!important;bottom:11%!important;width:11%!important;height:21%!important;background:linear-gradient(110deg,#51314e,#8d6084 70%,#38243d)!important;box-shadow:5px 7px 8px #090714aa}
+.alarm-clock{z-index:15!important;right:2%!important;bottom:32%!important;width:9%!important;min-height:5%!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:clamp(9px,1.8vw,25px)!important;line-height:1!important;white-space:nowrap!important}
+.lamp{z-index:14!important;right:1.5%!important;bottom:39%!important;width:10%!important;height:21%!important}
+.lampshade{background:linear-gradient(#fce4dc,#d0a1bb)!important;filter:drop-shadow(0 0 13px #ffcbb8)!important}
+.rug{z-index:5!important;left:27%!important;bottom:-7%!important;width:49%!important;height:32%!important;border-radius:48%!important;background:radial-gradient(ellipse,#e7b9dd 0%,#b47aab 72%,#6d406a 95%)!important;box-shadow:0 0 12px #edb7e077,inset 0 0 25px #fff7!important}
+.shelf{z-index:10!important;right:1%!important;top:29%!important}
+.wall-calendar{z-index:15!important}
+.ceiling-ring{z-index:16!important;top:13%!important;left:43%!important;box-shadow:0 0 15px #ffb3c8!important}
+.suite-ring{position:absolute;z-index:16;top:11%;left:53%;width:17%;height:8%;border:4px solid #ffd1c5;border-radius:50%;transform:rotate(-8deg);box-shadow:0 0 13px #ff9cd7}
+.left-sconce{z-index:15!important}
+.figure-slot{z-index:13!important}
+.foreground-depth{pointer-events:none}
+.room.lights-off .suite-cove,.room.lights-off .suite-ring{opacity:.12;box-shadow:none}
+.room.lights-off .suite-floor-reflection{opacity:.12}
+@media(prefers-reduced-motion:reduce){.suite-sheer{animation:none}}
