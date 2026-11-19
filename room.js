@@ -58,3 +58,6 @@ const figureSlot=$('vr-figure-slot');let figureNode=null;function placeFigure(x=
 placeFigure();
 window.VincentRoom={mountFigure(node){if(!(node instanceof HTMLElement))return false;figureSlot.replaceChildren(node);figureNode=node;placeFigure();return true},moveFigure(x,depth){if(!figureNode)return false;placeFigure(x,depth);return true},getState(){return {period:room.dataset.period,season:room.dataset.season,lights:S.lights,curtainsOpen:S.curtains}},destroy(){clearInterval(timer);clearTimeout(toastTimer);root.replaceChildren();delete window.VincentRoom}};
 })();
+
+/* Suite 14: fullscreen/landscape requires a direct user gesture on mobile browsers. */
+(()=>{const gate=document.getElementById('vivi-landscape-gate');const button=document.getElementById('vivi-enter-landscape');if(!button)return;button.addEventListener('click',async()=>{try{if(!document.fullscreenElement&&document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen()}catch(e){}try{if(screen.orientation&&screen.orientation.lock)await screen.orientation.lock('landscape')}catch(e){}if(matchMedia('(orientation:portrait)').matches){button.textContent='Handy bitte quer drehen';}else if(gate){gate.hidden=true}})})();

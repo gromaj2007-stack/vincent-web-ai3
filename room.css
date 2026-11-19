@@ -454,3 +454,16 @@
 .foreground-depth{pointer-events:none!important;z-index:10!important}
 @media(orientation:portrait){.room{width:100vw!important;height:74dvh!important;max-height:780px!important;min-height:430px!important}.window{top:23%!important;height:45%!important}.floor{top:69%!important}.bed{bottom:18%!important}.rug{bottom:8%!important}.nightstand{bottom:18%!important}.alarm-clock{bottom:35%!important}.lamp{bottom:40%!important}.wall-calendar{top:41%!important}}
 @media(prefers-reduced-motion:reduce){.room *, .room *:before,.room *:after{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+
+/* Suite 14: game-like fullscreen landscape stage */
+html,body{width:100%;height:100%;overflow:hidden!important;overscroll-behavior:none}
+#room-root{width:100vw!important;height:100dvh!important;min-height:0!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important}
+.room{flex:none!important;width:min(100vw,177.7778dvh)!important;height:min(100dvh,56.25vw)!important;min-height:0!important;max-height:none!important;aspect-ratio:16/9!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+.vivi-back{font-size:12px!important;padding:8px 11px!important;opacity:.82;transition:opacity .2s}
+.vivi-back:hover,.vivi-back:focus{opacity:1}
+.vivi-landscape-gate{display:none;position:fixed;inset:0;z-index:10000;background:radial-gradient(ellipse at center,#4e2b66,#0b0918 80%);align-items:center;justify-content:center;padding:20px;text-align:center;color:white;font-family:system-ui}
+.gate-card{display:grid;justify-items:center;gap:12px;max-width:340px}
+.gate-icon{font-size:50px;color:#df9aff}.gate-card strong{font-size:24px}.gate-card p{margin:0;line-height:1.5}.gate-card small{opacity:.75;line-height:1.5}
+#vivi-enter-landscape{border:1px solid #efb8ff;border-radius:30px;background:#743ba4;color:white;padding:14px 22px;font:600 16px system-ui}
+@media(orientation:portrait){.vivi-landscape-gate{display:flex}.room{width:100vw!important;height:56.25vw!important;min-height:0!important}.vivi-back{display:none!important}}
+@media(orientation:landscape){.vivi-landscape-gate{display:none}.room{width:min(100vw,177.7778dvh)!important;height:min(100dvh,56.25vw)!important}}
