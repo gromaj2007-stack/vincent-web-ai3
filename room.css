@@ -395,3 +395,30 @@
 .room:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:90;box-shadow:inset 0 0 30px #3d213b33}
 .room[data-period=day]{filter:saturate(1.05) brightness(1.12)}
 @media(prefers-reduced-motion:reduce){.curtain{animation:none}}
+
+/* Vivi Suite 12: angled 2.5D cartoon perspective, separate depth planes */
+.room{perspective:950px;--ink:#493044;--cream:#ffe0c6}
+.wall{background:linear-gradient(105deg,#76516c 0 19%,#b48296 19.2% 77%,#75506f 77.2% 100%)!important}
+.suite-left-wall{position:absolute!important;inset:0 auto 24% 0!important;width:23%!important;clip-path:polygon(0 0,100% 10%,100% 100%,0 100%)!important;background:linear-gradient(110deg,#76506d,#a8748a)!important;border-right:4px solid #53354d!important;box-shadow:inset -18px 0 25px #2e193b40!important}
+.suite-right-wall{position:absolute!important;inset:0 0 24% auto!important;width:22%!important;clip-path:polygon(0 10%,100% 0,100% 100%,0 100%)!important;background:linear-gradient(100deg,#a97690,#66425f)!important;border-left:4px solid #50364b!important}
+.suite-ceiling{clip-path:polygon(0 0,100% 0,78% 12%,22% 12%)!important;height:23%!important;background:linear-gradient(#d9a6aa,#b8819a)!important;border-bottom:0!important}
+.ceiling-strip,.suite-cove,.ambient-led{opacity:.45!important;box-shadow:0 0 6px #f3b1dc!important}
+.floor{inset:69% 0 0!important;clip-path:polygon(22% 0,78% 0,100% 100%,0 100%)!important;background:repeating-linear-gradient(90deg,transparent 0 17%,#69445d66 17.2% 17.6%,transparent 17.8% 34%),linear-gradient(#c9959b,#89647d)!important;border-top:5px solid #50344d!important;box-shadow:inset 0 16px 20px #50334a55!important}
+.floor:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 24%,#69475a88 24.5% 25%,transparent 25.5% 50%);transform:perspective(220px) rotateX(20deg)}
+.window{left:28%!important;top:15%!important;width:49%!important;height:55%!important;border:7px solid #52384e!important;border-radius:3px!important;box-shadow:7px 9px 0 #4c314455,0 0 0 3px #e9b8c0!important;transform:perspective(700px) rotateY(-4deg)!important}
+.curtain{box-shadow:inset 8px 0 6px #ffe5e455!important}
+.wardrobe{left:5%!important;top:27%!important;width:19%!important;height:45%!important;transform:perspective(500px) rotateY(13deg)!important;box-shadow:10px 12px 0 #49314b99!important;border:4px solid #533449!important}
+.wardrobe:after{content:"";position:absolute;left:100%;top:4%;height:94%;width:12%;background:#6d465f;transform:skewY(-22deg);transform-origin:left top;border:2px solid #4e3246;pointer-events:none}
+.bed{right:8%!important;bottom:10%!important;width:35%!important;height:29%!important;transform:perspective(650px) rotateY(-19deg) rotateX(5deg)!important;filter:drop-shadow(10px 12px 0 #4c334e80)!important;z-index:6!important}
+.bed-head{border:4px solid #50354b!important;background:linear-gradient(120deg,#c88ba5,#81536e)!important}
+.blanket{background:linear-gradient(155deg,#f7c8d9,#c58da9 52%,#a26b9a)!important;border:3px solid #67445b!important;box-shadow:inset 0 9px 0 #fff5!important}
+.bed-foot{background:#76536b!important;border:3px solid #513448!important;height:15%!important}
+.nightstand{right:2%!important;bottom:11%!important;width:10%!important;transform:perspective(420px) rotateY(-15deg)!important;box-shadow:5px 7px 0 #4d314b88!important}
+.alarm-clock{right:2.5%!important;bottom:28%!important;width:9%!important;z-index:9!important;font-size:clamp(9px,1.8vw,24px)!important}
+.lamp{right:2%!important;bottom:33%!important;height:25%!important;z-index:5!important}
+.rug{left:29%!important;bottom:-11%!important;width:37%!important;height:26%!important;border-radius:50%!important;transform:perspective(250px) rotateX(32deg)!important;filter:none!important;background:radial-gradient(ellipse,#f5c7d9 0 47%,#d79bc4 48% 70%,#8f648d 71%)!important;border:4px solid #62435d!important}
+.wall-calendar{left:2%!important;top:35%!important;z-index:7!important}
+.shelf{right:3%!important;top:28%!important;width:15%!important}
+.figure-slot{z-index:7!important;transition:left .7s ease,bottom .7s ease,transform .7s ease!important}
+.foreground-depth{pointer-events:none!important}
+@media(max-width:650px){.room{perspective:600px}.wardrobe{left:4%!important}.window{left:27%!important;width:51%!important}}
