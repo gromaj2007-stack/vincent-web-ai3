@@ -179,3 +179,49 @@
 .suite-controls button{background:transparent;border:0;color:#ffe6ff;font-size:clamp(15px,2.5vw,31px);width:clamp(29px,5vw,55px);height:clamp(28px,4vw,44px);cursor:pointer;text-shadow:0 0 10px #ff73f8}
 .suite-controls button:focus-visible{outline:2px solid #fff;border-radius:12px}
 @media(prefers-reduced-motion:reduce){.curtain,.yacht,.sun-path,.candles{animation:none!important}}
+
+/* V6 solar-aware coherent suite; override sunset-only legacy styles */
+.room{--night-sky:#071027}
+.room[data-period=night] .window .sky{background:linear-gradient(180deg,#030b21 0%,#0b173b 48%,#17264d 78%,#14294e 100%)!important;filter:none!important}
+.room[data-period=morning] .window .sky{background:linear-gradient(#24375c,#b5679c 55%,#f8b69c 83%,#455e91)!important;filter:none}
+.room[data-period=day] .window .sky{background:linear-gradient(#2274ad,#65bad3 65%,#d3c3b8)!important;filter:none}
+.room[data-period=evening] .window .sky{background:linear-gradient(#23164c,#74377e 45%,#ed7f9d 76%,#534b86)!important;filter:none}
+.window .sunmoon{left:var(--sun-x,50%)!important;top:var(--sun-y,25%)!important;width:11%;background:#ffe4b4!important;box-shadow:0 0 28px #ffcda388!important;animation:none!important;transition:left 30s linear,top 30s linear,opacity 2s}
+.window .sunmoon:after{display:none}
+.room[data-daylight=false] .window .sunmoon{left:69%!important;top:13%!important;width:9%;background:#e4eeff!important;box-shadow:0 0 15px #cbdfff99!important}
+.room[data-period=night] .sun-glow{opacity:0!important}
+.room[data-period=night] .sun-path{opacity:0!important}
+.room[data-period=night] .window .lake{background:linear-gradient(#12284e,#10284c 50%,#071932)!important}
+.room[data-period=night] .window .city{background:linear-gradient(#1d2546,#0b132b)!important}
+.room[data-period=night] .window .city-lights{opacity:.9}
+.stars{position:absolute;inset:0 0 26%;z-index:1;pointer-events:none;background-image:radial-gradient(circle,#eaf1ff 1px,transparent 1.6px),radial-gradient(circle,#bbceff 1px,transparent 1.6px);background-size:47px 35px,73px 53px;background-position:12px 9px,29px 19px;opacity:0;transition:opacity 5s}
+.room[data-period=night] .stars{opacity:.78}
+.room[data-period=night] .window .cloud{opacity:.12}
+.room[data-period=night] .window .reflections{background:repeating-linear-gradient(177deg,transparent 0 12px,#b4d5ff55 13px 14px,transparent 15px 27px);opacity:.4}
+.bed{right:12%!important;bottom:12%!important;width:31%!important;height:25%!important}
+.bed-head{border-radius:20px 20px 3px 3px}
+.nightstand{right:2%!important;bottom:12%!important;width:9%!important;height:16%!important}
+.alarm-clock{right:2%!important;bottom:28%!important;width:9%!important;height:7%!important}
+.lamp{right:3%!important;bottom:35%!important;width:6%!important;height:18%!important}
+.lampshade{border-radius:50% 50% 15% 15%;clip-path:none;background:linear-gradient(#fff0dc,#d9a3bc);box-shadow:0 0 18px #ffc7a877}
+.wardrobe{left:12%!important;top:23%!important;width:15%!important;height:48%!important;border:2px solid #d7a7aa;border-radius:3px;background:linear-gradient(110deg,#3a293d,#61405c,#281e34);box-shadow:5px 12px 20px #0b071a88}
+.wardrobe-door{background:linear-gradient(110deg,#46314b,#765273 55%,#34233e);border:1px solid #d0a4bb66}
+.wardrobe-door:before{display:none}
+.wardrobe-door:after{inset:8%;border:1px solid #e1b8ca44}
+.wardrobe-panel{left:29%!important}
+.ceiling-ring{left:53%;top:2%;width:16%;height:7%;border-width:3px}
+.room-art,.floor-cushion,.coffee-table,.flamingo-neon,.window-console,.particles,.plant,.yacht,.birds{display:none!important}
+.rug{left:33%;bottom:-10%;width:32%;height:24%;background:radial-gradient(ellipse,#d5a5c388,#97648c77 60%,transparent 75%)}
+.hud{left:2%;top:13%;width:10%;max-width:10%}
+.wall-calendar{left:2%;top:36%;width:9%;height:18%}
+.shelf{right:4%;top:23%;width:12%;background:#805473;box-shadow:0 4px 6px #110b18}
+.suite-controls{bottom:1.5%;padding:3px 11px}
+.window .waves{animation-duration:17s}
+.window .wave-b{animation-duration:29s}
+.window .curtain.left{animation-duration:13s}
+.window .curtain.right{animation-duration:17s}
+.window .palm-left{animation-duration:19s}
+.window .palm-right{animation-duration:23s}
+.window .cloud.c1{animation-duration:81s}
+.window .cloud.c2{animation-duration:113s}
+@media(prefers-reduced-motion:reduce){.stars{transition:none}.window .sunmoon{transition:none}}
