@@ -467,3 +467,17 @@ html,body{width:100%;height:100%;overflow:hidden!important;overscroll-behavior:n
 #vivi-enter-landscape{border:1px solid #efb8ff;border-radius:30px;background:#743ba4;color:white;padding:14px 22px;font:600 16px system-ui}
 @media(orientation:portrait){.vivi-landscape-gate{display:flex}.room{width:100vw!important;height:56.25vw!important;min-height:0!important}.vivi-back{display:none!important}}
 @media(orientation:landscape){.vivi-landscape-gate{display:none}.room{width:min(100vw,177.7778dvh)!important;height:min(100dvh,56.25vw)!important}}
+
+/* Suite 15: small 2.5D companion, with independent figure and interactions */
+.figure-slot:has(.vivi-room-companion){pointer-events:none!important;transition:left .85s ease-in-out,bottom .85s ease-in-out,transform .85s ease-in-out!important;width:17%!important;height:52%!important;z-index:8!important}
+.vivi-room-companion{pointer-events:auto;position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;background:transparent;cursor:pointer;display:flex;align-items:end;justify-content:center;filter:drop-shadow(0 6px 7px #160c2680);animation:vrcIdle 3.7s ease-in-out infinite}
+.vivi-companion-art{height:100%;width:100%;overflow:visible}
+.vivi-companion-bubble{position:absolute;bottom:97%;left:50%;transform:translateX(-50%);min-width:110px;max-width:200px;padding:9px 12px;border:1px solid #e7b9ff;border-radius:14px;background:#21132de8;color:white;font:600 clamp(9px,1.3vw,14px) system-ui;white-space:nowrap;opacity:0;transition:opacity .25s;box-shadow:0 3px 15px #0006;z-index:2}
+.vivi-room-companion.is-speaking .vivi-companion-bubble{opacity:1}
+.vivi-room-companion.is-blinking .vivi-companion-eyes{transform:scaleY(.12);transform-origin:90px 94px}
+.vivi-room-companion.is-walking .vivi-companion-art{animation:vrcWalk .24s ease-in-out infinite alternate}
+.vivi-room-companion.is-waving .vivi-companion-art{animation:vrcWave .45s ease-in-out 2}
+@keyframes vrcIdle{0%,100%{translate:0 0}50%{translate:0 -3px}}
+@keyframes vrcWalk{from{transform:rotate(-3deg)}to{transform:rotate(3deg)}}
+@keyframes vrcWave{0%,100%{transform:rotate(0)}50%{transform:rotate(-8deg)}}
+@media(prefers-reduced-motion:reduce){.vivi-room-companion,.vivi-room-companion *{animation:none!important;transition:none!important}}
